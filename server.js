@@ -15,16 +15,18 @@ app.get('/', (req, res) => {
 app.post('/generate-qr', (req, res) => {
     try {
         const { amount, service } = req.body;
-        
-        // កំណត់តម្លៃ Amount និងព័ត៌មាន KHQR
-        const qrAmount = parseFloat(amount) || 1.00;
-        
+
+        // ចាប់យកតម្លៃ Price ចេញពី Option Value 
+        const parsedAmount = parseFloat(amount) || 1.0;
+
+        // កំណត់ Optional Data តាមទម្រង់ Standard របស់ Bakong SDK
         const optionalData = {
             currency: khqrData.currency.usd,
-            amount: qrAmount,
+            amount: parsedAmount,
             mobileNumber: '85590217653',
             storeLabel: 'KhmerSMM',
-            terminalLabel: service || 'Online Service'
+            terminalLabel: service ? String(service).substring(0, 25) : 'Service',
+            billNumber: 'INV-' + Date.now().toString().slice(-6)
         };
 
         const individualInfo = new IndividualInfo(
@@ -37,23 +39,28 @@ app.post('/generate-qr', (req, res) => {
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
+        // បើជោគជ័យ និងមាន string qr
         if (response && response.data && response.data.qr) {
+            const qrText = response.data.qr;
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrText)}`;
+
             return res.json({
                 success: true,
-                qrImage: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(response.data.qr)}`,
+                qrImage: qrImageUrl,
                 md5: response.data.md5
             });
         } else {
+            console.error('Bakong Response Invalid:', response);
             return res.status(400).json({
                 success: false,
-                message: 'មិនអាចបង្កើត KHQR Code បានទេ'
+                message: 'មិនអាចបង្កើត KHQR Code បានទេ (SDK Error)'
             });
         }
     } catch (error) {
-        console.error('KHQR Error:', error);
+        console.error('Server Error:', error);
         return res.status(500).json({
             success: false,
-            message: 'Error: ' + error.message
+            message: 'Server error: ' + error.message
         });
     }
 });
