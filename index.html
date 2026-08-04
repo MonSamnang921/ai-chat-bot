@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KhmerSMM - Dynamic Platform</title>
+    <title>KhmerSMM - Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/socket.io/socket.io.js"></script>
@@ -11,59 +11,43 @@
         body { background-color: #f4f7f6; font-family: sans-serif; padding: 15px 10px; }
         .app-container { max-width: 800px; margin: 10px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 25px; }
         
-        /* KHQR Card UI */
-        .khqr-card {
-            max-width: 360px;
-            margin: 20px auto;
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            overflow: hidden;
-            border: 1px solid #e0e0e0;
-            text-align: center;
-        }
-        .khqr-header {
-            background: #e61b23;
-            color: white;
-            padding: 14px;
-            font-weight: bold;
-            font-size: 20px;
-            letter-spacing: 1px;
-        }
+        .khqr-card { max-width: 360px; margin: 20px auto; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border: 1px solid #e0e0e0; text-align: center; }
+        .khqr-header { background: #e61b23; color: white; padding: 14px; font-weight: bold; font-size: 20px; letter-spacing: 1px; }
         .khqr-body { padding: 20px; }
-        .khqr-img-wrapper {
-            background: #ffffff;
-            padding: 12px;
-            border-radius: 16px;
-            display: inline-block;
-            border: 2px dashed #e61b23;
-            margin: 10px 0;
-        }
-        .khqr-img {
-            width: 260px;
-            height: 260px;
-            object-fit: contain;
-            display: block;
-        }
+        .khqr-img-wrapper { background: #ffffff; padding: 12px; border-radius: 16px; display: inline-block; border: 2px dashed #e61b23; margin: 10px 0; }
+        .khqr-img { width: 260px; height: 260px; object-fit: contain; display: block; }
         .khqr-amount { font-size: 28px; font-weight: 800; color: #111; margin-top: 5px; }
         .khqr-merchant { font-size: 15px; font-weight: 700; color: #444; }
 
-        /* Chat UI */
         .chat-box { height: 320px; overflow-y: auto; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; background: #f8f9fa; }
         .chat-msg { margin-bottom: 12px; max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
         .msg-self { background: #0d6efd; color: #fff; margin-left: auto; text-align: right; }
         .msg-other { background: #e9ecef; color: #333; margin-right: auto; }
         .chat-img, .chat-video { max-width: 220px; border-radius: 8px; margin-top: 5px; display: block; }
+        .custom-input { background-color: #f1f3f5 !important; border: 1px solid #e9ecef !important; border-radius: 10px !important; padding: 10px 14px !important; }
     </style>
 </head>
 <body>
 
-    <!-- Authentication Section -->
+    <!-- Auth Section -->
     <div id="auth-section" class="app-container">
         <h3 class="text-center fw-bold text-primary mb-4"><i class="fa-solid fa-rocket me-2"></i>KhmerSMM Panel</h3>
-        <div class="mb-3"><label class="fw-bold">Username</label><input type="text" id="login-user" class="form-control"></div>
-        <div class="mb-3"><label class="fw-bold">Password</label><input type="password" id="login-pass" class="form-control"></div>
-        <button class="btn btn-primary w-100 fw-bold" onclick="handleLogin()">Sign In</button>
+        <ul class="nav nav-pills nav-justified mb-4">
+            <li class="nav-item"><button class="nav-link active" id="btn-tab-login" onclick="switchForm('login')">Sign In</button></li>
+            <li class="nav-item"><button class="nav-link" id="btn-tab-reg" onclick="switchForm('register')">Sign Up</button></li>
+        </ul>
+
+        <div id="login-form">
+            <div class="mb-3"><label class="fw-bold">Email</label><input type="text" id="login-email" class="form-control custom-input" placeholder="ឧទាហរណ៍: user@gmail.com"></div>
+            <div class="mb-3"><label class="fw-bold">Password</label><input type="password" id="login-pass" class="form-control custom-input"></div>
+            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleLogin()">Sign In</button>
+        </div>
+
+        <div id="register-form" style="display: none;">
+            <div class="mb-3"><label class="fw-bold">Email</label><input type="email" id="reg-email" class="form-control custom-input" placeholder="ឧទាហរណ៍: user@gmail.com"></div>
+            <div class="mb-3"><label class="fw-bold">Password</label><input type="password" id="reg-pass" class="form-control custom-input"></div>
+            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleRegister()">Sign Up</button>
+        </div>
     </div>
 
     <!-- Dashboard Section -->
@@ -119,11 +103,32 @@
     const socket = io();
     let currentUser = null;
 
+    function switchForm(type) {
+        document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
+        document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
+        document.getElementById('btn-tab-login').classList.toggle('active', type === 'login');
+        document.getElementById('btn-tab-reg').classList.toggle('active', type === 'register');
+    }
+
+    async function handleRegister() {
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-pass').value;
+
+        const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) switchForm('login');
+    }
+
     async function handleLogin() {
-        const username = document.getElementById('login-user').value;
+        const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-pass').value;
 
-        const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
+        const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
         const data = await res.json();
         if (data.success) {
             currentUser = data.user;
