@@ -1,54 +1,57 @@
 const express = require('express');
-const { KHQR, BakongKHQR } = require('bakong-khqr');
-const QRCode = require('qrcode');
 const path = require('path');
+const { BakongKHQR } = require('bakong-khqr');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(express.json());
+app.use(express.static(path.join(__dirname)));
 
-// បង្កើត API សម្រាប់បង្កើត Bakong KHQR
-app.post('/generate-qr', async (req, res) => {
-    try {
-        const { amount, serviceName } = req.body;
-        
-        const optionalData = {
-            currency: BakongKHQR.currency.usd,
-            amount: parseFloat(amount),
-            mobileNumber: "85512345678",
-            storeLabel: "KhmerSMM",
-            terminalLabel: "Online Store",
-            billNumber: "INV-" + Date.now().toString().slice(-6)
-        };
-
-        const khqr = new BakongKHQR();
-        const response = khqr.generateMerchantWithOptional({
-            bakongAccountId: "mon_samnang@bkrt",
-            merchantName: "KhmerSMM",
-            merchantCity: "Phnom Penh",
-            merchantId: "123456",
-            acquiringBank: "Dev Bank"
-        }, optionalData);
-
-        if (response.status.code === 0) {
-            const qrImageDataUrl = await QRCode.toDataURL(response.data.qr);
-            res.json({
-                success: true,
-                qrCode: qrImageDataUrl,
-                md5: response.data.md5,
-                amount: amount,
-                service: serviceName
-            });
-        } else {
-            res.status(400).json({ success: false, message: "ការបង្កើត QR បរាជ័យ" });
-        }
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-});
-
-app.get('*', (req, res) => {
+// បម្រើទំព័រដើម HTML
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// API សម្រាប់បង្កើត KHQR Code
+app.post('/generate-qr', (req, res) => {
+    try {
+        const { amount } = req.body;
+
+        const optionalData = {
+            currency: 'USD',
+            amount: parseFloat(amount) || 1.00,
+            mobileNumber: '85512345678', // អាចប្តូរតាមលេខទូរស័ព្ទគណនីបាគងរបស់អ្នក
+            storeLabel: 'KhmerSMM Store',
+            terminalLabel: 'Online Web',
+            billNumber: 'INV-' + Date.now()
+        };
+
+        // បង្កើតទិន្នន័យ KHQR តាមរយៈ Instance របស់ BakongKHQR
+        const khqr = new BakongKHQR();
+        const khqrResponse = khqr.generateIndividual(optionalData);
+
+        if (khqrResponse && khqrResponse.data) {
+            return res.json({
+                success: true,
+                qrImage: khqrResponse.data.qr,
+                md5: khqrResponse.data.md5
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: 'មិនអាចបង្កើត KHQR Code បានទេ'
+            });
+        }
+    } catch (error) {
+        console.error('KHQR Generation Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'មានបញ្ហាបច្ចេកទេសក្នុង Server: ' + error.message
+        });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
