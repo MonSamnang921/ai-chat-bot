@@ -8,112 +8,185 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --brand-blue: #0d6efd;
+            --brand-blue: #0066ff;
             --sidebar-dark: #121929;
             --sidebar-card: #1e293b;
             --bg-gray: #f4f6f9;
         }
         
-        body { background-color: var(--bg-gray); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; }
+        * { box-sizing: border-box; }
+        body { background-color: var(--bg-gray); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; margin: 0; padding: 0; }
         
-        /* Top Navigation Header Bar */
-        .top-navbar { background-color: var(--brand-blue); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .top-navbar .logo { font-size: 20px; font-weight: 900; letter-spacing: 0.5px; }
-        .top-nav-icons { display: flex; gap: 10px; }
-        .top-nav-icons .icon-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 14px; }
-        .top-nav-icons .icon-btn:hover { background: rgba(255,255,255,0.4); }
+        /* Top Header Bar */
+        .top-navbar { 
+            background-color: var(--brand-blue); 
+            color: white; 
+            padding: 8px 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-toggle-menu { 
+            background: white; 
+            color: #333; 
+            border: none; 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 8px; 
+            font-size: 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer;
+        }
+        .top-nav-icons { display: flex; gap: 8px; align-items: center; }
+        .top-nav-icons .icon-btn { 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.25); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            text-decoration: none; 
+            font-size: 16px; 
+            border: 1px solid rgba(255,255,255,0.4);
+        }
 
-        /* Main Layout */
-        .wrapper { display: flex; min-height: calc(100vh - 54px); }
-        .sidebar { width: 250px; background: var(--sidebar-dark); color: #fff; flex-shrink: 0; padding: 15px; }
-        .main-content { flex-grow: 1; padding: 20px; }
-
-        /* Sidebar User Profile Box */
-        .user-profile-card { background: var(--sidebar-card); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; position: relative; border: 1px solid rgba(255,255,255,0.05); }
-        .user-profile-card .badge-new { position: absolute; top: 10px; right: 10px; background: #ff0055; font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
-        .avatar-box { width: 65px; height: 65px; border-radius: 50%; background: #00d2ff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; }
+        /* Layout Structure */
+        .wrapper { display: flex; position: relative; }
         
-        /* Sidebar Menu Links */
+        /* Sidebar Menu Drawer */
+        .sidebar { 
+            width: 260px; 
+            background: var(--sidebar-dark); 
+            color: #fff; 
+            padding: 15px; 
+            position: fixed; 
+            top: 58px; 
+            bottom: 0; 
+            left: -260px; 
+            z-index: 999; 
+            transition: left 0.3s ease; 
+            overflow-y: auto;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-overlay { 
+            position: fixed; 
+            top: 58px; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 998; 
+            display: none; 
+        }
+        .sidebar-overlay.active { display: block; }
+
+        @media (min-width: 992px) {
+            .sidebar { position: static; left: 0; flex-shrink: 0; min-height: calc(100vh - 58px); }
+            .sidebar-overlay { display: none !important; }
+            .btn-toggle-menu { display: none; }
+        }
+
+        .main-content { flex-grow: 1; padding: 15px; width: 100%; max-width: 100%; }
+
+        /* User Card */
+        .user-profile-card { background: var(--sidebar-card); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .avatar-box { width: 60px; height: 60px; border-radius: 50%; background: #00d2ff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
         .sidebar-menu { display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-menu .menu-item { color: #94a3b8; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+        .sidebar-menu .menu-item { color: #94a3b8; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .sidebar-menu .menu-item:hover, .sidebar-menu .menu-item.active { background: var(--brand-blue); color: white; }
 
-        /* Announcement Bar */
-        .announcement { text-align: center; color: var(--brand-blue); font-weight: 600; margin-bottom: 15px; }
+        /* Stats Section */
+        .stats-box { background: transparent; padding: 10px 0; text-align: center; margin-bottom: 10px; font-weight: 600; color: #333; line-height: 1.8; }
+        .stats-box .val-blue { color: var(--brand-blue); font-weight: 800; }
+        .stats-box .val-green { color: #10b981; font-weight: 800; }
 
-        /* Stats Bar Box */
-        .stats-box { background: white; border-radius: 10px; padding: 12px 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-weight: 600; }
+        /* Platform Grid Buttons - Exactly like KhmerSMM Mobile */
+        .platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .platform-card { 
+            background: white; 
+            border: 1px solid #0066ff; 
+            border-radius: 8px; 
+            padding: 10px 8px; 
+            text-align: center; 
+            font-weight: 600; 
+            color: #0066ff; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+            font-size: 13px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .platform-card.active { background: #eaf2ff; border-width: 2px; }
 
-        /* Platform Quick Filter Buttons */
-        .platform-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .platform-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; font-weight: 700; color: #334155; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .platform-card:hover, .platform-card.active { border-color: var(--brand-blue); color: var(--brand-blue); background: #f0f6ff; }
+        /* Card Panels */
+        .panel-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        
+        .order-type-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .order-type-btn { padding: 10px; border-radius: 8px; border: 1px solid #0066ff; background: white; color: #0066ff; font-weight: 700; text-align: center; cursor: pointer; }
+        .order-type-btn.active { background: #0066ff; color: white; }
 
-        /* Form & Cards Styling */
-        .panel-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; height: 100%; }
-        .nav-tabs-custom { display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
-        .nav-tabs-custom .tab-btn { padding: 8px 20px; border: none; background: none; font-weight: 700; color: #64748b; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-        .nav-tabs-custom .tab-btn.active { color: var(--brand-blue); border-bottom-color: var(--brand-blue); }
+        .custom-field { background-color: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px 12px !important; }
 
-        /* Service Detail Items */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .info-card-item { background: #f8fafc; border-radius: 8px; padding: 12px; text-align: center; }
-        .info-card-item i { font-size: 18px; margin-bottom: 4px; }
-
-        /* KHQR Box */
-        .khqr-box { max-width: 320px; margin: 0 auto; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .khqr-header { background: #e61b23; color: white; font-weight: 900; font-size: 20px; padding: 10px; }
-
-        /* Floating Widget */
-        .chat-widget { position: fixed; bottom: 20px; right: 20px; background: white; border-radius: 30px; padding: 8px 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid #e2e8f0; z-index: 999; }
-        .chat-btn { width: 40px; height: 40px; border-radius: 50%; background: #0088cc; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        /* KHQR Mobile Box */
+        .khqr-box { max-width: 100%; margin: 0 auto; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; text-align: center; }
+        .khqr-header { background: #e61b23; color: white; font-weight: 900; font-size: 18px; padding: 10px; }
     </style>
 </head>
 <body>
 
 <!-- TOP NAVBAR -->
 <div class="top-navbar">
-    <div class="d-flex align-items-center gap-3">
-        <div class="logo"><i class="fa-solid fa-cloud-bolt me-1"></i> KHMER SMM</div>
-    </div>
+    <button class="btn-toggle-menu" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
     <div class="top-nav-icons">
-        <a href="#" class="icon-btn" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-        <a href="#" class="icon-btn" onclick="showTab('add-funds')" title="Deposit"><i class="fa-solid fa-dollar-sign"></i></a>
-        <a href="#" class="icon-btn" onclick="showTab('contact-admin')" title="Support"><i class="fa-solid fa-headset"></i></a>
-        <a href="#" class="icon-btn" title="Profile"><i class="fa-solid fa-user"></i></a>
+        <a href="#" class="icon-btn" style="background:#ff0000;" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="#" class="icon-btn" style="background:#f59e0b;" onclick="showTab('add-funds')" title="Deposit"><i class="fa-solid fa-dollar-sign"></i></a>
+        <a href="#" class="icon-btn" style="background:#3b82f6;" onclick="showTab('contact-admin')" title="Support"><i class="fa-solid fa-headset"></i></a>
+        <a href="#" class="icon-btn" style="background:#ef4444;" title="Profile"><i class="fa-solid fa-user"></i></a>
     </div>
 </div>
 
 <!-- AUTH CONTAINER -->
 <div id="auth-section" class="container py-5" style="max-width: 420px;">
-    <div class="panel-card shadow-sm text-center">
-        <h4 class="fw-bold text-primary mb-4">KhmerSMM Login</h4>
+    <div class="panel-card text-center">
+        <h4 class="fw-bold text-primary mb-4"><i class="fa-solid fa-cloud-bolt me-2"></i>KhmerSMM</h4>
         <div class="nav nav-pills nav-justified mb-3">
             <button class="nav-link active" onclick="switchForm('login')">Sign In</button>
             <button class="nav-link" onclick="switchForm('register')">Sign Up</button>
         </div>
         <div id="login-form">
-            <input type="text" id="login-key" class="form-control mb-3" placeholder="Username / Email">
-            <input type="password" id="login-pass" class="form-control mb-3" placeholder="Password">
-            <button class="btn btn-primary w-100 fw-bold" onclick="handleLogin()">Sign In</button>
+            <input type="text" id="login-key" class="form-control mb-3 custom-field" placeholder="Username / Email">
+            <input type="password" id="login-pass" class="form-control mb-3 custom-field" placeholder="Password">
+            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleLogin()">Sign In</button>
         </div>
         <div id="register-form" style="display: none;">
-            <input type="text" id="reg-user" class="form-control mb-3" placeholder="Username">
-            <input type="email" id="reg-email" class="form-control mb-3" placeholder="Email">
-            <input type="password" id="reg-pass" class="form-control mb-3" placeholder="Password">
-            <button class="btn btn-primary w-100 fw-bold" onclick="handleRegister()">Sign Up</button>
+            <input type="text" id="reg-user" class="form-control mb-3 custom-field" placeholder="Username">
+            <input type="email" id="reg-email" class="form-control mb-3 custom-field" placeholder="Email">
+            <input type="password" id="reg-pass" class="form-control mb-3 custom-field" placeholder="Password">
+            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleRegister()">Sign Up</button>
         </div>
     </div>
 </div>
 
 <!-- MAIN DASHBOARD -->
 <div id="dashboard-section" class="wrapper" style="display: none;">
+    <!-- SIDEBAR OVERLAY FOR MOBILE -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebarDrawer">
         <div class="user-profile-card">
-            <span class="badge-new">NEW</span>
             <div class="avatar-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" style="width: 50px;" alt="Avatar">
+                <i class="fa-solid fa-user fs-2 text-white"></i>
             </div>
             <div class="small text-muted mb-1">Balance: <strong class="text-success" id="sidebarBalance">$0.000000</strong></div>
             <div class="fw-bold text-white" id="sidebarUser">User</div>
@@ -122,152 +195,83 @@
         <div class="sidebar-menu">
             <a class="menu-item active" onclick="showTab('new-order', this)"><i class="fa-solid fa-cart-shopping"></i> New order</a>
             <a class="menu-item" onclick="showTab('add-funds', this)"><i class="fa-solid fa-wallet"></i> Add funds</a>
-            <a class="menu-item" onclick="showTab('contact-admin', this)"><i class="fa-brands fa-telegram"></i> Support Chat</a>
+            <a class="menu-item" onclick="showTab('contact-admin', this)"><i class="fa-brands fa-telegram"></i> Telegram Chat</a>
             <a class="menu-item text-danger mt-4" onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </div>
     </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-        <div class="announcement">
-            <i class="fa-solid fa-lock me-1"></i> ប្រព័ន្ធផ្ញើកាតឡើងវិញដោយស្វ័យប្រវត្តិ 🔒
-        </div>
-
         <!-- TOP STATS BAR -->
         <div class="stats-box">
-            <div>You are currently on: <span class="text-primary fw-bold" id="currentPageName">New order</span></div>
-            <div>Panel Orders: <span class="text-primary">3731360</span></div>
-            <div>My Orders: <span class="text-primary" id="topOrders">0</span></div>
-            <div>Total Spend: <span class="text-primary" id="topSpend">$0.0</span></div>
-            <div>Welcome <span class="text-primary" id="topUser">User</span> Your Balance is : <span class="text-success fw-bold" id="topBalance">$0.000000</span></div>
+            <div>You are currently on: <span class="val-blue" id="currentPageName">New order</span></div>
+            <div>Panel Orders: <span class="val-blue">3731377</span></div>
+            <div>My Orders: <span class="val-blue" id="topOrders">29</span></div>
+            <div>Total Spend: <span class="val-blue" id="topSpend">$23.1</span></div>
+            <div>Welcome <span class="val-blue" id="topUser">user</span> Your Balance is : <span class="val-green" id="topBalance">$0.001768</span></div>
         </div>
 
         <!-- TAB: NEW ORDER -->
         <div id="tab-new-order">
             <!-- Platform Quick Filters -->
             <div class="platform-grid">
-                <div class="platform-card active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-border-all text-primary"></i> Everythings</div>
+                <div class="platform-card active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-list-check"></i> Everythings</div>
                 <div class="platform-card" onclick="filterPlatform('TikTok', this)"><i class="fa-brands fa-tiktok text-dark"></i> TikTok</div>
                 <div class="platform-card" onclick="filterPlatform('Facebook', this)"><i class="fa-brands fa-facebook text-primary"></i> Facebook</div>
                 <div class="platform-card" onclick="filterPlatform('Facebook Live', this)"><i class="fa-brands fa-facebook text-danger"></i> Facebook Live</div>
                 <div class="platform-card" onclick="filterPlatform('YouTube', this)"><i class="fa-brands fa-youtube text-danger"></i> YouTube</div>
                 <div class="platform-card" onclick="filterPlatform('Telegram', this)"><i class="fa-brands fa-telegram text-info"></i> Telegram</div>
-                <div class="platform-card" onclick="filterPlatform('Instagram', this)"><i class="fa-brands fa-instagram text-warning"></i> Instagram</div>
-                <div class="platform-card" onclick="filterPlatform('Traffic', this)"><i class="fa-solid fa-globe text-secondary"></i> Website Traffic</div>
             </div>
 
-            <div class="row g-3">
-                <!-- Left Form Section -->
-                <div class="col-lg-7">
-                    <div class="panel-card">
-                        <div class="nav-tabs-custom">
-                            <button class="tab-btn active" id="btnSingleOrder" onclick="toggleOrderType('single')"><i class="fa-solid fa-cart-plus me-1"></i> New Order</button>
-                            <button class="tab-btn" id="btnMassOrder" onclick="toggleOrderType('mass')"><i class="fa-solid fa-star me-1"></i> Mass order</button>
-                        </div>
-
-                        <!-- Single Order Form -->
-                        <div id="singleOrderBox">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold"><i class="fa-solid fa-magnifying-glass me-1 text-muted"></i> Search</label>
-                                <input type="text" id="searchInput" class="form-control" placeholder="Search service..." oninput="filterServicesBySearch()">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold"><i class="fa-solid fa-list me-1 text-primary"></i> Category</label>
-                                <select id="categorySelect" class="form-select" onchange="onCategoryChange()"></select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold"><i class="fa-solid fa-gear me-1 text-primary"></i> Service</label>
-                                <select id="serviceSelect" class="form-select" onchange="onServiceChange()"></select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Link</label>
-                                <input type="text" id="orderLink" class="form-control" placeholder="https://...">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Quantity</label>
-                                <input type="number" id="orderQuantity" class="form-control" placeholder="1000" oninput="calculateCharge()">
-                                <small class="text-muted" id="minMaxText">Min: 50 - Max: 1,000,000</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Average time <i class="fa-regular fa-circle-question text-muted"></i></label>
-                                <input type="text" id="avgTimeDisplay" class="form-control bg-light" readonly value="45 minutes">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Charge ($)</label>
-                                <input type="text" id="orderCharge" class="form-control bg-light fw-bold text-primary" readonly value="$0.0000">
-                            </div>
-
-                            <button class="btn btn-primary w-100 fw-bold py-2 mt-2" onclick="submitOrder()">Submit Order</button>
-                        </div>
-
-                        <!-- Mass Order Form -->
-                        <div id="massOrderBox" style="display: none;">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">One order per line in format:</label>
-                                <textarea id="massOrderInput" class="form-control" rows="8" placeholder="service_id|quantity|link&#10;service_id|quantity|link"></textarea>
-                            </div>
-                            <button class="btn btn-primary w-100 fw-bold py-2" onclick="alert('Mass order processed!')">Submit Mass Orders</button>
-                        </div>
-                    </div>
+            <div class="panel-card">
+                <div class="order-type-tabs">
+                    <div class="order-type-btn active" id="btnSingleOrder" onclick="toggleOrderType('single')"><i class="fa-solid fa-cart-shopping me-1"></i> New Order</div>
+                    <div class="order-type-btn" id="btnMassOrder" onclick="toggleOrderType('mass')"><i class="fa-solid fa-star me-1"></i> Mass order</div>
                 </div>
 
-                <!-- Right Service Details Section -->
-                <div class="col-lg-5">
-                    <div class="panel-card">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold mb-0 text-primary"><i class="fa-solid fa-circle-info me-1"></i> Service details</h6>
-                            <div class="input-group input-group-sm" style="width: 180px;">
-                                <input type="text" class="form-control" placeholder="Search For orders">
-                                <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <small class="fw-bold text-muted d-block mb-1">Example Link</small>
-                            <div class="p-2 bg-light rounded text-danger small"><i class="fa-solid fa-link me-1"></i> <span id="detailLink">https://facebook.com/profile</span></div>
-                        </div>
-
-                        <div class="info-grid">
-                            <div class="info-card-item">
-                                <i class="fa-solid fa-bolt text-info"></i>
-                                <div class="small text-muted">Start Time</div>
-                                <div class="fw-bold text-dark" id="detailStart">Instant</div>
-                            </div>
-                            <div class="info-card-item">
-                                <i class="fa-solid fa-gauge-high text-purple" style="color: #8b5cf6;"></i>
-                                <div class="small text-muted">Speed</div>
-                                <div class="fw-bold text-dark" id="detailSpeed">100k/day</div>
-                            </div>
-                            <div class="info-card-item">
-                                <i class="fa-solid fa-arrows-rotate text-success"></i>
-                                <div class="small text-muted">Guarantee</div>
-                                <div class="fw-bold text-dark" id="detailGuarantee">30 Days</div>
-                            </div>
-                            <div class="info-card-item">
-                                <i class="fa-solid fa-clock text-primary"></i>
-                                <div class="small text-muted">Avarage Time</div>
-                                <div class="fw-bold text-dark" id="detailAvg">45 minutes</div>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="small">
-                            <strong class="d-block mb-2">More Details</strong>
-                            <div class="text-muted" id="detailDesc">
-                                Link: Profile / Page Url<br>
-                                Start: Instant<br>
-                                Speed: High Speed<br>
-                                Quality: Global Real Accounts
-                            </div>
-                        </div>
+                <!-- Single Order Form -->
+                <div id="singleOrderBox">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fa-solid fa-magnifying-glass text-muted me-1"></i> Search</label>
+                        <input type="text" id="searchInput" class="form-control custom-field" placeholder="Search service..." oninput="filterServicesBySearch()">
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fa-solid fa-shapes text-info me-1"></i> Category</label>
+                        <select id="categorySelect" class="form-select custom-field" onchange="onCategoryChange()"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fa-solid fa-tag text-primary me-1"></i> Service</label>
+                        <select id="serviceSelect" class="form-select custom-field" onchange="onServiceChange()"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Link</label>
+                        <input type="text" id="orderLink" class="form-control custom-field" placeholder="https://...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Quantity</label>
+                        <input type="number" id="orderQuantity" class="form-control custom-field" placeholder="1000" oninput="calculateCharge()">
+                        <small class="text-muted" id="minMaxText">Min: 50 - Max: 1,000,000</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Charge ($)</label>
+                        <input type="text" id="orderCharge" class="form-control custom-field fw-bold text-primary" readonly value="$0.0000">
+                    </div>
+
+                    <button class="btn btn-primary w-100 fw-bold py-2 mt-2" style="border-radius:10px;" onclick="submitOrder()">Submit Order</button>
+                </div>
+
+                <!-- Mass Order Form -->
+                <div id="massOrderBox" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">One order per line in format:</label>
+                        <textarea id="massOrderInput" class="form-control custom-field" rows="6" placeholder="service_id|quantity|link"></textarea>
+                    </div>
+                    <button class="btn btn-primary w-100 fw-bold py-2" onclick="alert('Mass order submitted!')">Submit Mass Orders</button>
                 </div>
             </div>
         </div>
@@ -278,7 +282,7 @@
                 <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-qrcode me-2"></i> Bakong KHQR Deposit</h5>
                 <div class="input-group mb-3 mx-auto" style="max-width: 350px;">
                     <span class="input-group-text">$</span>
-                    <input type="number" id="depositAmount" class="form-control" value="1.00" min="0.50" step="0.01">
+                    <input type="number" id="depositAmount" class="form-control" value="2.00" min="0.50" step="0.01">
                     <button class="btn btn-danger fw-bold" onclick="generateKHQR()">Generate QR</button>
                 </div>
                 
@@ -286,7 +290,7 @@
                     <div class="khqr-box p-3">
                         <div class="khqr-header mb-3">KHQR</div>
                         <div id="merchantName" class="fw-bold text-secondary">SAMNANG MON</div>
-                        <div id="displayAmount" class="fs-2 fw-bold text-dark">$1.00</div>
+                        <div id="displayAmount" class="fs-2 fw-bold text-dark">$2.00</div>
                         <img id="khqrImage" src="" class="img-fluid my-2" style="max-width: 220px;">
                         <div id="timerDisplay" class="text-danger fw-bold mt-2"></div>
                         <div class="text-muted small mt-1">Scan with Bakong or Mobile Banking App</div>
@@ -300,17 +304,11 @@
             <div class="panel-card text-center py-5">
                 <i class="fa-brands fa-telegram text-primary mb-3" style="font-size: 70px;"></i>
                 <h4 class="fw-bold">Contact Support</h4>
-                <p class="text-muted">Need help with your orders or account balance? Chat with us directly.</p>
+                <p class="text-muted">Need help with your orders or balance? Chat with us directly.</p>
                 <a href="https://t.me/your_telegram_username" target="_blank" class="btn btn-primary fw-bold px-4 py-2 rounded-pill"><i class="fa-brands fa-telegram me-2"></i> Open Telegram Chat</a>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Floating Help Widget -->
-<div class="chat-widget" onclick="showTab('contact-admin')">
-    <div class="small fw-bold text-secondary">Need help? Tap to chat with us.</div>
-    <div class="chat-btn"><i class="fa-brands fa-telegram"></i></div>
 </div>
 
 <script>
@@ -318,6 +316,13 @@
     let rawServicesList = [];
     let groupedCategories = {};
     let qrTimerInterval = null;
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebarDrawer');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
 
     function switchForm(type) {
         document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
@@ -334,6 +339,16 @@
         if (elem) {
             document.querySelectorAll('.sidebar-menu .menu-item').forEach(m => m.classList.remove('active'));
             elem.classList.add('active');
+        }
+
+        // Auto hide sidebar on mobile select
+        if (window.innerWidth < 992) {
+            const sidebar = document.getElementById('sidebarDrawer');
+            const overlay = document.querySelector('.sidebar-overlay');
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
         }
     }
 
@@ -369,7 +384,7 @@
             document.getElementById('topSpend').innerText = `$${currentUser.totalSpend.toFixed(1)}`;
             
             document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('dashboard-section').style.display = 'flex';
+            document.getElementById('dashboard-section').style.display = 'block';
             fetchApiServices();
         } else { alert(data.message); }
     }
@@ -449,13 +464,6 @@
         const opt = document.getElementById('serviceSelect').selectedOptions[0];
         if (!opt) return;
         document.getElementById('minMaxText').innerText = `Min: ${opt.getAttribute('data-min')} - Max: ${parseInt(opt.getAttribute('data-max')).toLocaleString()}`;
-        
-        // Update Service Details Card dynamically
-        const serviceId = opt.value;
-        const selectedObj = rawServicesList.find(s => s.service == serviceId);
-        if (selectedObj) {
-            document.getElementById('detailDesc').innerText = selectedObj.type ? `Type: ${selectedObj.type}` : 'Real Active Accounts - Instant Processing';
-        }
         calculateCharge();
     }
 
@@ -512,7 +520,7 @@
             document.getElementById('khqrContainer').style.display = 'block';
 
             if (qrTimerInterval) clearInterval(qrTimerInterval);
-            startTimer(10 * 60); // ១០ នាទី
+            startTimer(10 * 60);
         } else {
             alert(data.message);
         }
