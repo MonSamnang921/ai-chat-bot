@@ -6,127 +6,145 @@
     <title>KhmerSMM - សេវាកម្មបណ្តាញសង្គម</title>
     <style>
         body {
-            font-family: sans-serif;
-            background-color: #555;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
         }
-        .card {
-            background: #e0e0e0;
-            padding: 25px;
+        .container {
+            background-color: #2d2d2d;
+            padding: 30px;
             border-radius: 12px;
-            width: 380px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            text-align: left;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            text-align: left;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: bold;
         }
         select, input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
-            border: 1px solid #ccc;
+            border: 1px solid #444;
+            background-color: #3d3d3d;
+            color: #fff;
             box-sizing: border-box;
+            font-size: 14px;
         }
         button {
             width: 100%;
             padding: 12px;
-            background-color: #0b2575;
+            background-color: #0d1b3e;
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 16px;
-            cursor: pointer;
             font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
         }
         button:hover {
-            background-color: #081b54;
+            background-color: #162a5e;
         }
         #qr-container {
             margin-top: 20px;
-            text-align: center;
+            display: none;
         }
         #qr-image {
-            max-width: 200px;
+            width: 250px;
+            height: 250px;
+            margin: 15px auto;
+            border-radius: 8px;
+            background: #fff;
+            padding: 10px;
+        }
+        .loading {
             display: none;
-            margin: 10px auto;
+            margin-top: 15px;
+            color: #ccc;
         }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="container">
     <div class="form-group">
         <label>ជ្រើសរើសសេវាកម្ម</label>
-        <select id="service-select">
-            <option value="2.50">1,000 TikTok Followers - $2.50</option>
-            <option value="5.00">2,000 TikTok Followers - $5.00</option>
+        <select id="service">
             <option value="1.00">1,000 Facebook Likes - $1.00</option>
+            <option value="5.00">2,000 TikTok Followers - $5.00</option>
+            <option value="10.00">5,000 YouTube Views - $10.00</option>
         </select>
     </div>
 
     <div class="form-group">
         <label>Link គណនី/វីដេអូ</label>
-        <input type="text" id="link-input" placeholder="https://www.tiktok.com/@username/video/...">
+        <input type="text" id="link" placeholder="https://..." required>
     </div>
 
-    <button onclick="generateQR()">ទូទាត់ប្រាក់តាម KHQR</button>
+    <button id="btn-pay" onclick="generateQR()">ទូទាត់ប្រាក់តាម KHQR</button>
+
+    <div id="loading" class="loading">កំពុងបង្កើត KHQR...</div>
 
     <div id="qr-container">
-        <img id="qr-image" alt="Bakong KHQR">
-        <p id="status-text"></p>
+        <h3>ស្កែនដើម្បីទូទាត់ប្រាក់</h3>
+        <img id="qr-image" src="" alt="KHQR Code">
     </div>
 </div>
 
 <script>
-async function generateQR() {
-    const amount = document.getElementById('service-select').value;
-    const link = document.getElementById('link-input').value;
-    const statusText = document.getElementById('status-text');
-    const qrImage = document.getElementById('qr-image');
+    async function generateQR() {
+        const serviceSelect = document.getElementById('service');
+        const amount = serviceSelect.value;
+        const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
+        const link = document.getElementById('link').value;
 
-    if (!link) {
-        alert('សូមបញ្ចូល Link គណនី ឬវីដេអូជាមុនសិន!');
-        return;
-    }
-
-    statusText.innerText = 'កំពុងបង្កើត KHQR...';
-    qrImage.style.display = 'none';
-
-    try {
-        const response = await fetch('/generate-qr', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ amount: parseFloat(amount) })
-        });
-
-        const data = await response.json();
-
-        if (data.success && data.qrImage) {
-            qrImage.src = data.qrImage;
-            qrImage.style.display = 'block';
-            statusText.innerText = 'សូមស្កែន QR ខាងលើដើម្បីទូទាត់ប្រាក់';
-        } else {
-            alert(data.message || 'មានបញ្ហាក្នុងការបង្កើត KHQR');
-            statusText.innerText = '';
+        if (!link) {
+            alert('សូមបញ្ចូល Link គណនី/វីដេអូ ជាមុនសិន!');
+            return;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('មិនអាចភ្ជាប់ទៅកាន់ Server បានទេ!');
-        statusText.innerText = '';
+
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('qr-container').style.display = 'none';
+
+        try {
+            const response = await fetch('/generate-qr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount: amount,
+                    service: serviceText
+                })
+            });
+
+            const data = await response.json();
+            document.getElementById('loading').style.display = 'none';
+
+            if (data.success && data.qrImage) {
+                document.getElementById('qr-image').src = data.qrImage;
+                document.getElementById('qr-container').style.display = 'block';
+            } else {
+                alert(data.message || 'មិនអាចបង្កើត KHQR Code បានទេ');
+            }
+        } catch (error) {
+            document.getElementById('loading').style.display = 'none';
+            alert('មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!');
+        }
     }
-}
 </script>
 
 </body>
