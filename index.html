@@ -1,8 +1,133 @@
-// កូដដែលត្រូវកែសម្រួល៖
-const response = await fetch('/generate-qr', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ amount: 2.50 }) // ដាក់តាមតម្លៃ amount ដែលអ្នកចង់ផ្ញើ
-});
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhmerSMM - សេវាកម្មបណ្តាញសង្គម</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #e0e0e0;
+            padding: 25px;
+            border-radius: 12px;
+            width: 380px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0b2575;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #081b54;
+        }
+        #qr-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #qr-image {
+            max-width: 200px;
+            display: none;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="form-group">
+        <label>ជ្រើសរើសសេវាកម្ម</label>
+        <select id="service-select">
+            <option value="2.50">1,000 TikTok Followers - $2.50</option>
+            <option value="5.00">2,000 TikTok Followers - $5.00</option>
+            <option value="1.00">1,000 Facebook Likes - $1.00</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Link គណនី/វីដេអូ</label>
+        <input type="text" id="link-input" placeholder="https://www.tiktok.com/@username/video/...">
+    </div>
+
+    <button onclick="generateQR()">ទូទាត់ប្រាក់តាម KHQR</button>
+
+    <div id="qr-container">
+        <img id="qr-image" alt="Bakong KHQR">
+        <p id="status-text"></p>
+    </div>
+</div>
+
+<script>
+async function generateQR() {
+    const amount = document.getElementById('service-select').value;
+    const link = document.getElementById('link-input').value;
+    const statusText = document.getElementById('status-text');
+    const qrImage = document.getElementById('qr-image');
+
+    if (!link) {
+        alert('សូមបញ្ចូល Link គណនី ឬវីដេអូជាមុនសិន!');
+        return;
+    }
+
+    statusText.innerText = 'កំពុងបង្កើត KHQR...';
+    qrImage.style.display = 'none';
+
+    try {
+        const response = await fetch('/generate-qr', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount: parseFloat(amount) })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.qrImage) {
+            qrImage.src = data.qrImage;
+            qrImage.style.display = 'block';
+            statusText.innerText = 'សូមស្កែន QR ខាងលើដើម្បីទូទាត់ប្រាក់';
+        } else {
+            alert(data.message || 'មានបញ្ហាក្នុងការបង្កើត KHQR');
+            statusText.innerText = '';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('មិនអាចភ្ជាប់ទៅកាន់ Server បានទេ!');
+        statusText.innerText = '';
+    }
+}
+</script>
+
+</body>
+</html>
