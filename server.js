@@ -1,50 +1,34 @@
-const express = require('express');
-const app = express(); // 👈 ប្រកាស app នៅលើគេបែបនេះ
+// ប្រកាស Array រក្សាទុក Users (ដាក់នៅខាងលើ Admin API)
+let users = [];
 
-app.use(express.json());
-app.use(express.static(__dirname)); // 👈 សម្រាប់ឱ្យដើរ admin.html
+// ================= SIGN UP API ================= //
+app.post('/api/signup', (req, res) => {
+    const { username, email, password } = req.body;
 
-// ... កូដចាស់ៗរបស់បងទាំងអស់នៅកណ្តាលនេះ ...
-
-// ================= ADMIN ADD/DEDUCT BALANCE ================= //
-// 👈 យកកូដ API មកដាក់នៅខាងក្រោមនេះ (ក្រោម app និងក្រោម users array)
-app.post('/api/admin/update-balance', (req, res) => {
-    const { username, amount, type, adminKey } = req.body;
-
-    if (adminKey !== '123456') {
-        return res.status(403).json({ success: false, message: 'Admin Key មិនត្រឹមត្រូវ!' });
+    if (!username || !email || !password) {
+        return res.status(400).json({ success: false, message: 'សូមបញ្ចូលព័ត៌មានឲ្យគ្រប់!' });
     }
 
-    if (!username || !amount || isNaN(amount)) {
-        return res.status(400).json({ success: false, message: 'សូមបញ្ចូលទិន្នន័យឲ្យបានត្រឹមត្រូវ' });
+    // ពិនិត្យមើលក្រែងលោមាន account ហ្នឹងហើយ
+    const existingUser = users.find(u => u.username === username || u.email === email);
+    if (existingUser) {
+        return res.status(400).json({ success: false, message: 'Username ឬ Email នេះមានគេប្រើហើយ!' });
     }
 
-    const user = users.find(u => u.username === username || u.email === username);
+    // បង្កើត user ថ្មី (ផ្តល់ balance ដំបូង 0$)
+    const newUser = {
+        id: Date.now(),
+        username,
+        email,
+        password,
+        balance: 0.00
+    };
 
-    if (!user) {
-        return res.status(404).json({ success: false, message: 'រកមិនឃើញ User នេះទេ!' });
-    }
-
-    const value = parseFloat(amount);
-    
-    if (type === 'add') {
-        user.balance += value;
-    } else if (type === 'deduct') {
-        user.balance = Math.max(0, user.balance - value);
-    } else {
-        return res.status(400).json({ success: false, message: 'Type ត្រូវតែជា add ឬ deduct' });
-    }
+    users.push(newUser);
 
     return res.json({
         success: true,
-        message: `បច្ចុប្បន្នភាពជោគជ័យ!`,
-        username: user.username,
-        newBalance: user.balance
+        message: 'ចុះឈ្មោះជោគជ័យ!',
+        user: newUser
     });
-});
-
-// 👈 ដាក់ app.listen នៅក្រោមគេបង្អស់
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
 });
