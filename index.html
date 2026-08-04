@@ -97,7 +97,7 @@
             <div class="card p-3 mb-3 border-0 shadow-sm">
                 <h6 class="fw-bold text-success"><i class="fa-solid fa-wallet me-1"></i> បញ្ចូលលុយឱ្យភ្ញៀវ (Add Balance)</h6>
                 <div class="row g-2">
-                    <div class="col-5"><input type="email" id="adminTargetEmail" class="form-control" placeholder="អ៊ីមែលភ្ញៀវ"></div>
+                    <div class="col-5"><input type="text" id="adminTargetEmail" class="form-control" placeholder="អ៊ីមែល/Username ភ្ញៀវ"></div>
                     <div class="col-4"><input type="number" id="adminAddAmount" class="form-control" placeholder="ចំនួន ($)"></div>
                     <div class="col-3"><button class="btn btn-success w-100 fw-bold" onclick="adminAddBalance()">បញ្ចូល</button></div>
                 </div>
@@ -126,23 +126,23 @@
         <div class="card p-3 mb-4 shadow-sm border-0">
             <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-cart-shopping me-2"></i>New Order (កុម្ម៉ង់សេវាកម្ម)</h6>
             <div class="mb-3">
-                <label class="fw-bold mb-1">Category</label>
+                <label class="fw-bold mb-1">Category (ប្រភេទសេវាកម្ម)</label>
                 <select id="categorySelect" class="form-select custom-select" onchange="onCategoryChange()"></select>
             </div>
             <div class="mb-3">
-                <label class="fw-bold mb-1">Service</label>
+                <label class="fw-bold mb-1">Service (សេវាកម្ម)</label>
                 <select id="serviceSelect" class="form-select custom-select" onchange="onServiceChange()"></select>
             </div>
             <div class="mb-3">
-                <label class="fw-bold mb-1">Link</label>
+                <label class="fw-bold mb-1">Link (តំណភ្ជាប់)</label>
                 <input type="text" id="orderLink" class="form-control custom-input" placeholder="https://...">
             </div>
             <div class="mb-3">
-                <label class="fw-bold mb-1">Quantity</label>
+                <label class="fw-bold mb-1">Quantity (ចំនួន)</label>
                 <input type="number" id="orderQuantity" class="form-control custom-input" placeholder="1000" oninput="calculateCharge()">
             </div>
             <div class="mb-3">
-                <label class="fw-bold mb-1">Charge ($)</label>
+                <label class="fw-bold mb-1">Charge (តម្លៃសរុប $)</label>
                 <input type="text" id="orderCharge" class="form-control custom-input" readonly value="$0.0000">
             </div>
             <button class="btn btn-primary w-100 fw-bold py-2" onclick="submitOrder()"><i class="fa-solid fa-paper-plane me-1"></i> Submit Order</button>
