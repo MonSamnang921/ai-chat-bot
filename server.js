@@ -14,19 +14,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// -------------------------------------------------------------
-// SMM API CONFIGURATION (ភ្ជាប់ទៅ KhmerSMM)
-// -------------------------------------------------------------
 const SMM_API_URL = 'https://khmer-smm.com/api/v2';
-const SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78'; // API Key របស់អ្នក
-let globalPriceMarginPercent = 10; // បូកចំណេញ ១០% លើតម្លៃដើម
+const SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78';
+let globalPriceMarginPercent = 10;
 
-// In-Memory Database (សម្រាប់រក្សាទុកព័ត៌មានអ្នកប្រើប្រាស់)
 const users = [];
 
-// -------------------------------------------------------------
-// 1. AUTHENTICATION ROUTES (ការចុះឈ្មោះ និង Login)
-// -------------------------------------------------------------
 app.post('/api/register', (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
@@ -67,9 +60,6 @@ app.post('/api/login', (req, res) => {
     return res.json({ success: true, message: 'ចូលប្រើប្រាស់ជោគជ័យ!', user });
 });
 
-// -------------------------------------------------------------
-// 2. SMM SERVICES API (ទាញយកសេវាកម្មពិតពី KhmerSMM + បូកភាគរយចំណេញ)
-// -------------------------------------------------------------
 app.get('/api/services', async (req, res) => {
     try {
         const response = await axios.post(SMM_API_URL, new URLSearchParams({
@@ -78,7 +68,6 @@ app.get('/api/services', async (req, res) => {
         }));
 
         if (Array.isArray(response.data)) {
-            // កែច្នៃតម្លៃដោយបូក Margin % ដែលបានកំណត់
             const servicesWithMargin = response.data.map(item => {
                 const originalRate = parseFloat(item.rate) || 0;
                 const finalRate = originalRate + (originalRate * (globalPriceMarginPercent / 100));
@@ -92,14 +81,10 @@ app.get('/api/services', async (req, res) => {
             return res.status(400).json({ success: false, message: 'មិនអាចទាញយកសេវាកម្មបានទេ!' });
         }
     } catch (error) {
-        console.error('Fetch Services Error:', error.message);
         return res.status(500).json({ success: false, message: 'Server Error ក្នុងការទាញយក Services' });
     }
 });
 
-// -------------------------------------------------------------
-// 3. ORDER SUBMISSION API (បង្កើត Order ពិតប្រាកដទៅ KhmerSMM)
-// -------------------------------------------------------------
 app.post('/api/order', async (req, res) => {
     try {
         const { username, service, link, quantity, charge } = req.body;
@@ -114,7 +99,6 @@ app.post('/api/order', async (req, res) => {
             return res.status(400).json({ success: false, message: 'ទឹកប្រាក់ក្នុងគណនីមិនគ្រប់គ្រាន់ទេ! សូមបញ្ចូលប្រាក់បន្ថែម។' });
         }
 
-        // បញ្ជូន Order ទៅកាន់ KhmerSMM Main Provider API
         const apiRes = await axios.post(SMM_API_URL, new URLSearchParams({
             key: SMM_API_KEY,
             action: 'add',
@@ -124,7 +108,6 @@ app.post('/api/order', async (req, res) => {
         }));
 
         if (apiRes.data && apiRes.data.order) {
-            // កាត់លុយចេញពីគណនី និងកត់ត្រា Order
             user.balance -= parsedCharge;
             user.totalSpend += parsedCharge;
             user.myOrders += 1;
@@ -139,18 +122,14 @@ app.post('/api/order', async (req, res) => {
         } else {
             return res.status(400).json({ 
                 success: false, 
-                message: apiRes.data.error || 'មានបញ្ហាក្នុងការបង្កើត Order ទៅកាន់ Provider!' 
+                message: apiRes.data.error || 'មានបញ្ហាក្នុងការបង្កើត Order!' 
             });
         }
     } catch (error) {
-        console.error('Submit Order Error:', error.message);
         return res.status(500).json({ success: false, message: 'Server Error ក្នុងការបញ្ជូន Order' });
     }
 });
 
-// -------------------------------------------------------------
-// 4. BAKONG KHQR GENERATOR (១០ នាទី Expiration)
-// -------------------------------------------------------------
 app.post('/generate-qr', (req, res) => {
     try {
         const { amount } = req.body;
@@ -159,7 +138,7 @@ app.post('/generate-qr', (req, res) => {
             return res.status(400).json({ success: false, message: 'ចំនួនទឹកប្រាក់យ៉ាងតិច $0.50' });
         }
 
-        const expirationTime = Date.now() + (10 * 60 * 1000); // កំណត់ ១០ នាទី
+        const expirationTime = Date.now() + (10 * 60 * 1000);
 
         const optionalData = {
             currency: khqrData.currency.usd,
@@ -171,7 +150,7 @@ app.post('/generate-qr', (req, res) => {
             expirationTimestamp: expirationTime
         };
 
-        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'KhmerSmm', 'Phnom Penh', optionalData);
+        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'SAMNANG MON', 'Phnom Penh', optionalData);
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
@@ -190,4 +169,4 @@ app.post('/generate-qr', (req, res) => {
     }
 });
 
-server.listen(PORT, () => console.log(`KhmerSMM Engine active on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
