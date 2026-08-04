@@ -130,6 +130,9 @@ app.post('/api/order', async (req, res) => {
     }
 });
 
+// -------------------------------------------------------------
+// BAKONG KHQR GENERATOR (ប្ដូរឈ្មោះទៅ KHMERSMM)
+// -------------------------------------------------------------
 app.post('/generate-qr', (req, res) => {
     try {
         const { amount } = req.body;
@@ -138,7 +141,7 @@ app.post('/generate-qr', (req, res) => {
             return res.status(400).json({ success: false, message: 'ចំនួនទឹកប្រាក់យ៉ាងតិច $0.50' });
         }
 
-        const expirationTime = Date.now() + (10 * 60 * 1000);
+        const expirationTime = Date.now() + (10 * 60 * 1000); // 10 នាទី
 
         const optionalData = {
             currency: khqrData.currency.usd,
@@ -150,7 +153,8 @@ app.post('/generate-qr', (req, res) => {
             expirationTimestamp: expirationTime
         };
 
-        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'KhmerSmm', 'Phnom Penh', optionalData);
+        // កែសម្រួលឈ្មោះ Merchant Name ទៅជា KHMERSMM នៅត្រង់នេះ
+        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'KHMERSMM', 'Phnom Penh', optionalData);
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
@@ -160,7 +164,7 @@ app.post('/generate-qr', (req, res) => {
                 success: true, 
                 qrImage: qrImageUrl, 
                 amount: parsedAmount.toFixed(2), 
-                merchantName: 'SAMNANG MON' 
+                merchantName: 'KHMERSMM' 
             });
         }
         return res.status(400).json({ success: false, message: 'មិនអាចបង្កើត KHQR បានទេ' });
