@@ -20,7 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Storage Config សម្រាប់ Upload រូបភាព និង វីដេអូ
 if (!fs.existsSync('uploads')) { fs.mkdirSync('uploads'); }
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -33,28 +32,36 @@ const SMM_API_URL = 'https://khmer-smm.com/api/v2';
 const SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78';
 
 let globalPricePercentage = 10;
+
+// Admin Configured Credentials: 090217653 / កក
 const users = [
-    { id: 1, username: 'admin', email: 'admin@khmersmm.com', password: 'admin', balance: 1000.00, role: 'admin', isBlocked: false, myOrders: 0, totalSpend: 0.00 }
+    { id: 1, username: 'Admin', email: '090217653', password: 'កក', balance: 1000.00, role: 'admin', isBlocked: false, myOrders: 0, totalSpend: 0.00 }
 ];
 
 // ------------------- AUTHENTICATION -------------------
 
 app.post('/api/register', (req, res) => {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) return res.status(400).json({ success: false, message: 'សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!' });
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ success: false, message: 'សូមបំពេញ អ៊ីមែល និង ពាក្យសម្ងាត់!' });
 
-    const existingUser = users.find(u => u.username === username || u.email === email);
-    if (existingUser) return res.status(400).json({ success: false, message: 'Username ឬ Email នេះមានគេប្រើរួចហើយ!' });
+    const existingUser = users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+    if (existingUser) return res.status(400).json({ success: false, message: 'អ៊ីមែលនេះមានគេចុះឈ្មោះរួចហើយ!' });
 
-    const newUser = { id: Date.now(), username, email, password, balance: 0.00, role: 'user', isBlocked: false, myOrders: 0, totalSpend: 0.00 };
+    // បង្កើត Username ស្វ័យប្រវត្តិតាមរយៈផ្នែកខាងមុខនៃ Email
+    const username = email.split('@')[0];
+    const newUser = { id: Date.now(), username, email: email.trim().toLowerCase(), password, balance: 0.00, role: 'user', isBlocked: false, myOrders: 0, totalSpend: 0.00 };
     users.push(newUser);
-    return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូម Sign In' });
+    return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូម Sign In ដោយប្រើប្រាស់អ៊ីមែលរបស់អ្នក' });
 });
 
 app.post('/api/login', (req, res) => {
-    const { username, password } = req.body;
-    const user = users.find(u => u.username === username && u.password === password);
-    if (!user) return res.status(401).json({ success: false, message: 'Username ឬ Password មិនត្រឹមត្រូវ!' });
+    const { email, password } = req.body;
+    const inputKey = (email || '').trim().toLowerCase();
+
+    // ឆែកមើលការ Login ទាំងភ្ញៀវ (Email) និង Admin (090217653)
+    const user = users.find(u => (u.email.toLowerCase() === inputKey || u.username.toLowerCase() === inputKey) && u.password === password);
+    
+    if (!user) return res.status(401).json({ success: false, message: 'អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!' });
     if (user.isBlocked) return res.status(403).json({ success: false, message: 'គណនីរបស់អ្នកត្រូវ បានបិទ!' });
 
     return res.json({
@@ -105,23 +112,18 @@ app.post('/api/upload-media', upload.single('mediaFile'), (req, res) => {
     return res.json({ success: true, url: fileUrl, isVideo });
 });
 
-// ------------------- BAKONG KHQR GENERATOR ($0.50 - $100,000) -------------------
+// ------------------- BAKONG KHQR GENERATOR -------------------
 
 app.post('/generate-qr', (req, res) => {
     try {
         const { amount, service } = req.body;
         const parsedAmount = parseFloat(amount);
 
-        // Check if amount is between $0.50 and $100,000
         if (isNaN(parsedAmount) || parsedAmount < 0.50 || parsedAmount > 100000) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'ចំនួនទឹកប្រាក់ត្រូវតែចាប់ពី $0.50 រហូតដល់ $100,000.00!' 
-            });
+            return res.status(400).json({ success: false, message: 'ចំនួនទឹកប្រាក់ត្រូវតែចាប់ពី $0.50 រហូតដល់ $100,000.00!' });
         }
 
         const expirationTime = Date.now() + 10 * 60 * 1000;
-
         const optionalData = {
             currency: khqrData.currency.usd,
             amount: parsedAmount,
@@ -137,7 +139,6 @@ app.post('/generate-qr', (req, res) => {
         const response = khqr.generateIndividual(individualInfo);
 
         if (response && response.data && response.data.qr) {
-            // High-Res Image 600x600px
             const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(response.data.qr)}`;
             return res.json({ 
                 success: true, 
@@ -173,7 +174,7 @@ app.get('/api/services', async (req, res) => {
 app.post('/api/order', async (req, res) => {
     try {
         const { username, service, link, quantity, charge } = req.body;
-        const user = users.find(u => u.username === username);
+        const user = users.find(u => u.username === username || u.email === username);
         if (!user || user.isBlocked) return res.status(403).json({ success: false, message: 'Account មិនអាចដំណើរការបានទេ!' });
 
         const parsedCharge = parseFloat(charge) || 0;
