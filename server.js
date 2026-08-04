@@ -16,17 +16,19 @@ app.post('/generate-qr', (req, res) => {
     try {
         const { amount, service } = req.body;
 
-        // ចាប់យកតម្លៃ Price ចេញពី Option Value 
         const parsedAmount = parseFloat(amount) || 1.0;
 
-        // កំណត់ Optional Data តាមទម្រង់ Standard របស់ Bakong SDK
+        // កំណត់ Expiration Time (ឧទាហរណ៍៖ ១០ នាទីបន្ទាប់ពីបង្កើត QR)
+        const expirationTime = Date.now() + 10 * 60 * 1000; // 10 minutes in milliseconds
+
         const optionalData = {
             currency: khqrData.currency.usd,
             amount: parsedAmount,
             mobileNumber: '85590217653',
             storeLabel: 'KhmerSMM',
             terminalLabel: service ? String(service).substring(0, 25) : 'Service',
-            billNumber: 'INV-' + Date.now().toString().slice(-6)
+            billNumber: 'INV-' + Date.now().toString().slice(-6),
+            expirationTimestamp: expirationTime // បន្ថែមចំណុចនេះដើម្បីបំបាត់ Error 46
         };
 
         const individualInfo = new IndividualInfo(
@@ -39,7 +41,6 @@ app.post('/generate-qr', (req, res) => {
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
-        // បើជោគជ័យ និងមាន string qr
         if (response && response.data && response.data.qr) {
             const qrText = response.data.qr;
             const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrText)}`;
@@ -53,7 +54,7 @@ app.post('/generate-qr', (req, res) => {
             console.error('Bakong Response Invalid:', response);
             return res.status(400).json({
                 success: false,
-                message: 'មិនអាចបង្កើត KHQR Code បានទេ (SDK Error)'
+                message: 'មិនអាចបង្កើត KHQR Code បានទេ'
             });
         }
     } catch (error) {
