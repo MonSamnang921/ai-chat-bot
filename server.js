@@ -10,12 +10,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// Database បណ្តោះអាសន្នសម្រាប់ទុកគណនី
+// Database បណ្តោះអាសន្នទុកទិន្នន័យ User
 const users = [];
 
 // ------------------- API AUTHENTICATION -------------------
 
-// 1. API ចុះឈ្មោះ (Register)
 app.post('/api/register', (req, res) => {
     const { username, email, password } = req.body;
 
@@ -23,18 +22,17 @@ app.post('/api/register', (req, res) => {
         return res.status(400).json({ success: false, message: 'សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!' });
     }
 
-    const existingUser = users.find(u => u.username === username);
+    const existingUser = users.find(u => u.username === username || u.email === email);
     if (existingUser) {
-        return res.status(400).json({ success: false, message: 'Username នេះមានគេប្រើរួចហើយ!' });
+        return res.status(400).json({ success: false, message: 'Username ឬ Email នេះមានគេប្រើរួចហើយ!' });
     }
 
-    const newUser = { username, email, password };
+    const newUser = { id: Date.now(), username, email, password, balance: 0.001768, myOrders: 29, totalSpend: 23.10 };
     users.push(newUser);
 
     return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូមចូលប្រើប្រាស់ (Sign In)' });
 });
 
-// 2. API ចូលប្រើប្រាស់ (Login)
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -44,7 +42,13 @@ app.post('/api/login', (req, res) => {
         return res.json({
             success: true,
             message: 'ចូលប្រើប្រាស់ជោគជ័យ!',
-            user: { username: user.username, email: user.email }
+            user: { 
+                username: user.username, 
+                email: user.email, 
+                balance: user.balance,
+                myOrders: user.myOrders,
+                totalSpend: user.totalSpend
+            }
         });
     } else {
         return res.status(401).json({ success: false, message: 'Username ឬ Password មិនត្រឹមត្រូវទេ!' });
@@ -71,7 +75,7 @@ app.post('/generate-qr', (req, res) => {
 
         const individualInfo = new IndividualInfo(
             'mon_samnang@bkrt',
-            'SAMNANG MON',
+            'KhmerSmm',
             'Phnom Penh',
             optionalData
         );
