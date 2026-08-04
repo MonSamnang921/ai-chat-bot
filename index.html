@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KhmerSMM - Portal</title>
+    <title>KhmerSMM - Web Service</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --brand-blue: #0066ff;
+            --brand-blue: #0d6efd;
             --sidebar-dark: #121929;
             --sidebar-card: #1e293b;
-            --bg-gray: #eef2f5;
+            --bg-gray: #f4f6f9;
         }
         
         body { background-color: var(--bg-gray); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; }
@@ -19,7 +19,7 @@
         /* Top Navigation Header Bar */
         .top-navbar { background-color: var(--brand-blue); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
         .top-navbar .logo { font-size: 20px; font-weight: 900; letter-spacing: 0.5px; }
-        .top-nav-icons { display: flex; gap: 12px; }
+        .top-nav-icons { display: flex; gap: 10px; }
         .top-nav-icons .icon-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 14px; }
         .top-nav-icons .icon-btn:hover { background: rgba(255,255,255,0.4); }
 
@@ -35,7 +35,7 @@
         
         /* Sidebar Menu Links */
         .sidebar-menu { display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-menu .menu-item { color: #94a3b8; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .sidebar-menu .menu-item { color: #94a3b8; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
         .sidebar-menu .menu-item:hover, .sidebar-menu .menu-item.active { background: var(--brand-blue); color: white; }
 
         /* Announcement Bar */
@@ -63,6 +63,10 @@
         /* KHQR Box */
         .khqr-box { max-width: 320px; margin: 0 auto; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .khqr-header { background: #e61b23; color: white; font-weight: 900; font-size: 20px; padding: 10px; }
+
+        /* Floating Widget */
+        .chat-widget { position: fixed; bottom: 20px; right: 20px; background: white; border-radius: 30px; padding: 8px 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid #e2e8f0; z-index: 999; }
+        .chat-btn { width: 40px; height: 40px; border-radius: 50%; background: #0088cc; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; }
     </style>
 </head>
 <body>
@@ -70,13 +74,12 @@
 <!-- TOP NAVBAR -->
 <div class="top-navbar">
     <div class="d-flex align-items-center gap-3">
-        <button class="btn btn-sm text-white fs-5 p-0" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
         <div class="logo"><i class="fa-solid fa-cloud-bolt me-1"></i> KHMER SMM</div>
     </div>
     <div class="top-nav-icons">
         <a href="#" class="icon-btn" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-        <a href="#" class="icon-btn" title="Deposit"><i class="fa-solid fa-dollar-sign"></i></a>
-        <a href="#" class="icon-btn" title="Support"><i class="fa-solid fa-headset"></i></a>
+        <a href="#" class="icon-btn" onclick="showTab('add-funds')" title="Deposit"><i class="fa-solid fa-dollar-sign"></i></a>
+        <a href="#" class="icon-btn" onclick="showTab('contact-admin')" title="Support"><i class="fa-solid fa-headset"></i></a>
         <a href="#" class="icon-btn" title="Profile"><i class="fa-solid fa-user"></i></a>
     </div>
 </div>
@@ -117,12 +120,10 @@
         </div>
 
         <div class="sidebar-menu">
-            <a href="#" class="menu-item active" onclick="showTab('new-order')"><i class="fa-solid fa-cart-shopping"></i> New order</a>
-            <a href="#" class="menu-item" onclick="showTab('my-orders')"><i class="fa-solid fa-list-check"></i> My Orders</a>
-            <a href="#" class="menu-item" onclick="showTab('add-funds')"><i class="fa-solid fa-wallet"></i> Add funds</a>
-            <a href="#" class="menu-item" onclick="showTab('services')"><i class="fa-solid fa-list"></i> Services</a>
-            <a href="#" class="menu-item" onclick="showTab('contact-admin')"><i class="fa-brands fa-telegram"></i> Telegram Contact</a>
-            <a href="#" class="menu-item text-danger mt-4" onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <a class="menu-item active" onclick="showTab('new-order', this)"><i class="fa-solid fa-cart-shopping"></i> New order</a>
+            <a class="menu-item" onclick="showTab('add-funds', this)"><i class="fa-solid fa-wallet"></i> Add funds</a>
+            <a class="menu-item" onclick="showTab('contact-admin', this)"><i class="fa-brands fa-telegram"></i> Support Chat</a>
+            <a class="menu-item text-danger mt-4" onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </div>
     </div>
 
@@ -134,7 +135,7 @@
 
         <!-- TOP STATS BAR -->
         <div class="stats-box">
-            <div>You are currently on: <span class="text-primary fw-bold">New order</span></div>
+            <div>You are currently on: <span class="text-primary fw-bold" id="currentPageName">New order</span></div>
             <div>Panel Orders: <span class="text-primary">3731360</span></div>
             <div>My Orders: <span class="text-primary" id="topOrders">0</span></div>
             <div>Total Spend: <span class="text-primary" id="topSpend">$0.0</span></div>
@@ -160,47 +161,59 @@
                 <div class="col-lg-7">
                     <div class="panel-card">
                         <div class="nav-tabs-custom">
-                            <button class="tab-btn active"><i class="fa-solid fa-cart-plus me-1"></i> New Order</button>
-                            <button class="tab-btn"><i class="fa-solid fa-star me-1"></i> Mass order</button>
+                            <button class="tab-btn active" id="btnSingleOrder" onclick="toggleOrderType('single')"><i class="fa-solid fa-cart-plus me-1"></i> New Order</button>
+                            <button class="tab-btn" id="btnMassOrder" onclick="toggleOrderType('mass')"><i class="fa-solid fa-star me-1"></i> Mass order</button>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold"><i class="fa-solid fa-search me-1 text-muted"></i> Search</label>
-                            <input type="text" id="searchInput" class="form-control" placeholder="Search service..." oninput="searchServices()">
+                        <!-- Single Order Form -->
+                        <div id="singleOrderBox">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-magnifying-glass me-1 text-muted"></i> Search</label>
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search service..." oninput="filterServicesBySearch()">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-list me-1 text-primary"></i> Category</label>
+                                <select id="categorySelect" class="form-select" onchange="onCategoryChange()"></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-gear me-1 text-primary"></i> Service</label>
+                                <select id="serviceSelect" class="form-select" onchange="onServiceChange()"></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Link</label>
+                                <input type="text" id="orderLink" class="form-control" placeholder="https://...">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Quantity</label>
+                                <input type="number" id="orderQuantity" class="form-control" placeholder="1000" oninput="calculateCharge()">
+                                <small class="text-muted" id="minMaxText">Min: 50 - Max: 1,000,000</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Average time <i class="fa-regular fa-circle-question text-muted"></i></label>
+                                <input type="text" id="avgTimeDisplay" class="form-control bg-light" readonly value="45 minutes">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Charge ($)</label>
+                                <input type="text" id="orderCharge" class="form-control bg-light fw-bold text-primary" readonly value="$0.0000">
+                            </div>
+
+                            <button class="btn btn-primary w-100 fw-bold py-2 mt-2" onclick="submitOrder()">Submit Order</button>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold"><i class="fa-solid fa-list me-1 text-primary"></i> Category</label>
-                            <select id="categorySelect" class="form-select" onchange="onCategoryChange()"></select>
+                        <!-- Mass Order Form -->
+                        <div id="massOrderBox" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">One order per line in format:</label>
+                                <textarea id="massOrderInput" class="form-control" rows="8" placeholder="service_id|quantity|link&#10;service_id|quantity|link"></textarea>
+                            </div>
+                            <button class="btn btn-primary w-100 fw-bold py-2" onclick="alert('Mass order processed!')">Submit Mass Orders</button>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold"><i class="fa-solid fa-gear me-1 text-primary"></i> Service</label>
-                            <select id="serviceSelect" class="form-select" onchange="onServiceChange()"></select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Link</label>
-                            <input type="text" id="orderLink" class="form-control" placeholder="https://...">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Quantity</label>
-                            <input type="number" id="orderQuantity" class="form-control" placeholder="1000" oninput="calculateCharge()">
-                            <small class="text-muted" id="minMaxText">Min: 50 - Max: 1 000 000</small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Average time <i class="fa-regular fa-circle-question text-muted"></i></label>
-                            <input type="text" id="avgTimeDisplay" class="form-control bg-light" readonly value="45 minutes">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Charge ($)</label>
-                            <input type="text" id="orderCharge" class="form-control bg-light fw-bold text-primary" readonly value="$0.0000">
-                        </div>
-
-                        <button class="btn btn-primary w-100 fw-bold py-2 mt-2" onclick="submitOrder()">Submit Order</button>
                     </div>
                 </div>
 
@@ -217,29 +230,29 @@
 
                         <div class="mb-3">
                             <small class="fw-bold text-muted d-block mb-1">Example Link</small>
-                            <div class="p-2 bg-light rounded text-danger small"><i class="fa-solid fa-link me-1"></i> -</div>
+                            <div class="p-2 bg-light rounded text-danger small"><i class="fa-solid fa-link me-1"></i> <span id="detailLink">https://facebook.com/profile</span></div>
                         </div>
 
                         <div class="info-grid">
                             <div class="info-card-item">
                                 <i class="fa-solid fa-bolt text-info"></i>
                                 <div class="small text-muted">Start Time</div>
-                                <div class="fw-bold text-dark">Instant</div>
+                                <div class="fw-bold text-dark" id="detailStart">Instant</div>
                             </div>
                             <div class="info-card-item">
                                 <i class="fa-solid fa-gauge-high text-purple" style="color: #8b5cf6;"></i>
                                 <div class="small text-muted">Speed</div>
-                                <div class="fw-bold text-dark">100k/day</div>
+                                <div class="fw-bold text-dark" id="detailSpeed">100k/day</div>
                             </div>
                             <div class="info-card-item">
                                 <i class="fa-solid fa-arrows-rotate text-success"></i>
                                 <div class="small text-muted">Guarantee</div>
-                                <div class="fw-bold text-dark">-</div>
+                                <div class="fw-bold text-dark" id="detailGuarantee">30 Days</div>
                             </div>
                             <div class="info-card-item">
                                 <i class="fa-solid fa-clock text-primary"></i>
                                 <div class="small text-muted">Avarage Time</div>
-                                <div class="fw-bold text-dark">45 minutes</div>
+                                <div class="fw-bold text-dark" id="detailAvg">45 minutes</div>
                             </div>
                         </div>
 
@@ -248,11 +261,10 @@
                         <div class="small">
                             <strong class="d-block mb-2">More Details</strong>
                             <div class="text-muted" id="detailDesc">
-                                Link: Facebook Profile/Page Url<br>
+                                Link: Profile / Page Url<br>
                                 Start: Instant<br>
-                                Speed: 100k per Days<br>
-                                Refill: No Refill<br><br>
-                                Quality: Global Real Account
+                                Speed: High Speed<br>
+                                Quality: Global Real Accounts
                             </div>
                         </div>
                     </div>
@@ -295,6 +307,12 @@
     </div>
 </div>
 
+<!-- Floating Help Widget -->
+<div class="chat-widget" onclick="showTab('contact-admin')">
+    <div class="small fw-bold text-secondary">Need help? Tap to chat with us.</div>
+    <div class="chat-btn"><i class="fa-brands fa-telegram"></i></div>
+</div>
+
 <script>
     let currentUser = null;
     let rawServicesList = [];
@@ -306,10 +324,24 @@
         document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
     }
 
-    function showTab(tabName) {
+    function showTab(tabName, elem) {
         document.getElementById('tab-new-order').style.display = tabName === 'new-order' ? 'block' : 'none';
         document.getElementById('tab-add-funds').style.display = tabName === 'add-funds' ? 'block' : 'none';
         document.getElementById('tab-contact-admin').style.display = tabName === 'contact-admin' ? 'block' : 'none';
+        
+        document.getElementById('currentPageName').innerText = tabName === 'new-order' ? 'New order' : (tabName === 'add-funds' ? 'Add funds' : 'Support');
+
+        if (elem) {
+            document.querySelectorAll('.sidebar-menu .menu-item').forEach(m => m.classList.remove('active'));
+            elem.classList.add('active');
+        }
+    }
+
+    function toggleOrderType(type) {
+        document.getElementById('btnSingleOrder').classList.toggle('active', type === 'single');
+        document.getElementById('btnMassOrder').classList.toggle('active', type === 'mass');
+        document.getElementById('singleOrderBox').style.display = type === 'single' ? 'block' : 'none';
+        document.getElementById('massOrderBox').style.display = type === 'mass' ? 'block' : 'none';
     }
 
     async function handleRegister() {
@@ -377,6 +409,26 @@
         onCategoryChange();
     }
 
+    function filterServicesBySearch() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        if (!query) return filterPlatform('All');
+
+        const serviceSelect = document.getElementById('serviceSelect');
+        serviceSelect.innerHTML = '';
+        rawServicesList.forEach(s => {
+            if (s.name.toLowerCase().includes(query) || s.service.toString().includes(query)) {
+                let opt = document.createElement('option');
+                opt.value = s.service;
+                opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
+                opt.setAttribute('data-rate', s.rate);
+                opt.setAttribute('data-min', s.min || 10);
+                opt.setAttribute('data-max', s.max || 1000000);
+                serviceSelect.appendChild(opt);
+            }
+        });
+        onServiceChange();
+    }
+
     function onCategoryChange() {
         const catValue = document.getElementById('categorySelect').value;
         const serviceSelect = document.getElementById('serviceSelect');
@@ -397,6 +449,13 @@
         const opt = document.getElementById('serviceSelect').selectedOptions[0];
         if (!opt) return;
         document.getElementById('minMaxText').innerText = `Min: ${opt.getAttribute('data-min')} - Max: ${parseInt(opt.getAttribute('data-max')).toLocaleString()}`;
+        
+        // Update Service Details Card dynamically
+        const serviceId = opt.value;
+        const selectedObj = rawServicesList.find(s => s.service == serviceId);
+        if (selectedObj) {
+            document.getElementById('detailDesc').innerText = selectedObj.type ? `Type: ${selectedObj.type}` : 'Real Active Accounts - Instant Processing';
+        }
         calculateCharge();
     }
 
