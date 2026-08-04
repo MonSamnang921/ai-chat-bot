@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,135 +7,180 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f4f7f6; font-family: sans-serif; padding: 15px 10px; }
-        .app-container { max-width: 800px; margin: 10px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 25px; }
+        :root { --primary-blue: #0d6efd; --sidebar-bg: #1a2332; --body-bg: #f4f6f9; }
+        body { background-color: var(--body-bg); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        .khqr-card { max-width: 360px; margin: 20px auto; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; border: 1px solid #e0e0e0; text-align: center; }
-        .khqr-header { background: #e61b23; color: white; padding: 14px; font-weight: bold; font-size: 20px; letter-spacing: 1px; }
-        .khqr-body { padding: 20px; }
-        .khqr-img-wrapper { background: #ffffff; padding: 12px; border-radius: 16px; display: inline-block; border: 2px dashed #e61b23; margin: 10px 0; }
-        .khqr-img { width: 260px; height: 260px; object-fit: contain; display: block; }
-        .khqr-amount { font-size: 28px; font-weight: 800; color: #111; margin-top: 5px; }
-        .khqr-merchant { font-size: 15px; font-weight: 700; color: #444; }
+        /* Layout Structure */
+        .wrapper { display: flex; width: 100%; min-height: 100vh; }
+        .sidebar { width: 240px; background: var(--sidebar-bg); color: #fff; flex-shrink: 0; padding-top: 15px; }
+        .main-content { flex-grow: 1; padding: 20px; }
 
-        .custom-input, .custom-select { background-color: #f1f3f5 !important; border: 1px solid #e9ecef !important; border-radius: 10px !important; padding: 10px 14px !important; }
+        /* Sidebar UI */
+        .user-card { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin: 10px 15px; text-align: center; }
+        .user-avatar { width: 60px; height: 60px; border-radius: 50%; background: #00bcd4; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #fff; margin: 0 auto 10px; }
+        .nav-menu .nav-link { color: #a0aec0; padding: 12px 20px; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid transparent; }
+        .nav-menu .nav-link:hover, .nav-menu .nav-link.active { color: #fff; background: rgba(255,255,255,0.08); border-left-color: var(--primary-blue); }
+
+        /* Quick Filter Buttons */
+        .filter-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 15px; font-weight: 600; color: #444; text-align: center; cursor: pointer; transition: 0.2s; }
+        .filter-btn:hover, .filter-btn.active { border-color: var(--primary-blue); color: var(--primary-blue); background: #ebf3ff; }
+
+        /* Cards & Form */
+        .custom-card { background: #fff; border-radius: 12px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.04); padding: 20px; margin-bottom: 20px; }
+        .info-box { background: #f8f9fa; border-radius: 8px; padding: 12px; text-align: center; margin-bottom: 10px; }
+        .info-box i { font-size: 20px; margin-bottom: 5px; }
+
+        /* KHQR Styling */
+        .khqr-card { max-width: 340px; margin: 0 auto; background: #fff; border-radius: 16px; border: 1px solid #ddd; overflow: hidden; text-align: center; }
+        .khqr-header { background: #e61b23; color: white; padding: 12px; font-weight: bold; font-size: 18px; }
     </style>
 </head>
 <body>
 
-    <!-- Auth Section -->
-    <div id="auth-section" class="app-container">
-        <h3 class="text-center fw-bold text-primary mb-4"><i class="fa-solid fa-rocket me-2"></i>KhmerSMM Panel</h3>
-        <ul class="nav nav-pills nav-justified mb-4">
-            <li class="nav-item"><button class="nav-link active" id="btn-tab-login" onclick="switchForm('login')">Sign In</button></li>
-            <li class="nav-item"><button class="nav-link" id="btn-tab-reg" onclick="switchForm('register')">Sign Up</button></li>
+<div id="auth-section" class="container py-5" style="max-width: 450px;">
+    <div class="custom-card shadow">
+        <h4 class="text-center fw-bold text-primary mb-4"><i class="fa-solid fa-rocket me-2"></i>KhmerSMM</h4>
+        <ul class="nav nav-pills nav-justified mb-3">
+            <li class="nav-item"><button class="nav-link active" onclick="switchForm('login')">Sign In</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="switchForm('register')">Sign Up</button></li>
         </ul>
-
-        <!-- Login Form -->
         <div id="login-form">
-            <div class="mb-3">
-                <label class="fw-bold">Email / Username</label>
-                <input type="text" id="login-key" class="form-control custom-input" placeholder="អ៊ីមែល ឬ ឈ្មោះអ្នកប្រើ">
-            </div>
-            <div class="mb-3">
-                <label class="fw-bold">Password</label>
-                <input type="password" id="login-pass" class="form-control custom-input">
-            </div>
-            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleLogin()">Sign In</button>
+            <input type="text" id="login-key" class="form-control mb-3" placeholder="Username / Email">
+            <input type="password" id="login-pass" class="form-control mb-3" placeholder="Password">
+            <button class="btn btn-primary w-100 fw-bold" onclick="handleLogin()">Sign In</button>
         </div>
-
-        <!-- Register Form -->
         <div id="register-form" style="display: none;">
-            <div class="mb-3">
-                <label class="fw-bold">Username (ឈ្មោះអ្នកប្រើប្រាស់)</label>
-                <input type="text" id="reg-user" class="form-control custom-input" placeholder="ឧទាហរណ៍: samnang168">
-            </div>
-            <div class="mb-3">
-                <label class="fw-bold">Email (អ៊ីមែល)</label>
-                <input type="email" id="reg-email" class="form-control custom-input" placeholder="ឧទាហរណ៍: user@gmail.com">
-            </div>
-            <div class="mb-3">
-                <label class="fw-bold">Password (ពាក្យសម្ងាត់)</label>
-                <input type="password" id="reg-pass" class="form-control custom-input">
-            </div>
-            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleRegister()">Sign Up</button>
+            <input type="text" id="reg-user" class="form-control mb-3" placeholder="Username">
+            <input type="email" id="reg-email" class="form-control mb-3" placeholder="Email">
+            <input type="password" id="reg-pass" class="form-control mb-3" placeholder="Password">
+            <button class="btn btn-primary w-100 fw-bold" onclick="handleRegister()">Sign Up</button>
+        </div>
+    </div>
+</div>
+
+<div id="dashboard-section" class="wrapper" style="display: none;">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4 class="px-3 fw-bold text-primary"><i class="fa-solid fa-crown me-2"></i>KHMER SMM</h4>
+        <div class="user-card">
+            <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+            <small class="text-muted d-block">Balance: <strong class="text-success" id="sidebarBalance">$0.00</strong></small>
+            <span class="fw-bold" id="sidebarUser">User</span>
+        </div>
+        <div class="nav nav-menu flex-column">
+            <a href="#" class="nav-link active" onclick="showTab('new-order')"><i class="fa-solid fa-cart-shopping"></i> New order</a>
+            <a href="#" class="nav-link" onclick="showTab('add-funds')"><i class="fa-solid fa-wallet"></i> Add funds (KHQR)</a>
+            <a href="#" class="nav-link" onclick="showTab('contact-admin')"><i class="fa-brands fa-telegram"></i> Telegram Contact</a>
+            <a href="#" class="nav-link text-danger mt-4" onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </div>
     </div>
 
-    <!-- Dashboard Section -->
-    <div id="dashboard-section" class="app-container" style="display: none;">
-        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-3">
-            <div>
-                <h5 class="fw-bold m-0" id="welcomeUser">Welcome</h5>
-                <small class="text-muted">Balance: <strong class="text-success" id="userBalance">$0.00</strong></small>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Stats Header -->
+        <div class="custom-card py-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>You are currently on: <strong>New order</strong></div>
+                <div>My Orders: <strong id="topOrders">0</strong></div>
+                <div>Total Spend: <strong id="topSpend" class="text-primary">$0.00</strong></div>
+                <div>Welcome <strong id="topUser">User</strong> Your Balance is: <strong id="topBalance" class="text-success">$0.00</strong></div>
             </div>
-            <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Logout</button>
         </div>
 
-        <!-- Order Services Section -->
-        <div class="card p-3 mb-4 shadow-sm border-0">
-            <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-cart-shopping me-2"></i>New Order (កុម្ម៉ង់សេវាកម្ម)</h6>
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Category (ប្រភេទសេវាកម្ម)</label>
-                <select id="categorySelect" class="form-select custom-select" onchange="onCategoryChange()"></select>
+        <!-- NEW ORDER TAB -->
+        <div id="tab-new-order">
+            <!-- Platform Category Quick Filters -->
+            <div class="row g-2 mb-4">
+                <div class="col-4 col-md-3"><div class="filter-btn active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-border-all me-1"></i> Everythings</div></div>
+                <div class="col-4 col-md-3"><div class="filter-btn" onclick="filterPlatform('TikTok', this)"><i class="fa-brands fa-tiktok me-1"></i> TikTok</div></div>
+                <div class="col-4 col-md-3"><div class="filter-btn" onclick="filterPlatform('Facebook', this)"><i class="fa-brands fa-facebook me-1"></i> Facebook</div></div>
+                <div class="col-4 col-md-3"><div class="filter-btn" onclick="filterPlatform('YouTube', this)"><i class="fa-brands fa-youtube me-1"></i> YouTube</div></div>
+                <div class="col-4 col-md-3"><div class="filter-btn" onclick="filterPlatform('Telegram', this)"><i class="fa-brands fa-telegram me-1"></i> Telegram</div></div>
+                <div class="col-4 col-md-3"><div class="filter-btn" onclick="filterPlatform('Instagram', this)"><i class="fa-brands fa-instagram me-1"></i> Instagram</div></div>
             </div>
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Service (សេវាកម្ម)</label>
-                <select id="serviceSelect" class="form-select custom-select" onchange="onServiceChange()"></select>
-            </div>
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Link (តំណភ្ជាប់)</label>
-                <input type="text" id="orderLink" class="form-control custom-input" placeholder="https://...">
-            </div>
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Quantity (ចំនួន)</label>
-                <input type="number" id="orderQuantity" class="form-control custom-input" placeholder="1000" oninput="calculateCharge()">
-            </div>
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Charge (តម្លៃសរុប $)</label>
-                <input type="text" id="orderCharge" class="form-control custom-input" readonly value="$0.0000">
-            </div>
-            <button class="btn btn-primary w-100 fw-bold py-2" onclick="submitOrder()"><i class="fa-solid fa-paper-plane me-1"></i> Submit Order</button>
-        </div>
 
-        <!-- KHQR Deposit Card -->
-        <div class="card p-3 mb-4 shadow-sm border-0">
-            <h6 class="fw-bold text-danger mb-1"><i class="fa-solid fa-qrcode me-2"></i>KHQR Deposit ($0.50 - $100,000)</h6>
-            <small class="text-muted mb-2 d-block">បញ្ចូលចំនួនទឹកប្រាក់ដែលចង់ទូទាត់</small>
-            <div class="input-group">
-                <span class="input-group-text">$</span>
-                <input type="number" id="depositAmount" class="form-control" placeholder="0.50" min="0.50" max="100000" step="0.01" value="1.00">
-                <button class="btn btn-danger fw-bold" onclick="generateKHQR()"><i class="fa-solid fa-qrcode me-1"></i> បង្កើត QR Code</button>
-            </div>
-            
-            <div id="khqrDisplayContainer" style="display: none;">
-                <div class="khqr-card">
-                    <div class="khqr-header"><i class="fa-solid fa-qrcode me-2"></i>KHQR</div>
-                    <div class="khqr-body">
-                        <div class="khqr-merchant" id="merchantName">SAMNANG MON</div>
-                        <div class="khqr-amount" id="displayAmount">$0.00</div>
-                        <div class="khqr-img-wrapper"><img id="khqrImage" src="" alt="KHQR Code" class="khqr-img"></div>
-                        <small class="text-muted d-block">ស្កេនជាមួយ Bakong App ឬ Mobile Banking ណាមួយក៏បាន</small>
-                        <small class="text-danger fw-bold mt-1 d-block"><i class="fa-regular fa-clock me-1"></i>មានប្រសិទ្ធភាពរយៈពេល ១០ នាទី</small>
+            <div class="row">
+                <!-- Order Form Side -->
+                <div class="col-lg-7">
+                    <div class="custom-card">
+                        <div class="mb-3">
+                            <label class="fw-bold mb-1"><i class="fa-solid fa-list me-1 text-primary"></i> Category</label>
+                            <select id="categorySelect" class="form-select" onchange="onCategoryChange()"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-1"><i class="fa-solid fa-gear me-1 text-primary"></i> Service</label>
+                            <select id="serviceSelect" class="form-select" onchange="onServiceChange()"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-1">Link</label>
+                            <input type="text" id="orderLink" class="form-control" placeholder="https://...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-1">Quantity</label>
+                            <input type="number" id="orderQuantity" class="form-control" placeholder="1000" oninput="calculateCharge()">
+                            <small class="text-muted" id="minMaxText">Min: 10 - Max: 1,000,000</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-1">Charge ($)</label>
+                            <input type="text" id="orderCharge" class="form-control" readonly value="$0.0000">
+                        </div>
+                        <button class="btn btn-primary w-100 fw-bold py-2" onclick="submitOrder()"><i class="fa-solid fa-paper-plane me-1"></i> Submit Order</button>
+                    </div>
+                </div>
+
+                <!-- Service Details Side -->
+                <div class="col-lg-5">
+                    <div class="custom-card">
+                        <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-circle-info me-1"></i> Service Details</h6>
+                        <div class="row g-2">
+                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-bolt text-warning d-block"></i><small class="text-muted">Start Time</small><div class="fw-bold" id="detailStart">Instant</div></div></div>
+                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-gauge-high text-info d-block"></i><small class="text-muted">Speed</small><div class="fw-bold" id="detailSpeed">100k/day</div></div></div>
+                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-shield-halved text-success d-block"></i><small class="text-muted">Guarantee</small><div class="fw-bold" id="detailGuarantee">30 Days</div></div></div>
+                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-clock text-primary d-block"></i><small class="text-muted">Average Time</small><div class="fw-bold" id="detailAvg">45 minutes</div></div></div>
+                        </div>
+                        <hr>
+                        <div class="small">
+                            <strong>More Details:</strong>
+                            <p class="text-muted mt-1" id="detailDesc">Select a service to view full specifications and instructions.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Telegram Contact Section -->
-        <div class="card p-4 shadow-sm border-0 mb-4 text-center">
-            <div class="mb-3">
-                <i class="fa-brands fa-telegram text-primary" style="font-size: 50px;"></i>
-            </div>
-            <h5 class="fw-bold text-dark mb-2">ទាក់ទងមកកាន់ Admin</h5>
-            <p class="text-muted small mb-3">ប្រសិនបើបងមានបញ្ហា ឬចង់សាកសួរព័ត៌មានបន្ថែម សូមចុចប៊ូតុងខាងក្រោមដើម្បីផ្ញើសារតាម Telegram៖</p>
-            <div>
-                <a href="https://t.me/your_telegram_username" target="_blank" class="btn btn-success fw-bold px-4 py-2" style="border-radius: 10px;">
-                    <i class="fa-brands fa-telegram me-2 fs-5"></i> Chat via Telegram
-                </a>
+        <!-- ADD FUNDS TAB -->
+        <div id="tab-add-funds" style="display: none;">
+            <div class="custom-card">
+                <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-qrcode me-2"></i> Bakong KHQR Deposit</h5>
+                <div class="input-group mb-3" style="max-width: 400px;">
+                    <span class="input-group-text">$</span>
+                    <input type="number" id="depositAmount" class="form-control" value="1.00" min="0.50" step="0.01">
+                    <button class="btn btn-danger fw-bold" onclick="generateKHQR()">Generate QR</button>
+                </div>
+                <div id="khqrContainer" style="display: none;">
+                    <div class="khqr-card p-3">
+                        <div class="khqr-header mb-3">KHQR</div>
+                        <div id="merchantName" class="fw-bold text-secondary">SAMNANG MON</div>
+                        <div id="displayAmount" class="fs-2 fw-bold text-dark">$1.00</div>
+                        <img id="khqrImage" src="" class="img-fluid my-2" style="max-width: 240px;">
+                        <div class="text-muted small">Scan with Bakong or any Mobile Banking App</div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- TELEGRAM CONTACT TAB -->
+        <div id="tab-contact-admin" style="display: none;">
+            <div class="custom-card text-center py-5">
+                <i class="fa-brands fa-telegram text-primary mb-3" style="font-size: 60px;"></i>
+                <h4 class="fw-bold">Contact Administrator</h4>
+                <p class="text-muted">Need help with your orders or balance? Reach out on Telegram.</p>
+                <a href="https://t.me/your_telegram_username" target="_blank" class="btn btn-success fw-bold px-4 py-2"><i class="fa-brands fa-telegram me-2"></i> Open Telegram Chat</a>
+            </div>
+        </div>
+
     </div>
+</div>
 
 <script>
     let currentUser = null;
@@ -145,22 +190,19 @@
     function switchForm(type) {
         document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
         document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
-        document.getElementById('btn-tab-login').classList.toggle('active', type === 'login');
-        document.getElementById('btn-tab-reg').classList.toggle('active', type === 'register');
+    }
+
+    function showTab(tabName) {
+        document.getElementById('tab-new-order').style.display = tabName === 'new-order' ? 'block' : 'none';
+        document.getElementById('tab-add-funds').style.display = tabName === 'add-funds' ? 'block' : 'none';
+        document.getElementById('tab-contact-admin').style.display = tabName === 'contact-admin' ? 'block' : 'none';
     }
 
     async function handleRegister() {
         const username = document.getElementById('reg-user').value;
         const email = document.getElementById('reg-email').value;
         const password = document.getElementById('reg-pass').value;
-
-        if (!username || !email || !password) return alert('សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!');
-
-        const res = await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
-        });
+        const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
         const data = await res.json();
         alert(data.message);
         if (data.success) switchForm('login');
@@ -169,49 +211,53 @@
     async function handleLogin() {
         const loginKey = document.getElementById('login-key').value;
         const password = document.getElementById('login-pass').value;
-
-        if (!loginKey || !password) return alert('សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!');
-
-        const res = await fetch('/api/login', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ loginKey, password }) 
-        });
+        const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ loginKey, password }) });
         const data = await res.json();
         if (data.success) {
             currentUser = data.user;
-            document.getElementById('welcomeUser').innerText = `Welcome, ${currentUser.username}`;
-            document.getElementById('userBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
+            document.getElementById('sidebarUser').innerText = currentUser.username;
+            document.getElementById('topUser').innerText = currentUser.username;
+            document.getElementById('sidebarBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
+            document.getElementById('topBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
+            document.getElementById('topOrders').innerText = currentUser.myOrders;
+            document.getElementById('topSpend').innerText = `$${currentUser.totalSpend.toFixed(2)}`;
+            
             document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('dashboard-section').style.display = 'block';
-
+            document.getElementById('dashboard-section').style.display = 'flex';
             fetchApiServices();
         } else { alert(data.message); }
     }
 
-    // Services Logic
     async function fetchApiServices() {
         const res = await fetch('/api/services');
         const data = await res.json();
         if (data.success) {
             rawServicesList = data.services;
-            groupedCategories = {};
-            rawServicesList.forEach(item => {
-                const cat = item.category || 'Other Services';
-                if (!groupedCategories[cat]) groupedCategories[cat] = [];
-                groupedCategories[cat].push(item);
-            });
-            renderCategories();
+            filterPlatform('All');
         }
     }
 
-    function renderCategories() {
+    function filterPlatform(platform, btnElem) {
+        if (btnElem) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btnElem.classList.add('active');
+        }
+
+        groupedCategories = {};
+        rawServicesList.forEach(item => {
+            const cat = item.category || 'Other';
+            if (platform === 'All' || cat.toLowerCase().includes(platform.toLowerCase())) {
+                if (!groupedCategories[cat]) groupedCategories[cat] = [];
+                groupedCategories[cat].push(item);
+            }
+        });
+
         const catSelect = document.getElementById('categorySelect');
         catSelect.innerHTML = '';
-        Object.keys(groupedCategories).forEach(catName => {
+        Object.keys(groupedCategories).forEach(cat => {
             let opt = document.createElement('option');
-            opt.value = catName;
-            opt.innerText = catName;
+            opt.value = cat;
+            opt.innerText = cat;
             catSelect.appendChild(opt);
         });
         onCategoryChange();
@@ -226,17 +272,24 @@
             opt.value = s.service;
             opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
             opt.setAttribute('data-rate', s.rate);
+            opt.setAttribute('data-min', s.min || 10);
+            opt.setAttribute('data-max', s.max || 1000000);
             serviceSelect.appendChild(opt);
         });
         onServiceChange();
     }
 
-    function onServiceChange() { calculateCharge(); }
+    function onServiceChange() {
+        const opt = document.getElementById('serviceSelect').selectedOptions[0];
+        if (!opt) return;
+        document.getElementById('minMaxText').innerText = `Min: ${opt.getAttribute('data-min')} - Max: ${parseInt(opt.getAttribute('data-max')).toLocaleString()}`;
+        calculateCharge();
+    }
 
     function calculateCharge() {
-        const selectedOption = document.getElementById('serviceSelect').selectedOptions[0];
-        if (!selectedOption) return;
-        const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+        const opt = document.getElementById('serviceSelect').selectedOptions[0];
+        if (!opt) return;
+        const rate = parseFloat(opt.getAttribute('data-rate')) || 0;
         const qty = parseInt(document.getElementById('orderQuantity').value) || 0;
         document.getElementById('orderCharge').value = `$${(rate * (qty / 1000)).toFixed(4)}`;
     }
@@ -247,40 +300,35 @@
         const quantity = document.getElementById('orderQuantity').value;
         const chargeStr = document.getElementById('orderCharge').value.replace('$', '');
 
-        if (!link || !quantity) return alert('សូមបញ្ចូល Link និង ចំនួន Quantity!');
+        if (!link || !quantity) return alert('សូមបញ្ចូល Link និង Quantity!');
 
         const res = await fetch('/api/order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: currentUser.username, service: serviceId, link: link, quantity: quantity, charge: chargeStr })
+            body: JSON.stringify({ username: currentUser.username, service: serviceId, link, quantity, charge: chargeStr })
         });
         const data = await res.json();
         alert(data.message);
         if (data.success) {
             currentUser.balance = data.newBalance;
-            document.getElementById('userBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
+            currentUser.myOrders = data.myOrders;
+            currentUser.totalSpend = data.totalSpend;
+            document.getElementById('sidebarBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
+            document.getElementById('topBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
+            document.getElementById('topOrders').innerText = currentUser.myOrders;
+            document.getElementById('topSpend').innerText = `$${currentUser.totalSpend.toFixed(2)}`;
         }
     }
 
-    // KHQR Generator
     async function generateKHQR() {
         const amount = parseFloat(document.getElementById('depositAmount').value);
-        if (isNaN(amount) || amount < 0.50 || amount > 100000) {
-            return alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ចាប់ពី $0.50 ដល់ $100,000.00!');
-        }
-
-        const res = await fetch('/generate-qr', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: amount, service: 'Add Funds' })
-        });
+        const res = await fetch('/generate-qr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount }) });
         const data = await res.json();
-
         if (data.success) {
             document.getElementById('merchantName').innerText = data.merchantName;
             document.getElementById('displayAmount').innerText = `$${data.amount}`;
             document.getElementById('khqrImage').src = data.qrImage;
-            document.getElementById('khqrDisplayContainer').style.display = 'block';
+            document.getElementById('khqrContainer').style.display = 'block';
         } else { alert(data.message); }
     }
 </script>
