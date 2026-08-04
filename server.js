@@ -14,17 +14,19 @@ app.get('/', (req, res) => {
 
 app.post('/generate-qr', (req, res) => {
     try {
-        const { amount } = req.body;
-
+        const { amount, service } = req.body;
+        
+        // កំណត់តម្លៃ Amount និងព័ត៌មាន KHQR
+        const qrAmount = parseFloat(amount) || 1.00;
+        
         const optionalData = {
             currency: khqrData.currency.usd,
-            amount: parseFloat(amount) || 1.00,
+            amount: qrAmount,
             mobileNumber: '85590217653',
             storeLabel: 'KhmerSMM',
-            terminalLabel: 'Online Service'
+            terminalLabel: service || 'Online Service'
         };
 
-        // ប្រើប្រាស់ Bakong ID និង Name ត្រឹមត្រូវតាមប្រព័ន្ធ Bakong
         const individualInfo = new IndividualInfo(
             'mon_samnang@bkrt',
             'SAMNANG MON',
@@ -35,7 +37,6 @@ app.post('/generate-qr', (req, res) => {
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
-        // ពិនិត្យ Response និងបង្កើត QR Image URL
         if (response && response.data && response.data.qr) {
             return res.json({
                 success: true,
