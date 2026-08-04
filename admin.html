@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <title>KhmerSMM - Admin Balance Control</title>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 25px; border-radius: 12px; width: 320px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        h2 { text-align: center; margin-bottom: 20px; color: #38bdf8; }
+        input, select, button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #334155; box-sizing: border-box; }
+        input, select { background: #0f172a; color: #fff; }
+        button { background: #0284c7; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background: #0369a1; }
+        #result { margin-top: 15px; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Admin Balance Control</h2>
+    <input type="password" id="adminKey" placeholder="បញ្ចូល Admin Key (123456)">
+    <input type="text" id="username" placeholder="Username (ឧ. nang)">
+    <input type="number" step="0.01" id="amount" placeholder="ចំនួនទឹកប្រាក់ ($)">
+    <select id="type">
+        <option value="add">➕ បន្ថែម Balance (+)</option>
+        <option value="deduct">➖ កាត់ Balance (-)</option>
+    </select>
+    <button onclick="updateBalance()">បញ្ជាក់ (Update)</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function updateBalance() {
+    const adminKey = document.getElementById('adminKey').value;
+    const username = document.getElementById('username').value;
+    const amount = document.getElementById('amount').value;
+    const type = document.getElementById('type').value;
+    const resultDiv = document.getElementById('result');
+
+    resultDiv.style.color = '#fbbf24';
+    resultDiv.innerText = 'កំពុងដំណើរការ...';
+
+    try {
+        const res = await fetch('/api/admin/update-balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ adminKey, username, amount, type })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            resultDiv.style.color = '#4ade80';
+            resultDiv.innerText = `✅ ${data.message} Balance ថ្មី: $${data.newBalance.toFixed(2)}`;
+        } else {
+            resultDiv.style.color = '#f87171';
+            resultDiv.innerText = `❌ ${data.message}`;
+        }
+    } catch (err) {
+        resultDiv.style.color = '#f87171';
+        resultDiv.innerText = '❌ មានបញ្ហាភ្ជាប់ទៅ Server!';
+    }
+}
+</script>
+
+</body>
+</html>
