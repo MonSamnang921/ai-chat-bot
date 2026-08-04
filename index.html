@@ -3,399 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KhmerSMM - Dynamic SMM Panel</title>
-    <!-- Bootstrap 5 CSS & FontAwesome Icons -->
+    <title>KhmerSMM - Dynamic Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/socket.io/socket.io.js"></script>
     <style>
-        body { background-color: #f4f7f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Khmer OS Battambang", sans-serif; min-height: 100vh; padding: 15px 10px; }
-        .auth-card, .app-container { max-width: 600px; margin: 10px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 25px; }
+        body { background-color: #f4f7f6; font-family: sans-serif; padding: 15px 10px; }
+        .app-container { max-width: 800px; margin: 10px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 25px; }
         
-        .account-stats-bar { width: 100%; background-color: #ffffff; border-radius: 8px; padding: 12px 15px; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 13px; color: #333333; margin-bottom: 20px; border: 1px solid #eef0f2; }
-        .highlight-blue { color: #0066ff; font-weight: 700; }
+        /* KHQR Card UI */
+        .khqr-card {
+            max-width: 360px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .khqr-header {
+            background: #e61b23;
+            color: white;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 20px;
+            letter-spacing: 1px;
+        }
+        .khqr-body { padding: 20px; }
+        .khqr-img-wrapper {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 16px;
+            display: inline-block;
+            border: 2px dashed #e61b23;
+            margin: 10px 0;
+        }
+        .khqr-img {
+            width: 260px;
+            height: 260px;
+            object-fit: contain;
+            display: block;
+        }
+        .khqr-amount { font-size: 28px; font-weight: 800; color: #111; margin-top: 5px; }
+        .khqr-merchant { font-size: 15px; font-weight: 700; color: #444; }
 
-        .btn-submit { background-color: #0d6efd; color: #fff; font-weight: bold; border-radius: 8px; width: 100%; padding: 12px; border: none; }
-        .btn-submit:hover { background-color: #0b5ed7; }
-        .nav-pills .nav-link { color: #555; font-weight: 600; border-radius: 8px; }
-        .nav-pills .nav-link.active { background-color: #0d6efd; color: #fff; }
-
-        .btn-category { width: 100%; background-color: #ffffff; border: 1.5px solid #0d6efd; color: #0d6efd; font-weight: 600; font-size: 13px; padding: 8px 5px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
-        .btn-category:hover { background-color: #e7f1ff; color: #0b5ed7; }
-        .btn-category.active { background-color: #0d6efd; color: #ffffff; border-color: #0d6efd; }
-
-        .custom-input, .custom-select { background-color: #f1f3f5 !important; border: 1px solid #e9ecef !important; border-radius: 10px !important; padding: 10px 14px !important; font-size: 14px !important; color: #333 !important; }
-
-        .amount-input { width: 100%; border: 2px solid #004d7a; border-radius: 10px; padding: 10px; font-size: 16px; text-align: center; margin-bottom: 12px; outline: none; }
-        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
-        .amount-grid-bottom { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 15px; }
-        .btn-amount { position: relative; background-color: #004d7a; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 6px; border-radius: 8px; border: none; cursor: pointer; }
-        .btn-amount.active { background-color: #1a61f7; box-shadow: 0 0 10px rgba(26, 97, 247, 0.5); }
-        .bonus-badge { position: absolute; top: 2px; right: 4px; font-size: 9px; font-weight: 800; color: #00ff88; }
-        .bottom-btn { font-size: 12px; padding: 8px 2px; }
-
-        .chat-widget-btn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #0066a2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 6px 16px rgba(0, 102, 162, 0.4); cursor: pointer; z-index: 9999; border: none; }
-        .support-modal { display: none; flex-direction: column; position: fixed; bottom: 95px; right: 25px; width: 350px; max-width: 90vw; height: 580px; max-height: 85vh; background-color: #f8fafc; border-radius: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.18); overflow: hidden; z-index: 9998; }
-        .support-header { background: linear-gradient(180deg, #005a92 0%, #0077be 100%); color: white; padding: 20px; }
-        .support-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .support-card { background: white; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; box-shadow: 0 2px 6px rgba(0,0,0,0.03); border: 1px solid #edf2f7; }
-        .card-icon-box { width: 40px; height: 40px; border-radius: 50%; background-color: #0077be; color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-        .card-icon-box.green { background-color: #00b8a9; }
-        .support-footer-nav { background: white; border-top: 1px solid #edf2f7; display: flex; justify-content: space-around; padding: 8px 0; }
-        .nav-item-btn { display: flex; flex-direction: column; align-items: center; color: #718096; text-decoration: none; font-size: 11px; font-weight: 600; border: none; background: none; }
-        .nav-item-btn.active { color: #0077be; }
-
-        #dashboard-section { display: none; }
-        .khqr-card { display: none; width: 260px; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); margin: 20px auto 0 auto; border: 1px solid #e0e0e0; text-align: center; }
-        .khqr-header { background-color: #E11919; padding: 8px 15px; color: #fff; font-weight: 800; font-size: 18px; text-align: left; }
+        /* Chat UI */
+        .chat-box { height: 320px; overflow-y: auto; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; background: #f8f9fa; }
+        .chat-msg { margin-bottom: 12px; max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
+        .msg-self { background: #0d6efd; color: #fff; margin-left: auto; text-align: right; }
+        .msg-other { background: #e9ecef; color: #333; margin-right: auto; }
+        .chat-img, .chat-video { max-width: 220px; border-radius: 8px; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
 
-    <!-- 1. AUTHENTICATION SECTION -->
-    <div id="auth-section" class="auth-card">
-        <h3 class="text-center fw-bold text-primary mb-4"><i class="fa-solid fa-rocket me-2"></i>KhmerSMM</h3>
-
-        <ul class="nav nav-pills nav-justified mb-4">
-            <li class="nav-item"><button class="nav-link active" id="btn-tab-login" onclick="switchForm('login')">Sign In</button></li>
-            <li class="nav-item"><button class="nav-link" id="btn-tab-reg" onclick="switchForm('register')">Sign Up</button></li>
-        </ul>
-
-        <div id="login-form">
-            <div class="mb-3"><label class="form-label fw-bold">Username</label><input type="text" id="login-user" class="form-control custom-input" placeholder="Enter Username"></div>
-            <div class="mb-3"><label class="form-label fw-bold">Password</label><input type="password" id="login-pass" class="form-control custom-input" placeholder="Enter Password"></div>
-            <button class="btn-submit mb-3" onclick="handleLogin()">Sign In</button>
-        </div>
-
-        <div id="register-form" style="display: none;">
-            <div class="mb-3"><label class="form-label fw-bold">Username</label><input type="text" id="reg-user" class="form-control custom-input" placeholder="Create Username"></div>
-            <div class="mb-3"><label class="form-label fw-bold">Email</label><input type="email" id="reg-email" class="form-control custom-input" placeholder="name@example.com"></div>
-            <div class="mb-3"><label class="form-label fw-bold">Password</label><input type="password" id="reg-pass" class="form-control custom-input" placeholder="Create Password"></div>
-            <button class="btn-submit mb-3" onclick="handleRegister()">Sign Up</button>
-        </div>
+    <!-- Authentication Section -->
+    <div id="auth-section" class="app-container">
+        <h3 class="text-center fw-bold text-primary mb-4"><i class="fa-solid fa-rocket me-2"></i>KhmerSMM Panel</h3>
+        <div class="mb-3"><label class="fw-bold">Username</label><input type="text" id="login-user" class="form-control"></div>
+        <div class="mb-3"><label class="fw-bold">Password</label><input type="password" id="login-pass" class="form-control"></div>
+        <button class="btn btn-primary w-100 fw-bold" onclick="handleLogin()">Sign In</button>
     </div>
 
-    <!-- 2. MAIN DASHBOARD SECTION -->
-    <div id="dashboard-section" class="app-container">
-        
-        <div class="account-stats-bar">
-            <div>You are currently on: <span class="highlight-blue" id="currentPageName">New Order</span></div>
-            <div>Panel Orders: <span class="highlight-blue">3731198</span></div>
-            <div>My Orders: <span class="highlight-blue" id="myOrdersCount">0</span></div>
-            <div>Total Spend: <span class="highlight-blue" id="totalSpendAmount">$0.0</span></div>
-            <div>Welcome <span class="highlight-blue" id="accountUsername">User</span> Your Balance is : <span class="highlight-blue" id="accountBalance">$10.00</span></div>
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" class="app-container" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+                <h5 class="fw-bold m-0" id="welcomeUser">Welcome</h5>
+                <small class="text-muted">Balance: <strong class="text-success" id="userBalance">$0.00</strong></small>
+            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Logout</button>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="btn-group">
-                <button class="btn btn-sm btn-outline-primary active" id="tab-order" onclick="switchMainTab('order')">Order Panel</button>
-                <button class="btn btn-sm btn-outline-primary" id="tab-deposit" onclick="switchMainTab('deposit')">Add Funds</button>
+        <!-- KHQR Deposit Card -->
+        <div class="card p-3 mb-4 shadow-sm border-0">
+            <h6 class="fw-bold text-danger mb-1"><i class="fa-solid fa-qrcode me-2"></i>KHQR Deposit ($0.50 - $100,000)</h6>
+            <small class="text-muted mb-2 d-block">បញ្ចូលចំនួនទឹកប្រាក់ដែលចង់ទូទាត់</small>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" id="depositAmount" class="form-control" placeholder="0.50" min="0.50" max="100000" step="0.01" value="1.00">
+                <button class="btn btn-danger fw-bold" onclick="generateKHQR()"><i class="fa-solid fa-qrcode me-1"></i> បង្កើត QR Code</button>
             </div>
-            <button class="btn btn-sm btn-outline-danger" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-        </div>
-
-        <!-- ORDER FORM VIEW -->
-        <div id="order-view">
-            <!-- Platform Filter Buttons -->
-            <div class="row g-2 mb-3">
-                <div class="col-6 col-md-3"><button type="button" class="btn btn-category active" onclick="filterPlatform('all', this)">📑 Everythings</button></div>
-                <div class="col-6 col-md-3"><button type="button" class="btn btn-category" onclick="filterPlatform('instagram', this)">📸 Instagram</button></div>
-                <div class="col-6 col-md-3"><button type="button" class="btn btn-category" onclick="filterPlatform('tiktok', this)">🎵 TikTok</button></div>
-                <div class="col-6 col-md-3"><button type="button" class="btn btn-category" onclick="filterPlatform('facebook', this)">📘 Facebook</button></div>
-            </div>
-
-            <div class="mb-3">
-                <label class="fw-bold mb-1"><i class="fa-solid fa-shapes text-primary"></i> Category</label>
-                <select id="categorySelect" class="form-select custom-select" onchange="onCategoryChange()">
-                    <option value="">កំពុងទាញយកព័ត៌មានពី API...</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="fw-bold mb-1"><i class="fa-solid fa-cube text-primary"></i> Service</label>
-                <select id="serviceSelect" class="form-select custom-select" onchange="onServiceChange()"></select>
-            </div>
-
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Link</label>
-                <input type="text" id="orderLink" class="form-control custom-input" placeholder="https://...">
-            </div>
-
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Quantity</label>
-                <input type="number" id="orderQuantity" class="form-control custom-input" oninput="calculateCharge()">
-                <div class="small text-muted mt-1" id="quantityRangeText">Min: 0 - Max: 0</div>
-            </div>
-
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Charge</label>
-                <input type="text" id="orderCharge" class="form-control custom-input" readonly value="$0.00">
-            </div>
-
-            <button type="button" class="btn-submit" onclick="submitOrder()"><i class="fa-solid fa-paper-plane me-1"></i> Submit Order</button>
-        </div>
-
-        <!-- ADD FUNDS VIEW -->
-        <div id="deposit-view" style="display: none;" class="text-center">
-            <input type="number" id="customAmount" class="amount-input" placeholder="Enter amount (e.g. 5, 10, 40, 100)" oninput="clearActiveButtons()">
-            <button type="button" class="btn-submit mb-3" onclick="submitDeposit()">Submit</button>
-
-            <div class="amount-grid">
-                <button type="button" class="btn-amount" onclick="selectAmount(3, this)">$3</button>
-                <button type="button" class="btn-amount" onclick="selectAmount(5, this)">$5</button>
-                <button type="button" class="btn-amount" onclick="selectAmount(15, this)">$15 <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount" onclick="selectAmount(30, this)">$30 <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount" onclick="selectAmount(50, this)">$50 <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount" onclick="selectAmount(100, this)">$100 <span class="bonus-badge">+10%</span></button>
-            </div>
-
-            <!-- KHQR Card -->
-            <div id="khqr-card" class="khqr-card p-3">
-                <div class="khqr-header">KHQR</div>
-                <div class="fw-bold mt-2 fs-6">KhmerSMM</div>
-                <h4 class="fw-bold text-success my-1">$<span id="card-amount">50.00</span></h4>
-                <div class="qr-wrapper" style="width:160px; height:160px; margin: 10px auto;"><img id="qr-img" style="width:100%; height:100%;" src="" alt="KHQR"></div>
-                <small class="text-muted">ស្កែនដើម្បីបង់ប្រាក់</small>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- 3. FLOATING SUPPORT CHAT WIDGET -->
-    <button class="chat-widget-btn" onclick="toggleSupportModal()"><i class="fa-solid fa-comment-dots"></i></button>
-
-    <div class="support-modal" id="supportModal">
-        <div class="support-header">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div style="width:38px; height:38px; background:#fff; border-radius:50%; color:#0066a2; display:flex; align-items:center; justify-content:center; font-weight:bold;"><i class="fa-solid fa-crown"></i></div>
-                <div><span class="badge bg-light text-dark">EN</span> <button class="btn btn-sm btn-light rounded-circle" onclick="toggleSupportModal()">✕</button></div>
-            </div>
-            <div class="fw-bold fs-5">សួស្តី <span id="supportUserName">User</span> 👋<br>ខ្ញុំនៅទីនេះដើម្បីជួយបង</div>
-        </div>
-
-        <div class="support-body">
-            <a href="https://t.me/p0zz_zin" target="_blank" class="support-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="card-icon-box"><i class="fa-regular fa-comment-dots"></i></div>
-                    <div><div class="fw-bold" style="font-size:14px;">ផ្ញើសារមកយើង</div><div class="small text-muted">ឆ្លើយតបក្នុងរយៈពេល ១–៣០ នាទី</div></div>
+            
+            <div id="khqrDisplayContainer" style="display: none;">
+                <div class="khqr-card">
+                    <div class="khqr-header"><i class="fa-solid fa-qrcode me-2"></i>KHQR</div>
+                    <div class="khqr-body">
+                        <div class="khqr-merchant" id="merchantName">SAMNANG MON</div>
+                        <div class="khqr-amount" id="displayAmount">$0.00</div>
+                        <div class="khqr-img-wrapper"><img id="khqrImage" src="" alt="KHQR Code" class="khqr-img"></div>
+                        <small class="text-muted d-block">ស្កេនជាមួយ Bakong App ឬ Mobile Banking ណាមួយក៏បាន</small>
+                        <small class="text-danger fw-bold mt-1 d-block"><i class="fa-regular fa-clock me-1"></i>មានប្រសិទ្ធភាពរយៈពេល ១០ នាទី</small>
+                    </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-primary"></i>
-            </a>
+            </div>
+        </div>
+
+        <!-- Live Chat Card -->
+        <div class="card p-3 shadow-sm border-0 mb-4">
+            <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-comments me-2"></i>Live Support Chat</h6>
+            <div class="chat-box mb-3" id="chatBox"></div>
+            <div class="input-group">
+                <input type="file" id="mediaInput" class="d-none" accept="image/*,video/*" onchange="uploadAndSendMedia()">
+                <button class="btn btn-outline-secondary" title="ផ្ញើរូបភាព/វីដេអូ" onclick="document.getElementById('mediaInput').click()">
+                    <i class="fa-solid fa-paperclip"></i>
+                </button>
+                <input type="text" id="chatText" class="form-control" placeholder="សរសេរសារនៅទីនេះ..." onkeypress="if(event.key==='Enter') sendTextMessage()">
+                <button class="btn btn-primary fw-bold" onclick="sendTextMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
         </div>
     </div>
 
 <script>
-    let rawServicesList = [];
-    let groupedCategories = {};
-    let chosenAmount = 50;
-
-    function switchForm(type) {
-        document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
-        document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
-        document.getElementById('btn-tab-login').classList.toggle('active', type === 'login');
-        document.getElementById('btn-tab-reg').classList.toggle('active', type === 'register');
-    }
-
-    async function handleRegister() {
-        const username = document.getElementById('reg-user').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-pass').value;
-
-        if (!username || !email || !password) return alert('សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!');
-        try {
-            const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
-            const data = await res.json();
-            alert(data.message);
-            if (data.success) switchForm('login');
-        } catch (e) { alert('មានបញ្ហាក្នុងការភ្ជាប់ទៅ Server!'); }
-    }
+    const socket = io();
+    let currentUser = null;
 
     async function handleLogin() {
         const username = document.getElementById('login-user').value;
         const password = document.getElementById('login-pass').value;
 
-        if (!username || !password) return alert('សូមបញ្ចូល Username និង Password!');
-        try {
-            const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
-            const data = await res.json();
-            if (data.success) {
-                document.getElementById('auth-section').style.display = 'none';
-                document.getElementById('dashboard-section').style.display = 'block';
-                document.getElementById('accountUsername').innerText = data.user.username;
-                document.getElementById('supportUserName').innerText = data.user.username;
-                document.getElementById('accountBalance').innerText = `$${parseFloat(data.user.balance).toFixed(2)}`;
-                
-                // Fetch Services ចេញពី API ភ្លាមៗ
-                fetchApiServices();
-            } else { alert(data.message); }
-        } catch (e) { alert('មានបញ្ហាក្នុងការភ្ជាប់ទៅ Server!'); }
+        const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
+        const data = await res.json();
+        if (data.success) {
+            currentUser = data.user;
+            document.getElementById('welcomeUser').innerText = `Welcome, ${currentUser.username}`;
+            document.getElementById('userBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            socket.emit('join_chat', currentUser);
+        } else { alert(data.message); }
     }
 
-    function handleLogout() {
-        document.getElementById('auth-section').style.display = 'block';
-        document.getElementById('dashboard-section').style.display = 'none';
-    }
-
-    function switchMainTab(type) {
-        document.getElementById('order-view').style.display = type === 'order' ? 'block' : 'none';
-        document.getElementById('deposit-view').style.display = type === 'deposit' ? 'block' : 'none';
-        document.getElementById('tab-order').classList.toggle('active', type === 'order');
-        document.getElementById('tab-deposit').classList.toggle('active', type === 'deposit');
-        document.getElementById('currentPageName').innerText = type === 'order' ? 'New Order' : 'Add funds';
-    }
-
-    async function fetchApiServices() {
-        try {
-            const res = await fetch('/api/services');
-            const data = await res.json();
-            
-            if (data.success && Array.isArray(data.services)) {
-                rawServicesList = data.services;
-                groupedCategories = {};
-
-                rawServicesList.forEach(item => {
-                    const cat = item.category || 'Other Services';
-                    if (!groupedCategories[cat]) groupedCategories[cat] = [];
-                    groupedCategories[cat].push(item);
-                });
-
-                renderCategories();
-            } else {
-                alert('មិនអាចទាញយក Services ពី Provider បានទេ!');
-            }
-        } catch (e) {
-            console.error(e);
-            alert('មានបញ្ហាក្នុងការភ្ជាប់ទៅ API!');
+    async function generateKHQR() {
+        const amount = parseFloat(document.getElementById('depositAmount').value);
+        if (isNaN(amount) || amount < 0.50 || amount > 100000) {
+            return alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ចាប់ពី $0.50 ដល់ $100,000.00!');
         }
-    }
 
-    function renderCategories() {
-        const catSelect = document.getElementById('categorySelect');
-        catSelect.innerHTML = '';
-
-        Object.keys(groupedCategories).forEach(catName => {
-            let opt = document.createElement('option');
-            opt.value = catName;
-            opt.innerText = catName;
-            
-            // Platform auto detect
-            const lower = catName.toLowerCase();
-            if (lower.includes('instagram') || lower.includes('ig')) opt.setAttribute('data-platform', 'instagram');
-            else if (lower.includes('tiktok')) opt.setAttribute('data-platform', 'tiktok');
-            else if (lower.includes('facebook') || lower.includes('fb')) opt.setAttribute('data-platform', 'facebook');
-            else opt.setAttribute('data-platform', 'other');
-
-            catSelect.appendChild(opt);
+        const res = await fetch('/generate-qr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: amount, service: 'Add Funds' })
         });
+        const data = await res.json();
 
-        onCategoryChange();
+        if (data.success) {
+            document.getElementById('merchantName').innerText = data.merchantName;
+            document.getElementById('displayAmount').innerText = `$${data.amount}`;
+            document.getElementById('khqrImage').src = data.qrImage;
+            document.getElementById('khqrDisplayContainer').style.display = 'block';
+        } else { alert(data.message); }
     }
 
-    function onCategoryChange() {
-        const catValue = document.getElementById('categorySelect').value;
-        const serviceSelect = document.getElementById('serviceSelect');
-        serviceSelect.innerHTML = '';
-
-        const list = groupedCategories[catValue] || [];
-
-        list.forEach(s => {
-            let opt = document.createElement('option');
-            opt.value = s.service;
-            opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
-            opt.setAttribute('data-rate', s.rate);
-            opt.setAttribute('data-min', s.min);
-            opt.setAttribute('data-max', s.max);
-            serviceSelect.appendChild(opt);
-        });
-
-        onServiceChange();
+    function sendTextMessage() {
+        const text = document.getElementById('chatText').value.trim();
+        if (!text) return;
+        socket.emit('send_message', { sender: currentUser.username, type: 'text', content: text });
+        document.getElementById('chatText').value = '';
     }
 
-    function onServiceChange() {
-        const selectedOption = document.getElementById('serviceSelect').selectedOptions[0];
-        if (!selectedOption) return;
+    async function uploadAndSendMedia() {
+        const file = document.getElementById('mediaInput').files[0];
+        if (!file) return;
 
-        document.getElementById('quantityRangeText').innerText = `Min: ${selectedOption.getAttribute('data-min')} - Max: ${selectedOption.getAttribute('data-max')}`;
-        document.getElementById('orderQuantity').value = selectedOption.getAttribute('data-min');
-        calculateCharge();
-    }
+        const formData = new FormData();
+        formData.append('mediaFile', file);
 
-    function calculateCharge() {
-        const selectedOption = document.getElementById('serviceSelect').selectedOptions[0];
-        if (!selectedOption) return;
-        const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
-        const qty = parseInt(document.getElementById('orderQuantity').value) || 0;
-        document.getElementById('orderCharge').value = `$${(rate * (qty / 1000)).toFixed(4)}`;
-    }
+        const res = await fetch('/api/upload-media', { method: 'POST', body: formData });
+        const data = await res.json();
 
-    function filterPlatform(platform, btnElement) {
-        document.querySelectorAll('.btn-category').forEach(btn => btn.classList.remove('active'));
-        btnElement.classList.add('active');
-        const select = document.getElementById('categorySelect');
-        let firstIndex = -1;
-        for (let i = 0; i < select.options.length; i++) {
-            let match = platform === 'all' || select.options[i].getAttribute('data-platform') === platform;
-            select.options[i].hidden = !match;
-            if (match && firstIndex === -1) firstIndex = i;
-        }
-        if (firstIndex !== -1) { select.selectedIndex = firstIndex; onCategoryChange(); }
-    }
-
-    async function submitOrder() {
-        const serviceId = document.getElementById('serviceSelect').value;
-        const link = document.getElementById('orderLink').value;
-        const quantity = document.getElementById('orderQuantity').value;
-
-        if (!link || !quantity) return alert('សូមបំពេញ Link និង Quantity ឱ្យបានត្រឹមត្រូវ!');
-
-        try {
-            const res = await fetch('/api/order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ service: serviceId, link: link, quantity: quantity })
-            });
-
-            const data = await res.json();
-            alert(data.message);
-            if (data.success) {
-                document.getElementById('orderLink').value = '';
-            }
-        } catch (e) {
-            alert('មានបញ្ហាក្នុងការផ្ញើ Order!');
+        if (data.success) {
+            const type = data.isVideo ? 'video' : 'image';
+            socket.emit('send_message', { sender: currentUser.username, type, content: data.url });
         }
     }
 
-    function selectAmount(amount, btnElement) {
-        chosenAmount = amount;
-        document.getElementById('customAmount').value = amount;
-        document.querySelectorAll('.btn-amount').forEach(btn => btn.classList.remove('active'));
-        btnElement.classList.add('active');
-    }
+    socket.on('receive_message', (data) => {
+        const chatBox = document.getElementById('chatBox');
+        const isSelf = data.sender === currentUser.username;
+        let contentHtml = '';
 
-    function clearActiveButtons() {
-        chosenAmount = parseFloat(document.getElementById('customAmount').value) || 0;
-        document.querySelectorAll('.btn-amount').forEach(btn => btn.classList.remove('active'));
-    }
+        if (data.type === 'text') contentHtml = `<div>${data.content}</div>`;
+        else if (data.type === 'image') contentHtml = `<img src="${data.content}" class="chat-img">`;
+        else if (data.type === 'video') contentHtml = `<video src="${data.content}" controls class="chat-video"></video>`;
 
-    async function submitDeposit() {
-        let finalAmount = parseFloat(document.getElementById('customAmount').value) || chosenAmount;
-        if (!finalAmount || finalAmount <= 0) return alert("សូមបញ្ចូលចំនួនទឹកប្រាក់!");
-
-        try {
-            const res = await fetch('/generate-qr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: finalAmount, service: "Add Funds" }) });
-            const data = await res.json();
-            if (data.success) {
-                document.getElementById('qr-img').src = data.qrImage;
-                document.getElementById('card-amount').innerText = finalAmount.toFixed(2);
-                document.getElementById('khqr-card').style.display = 'block';
-            } else { alert(data.message); }
-        } catch (e) { alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅ Server!"); }
-    }
-
-    function toggleSupportModal() {
-        const modal = document.getElementById('supportModal');
-        modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'flex' : 'none';
-    }
+        chatBox.innerHTML += `
+            <div class="chat-msg ${isSelf ? 'msg-self' : 'msg-other'}">
+                <small class="fw-bold d-block mb-1">${data.sender}</small>
+                ${contentHtml}
+            </div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
 </script>
-
 </body>
 </html>
