@@ -18,8 +18,8 @@ app.post('/generate-qr', (req, res) => {
 
         const parsedAmount = parseFloat(amount) || 1.0;
 
-        // កំណត់ Expiration Time (ឧទាហរណ៍៖ ១០ នាទីបន្ទាប់ពីបង្កើត QR)
-        const expirationTime = Date.now() + 10 * 60 * 1000; // 10 minutes in milliseconds
+        // កំណត់ Expiration Time (១០ នាទីបន្ទាប់ពីបង្កើត QR)
+        const expirationTime = Date.now() + 10 * 60 * 1000;
 
         const optionalData = {
             currency: khqrData.currency.usd,
@@ -28,12 +28,12 @@ app.post('/generate-qr', (req, res) => {
             storeLabel: 'KhmerSMM',
             terminalLabel: service ? String(service).substring(0, 25) : 'Service',
             billNumber: 'INV-' + Date.now().toString().slice(-6),
-            expirationTimestamp: expirationTime // បន្ថែមចំណុចនេះដើម្បីបំបាត់ Error 46
+            expirationTimestamp: expirationTime
         };
 
         const individualInfo = new IndividualInfo(
             'mon_samnang@bkrt',
-            'KhmerSmm',
+            'SAMNANG MON',
             'Phnom Penh',
             optionalData
         );
