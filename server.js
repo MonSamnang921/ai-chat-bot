@@ -3,14 +3,10 @@ const cors = require('cors');
 const path = require('path');
 const axios = require('axios');
 const http = require('http');
-const { Server } = require('socket.io');
-const multer = require('multer');
-const fs = require('fs');
 const { BakongKHQR, khqrData, IndividualInfo } = require('bakong-khqr');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
 
 const PORT = process.env.PORT || 10000;
 
@@ -18,14 +14,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-if (!fs.existsSync('uploads')) { fs.mkdirSync('uploads'); }
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
-const upload = multer({ storage });
 
 // ------------------- SMM PROVIDER CONFIG -------------------
 const SMM_API_URL = 'https://khmer-smm.com/api/v2';
@@ -63,7 +51,7 @@ app.post('/api/login', (req, res) => {
     const user = users.find(u => (u.email.toLowerCase() === inputKey || u.username.toLowerCase() === inputKey) && u.password === password);
     
     if (!user) return res.status(401).json({ success: false, message: 'ឈ្មោះ/អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!' });
-    if (user.isBlocked) return res.status(403).json({ success: false, message: 'គណនីរបស់អ្នកត្រូវ បានបិទ!' });
+    if (user.isBlocked) return res.status(403).json({ success: false, message: 'គណនីរបស់អ្នកត្រូវបានបិទ!' });
 
     return res.json({
         success: true,
@@ -104,15 +92,6 @@ app.post('/api/admin/set-price-margin', (req, res) => {
     return res.json({ success: true, message: `បានកែប្រែភាគរយទៅ ${globalPricePercentage}% រួចរាល់!` });
 });
 
-// ------------------- CHAT FILE UPLOAD -------------------
-
-app.post('/api/upload-media', upload.single('mediaFile'), (req, res) => {
-    if (!req.file) return res.status(400).json({ success: false, message: 'គ្មានឯកសារត្រូវបាន Upload ទេ' });
-    const fileUrl = `/uploads/${req.file.filename}`;
-    const isVideo = req.file.mimetype.startsWith('video/');
-    return res.json({ success: true, url: fileUrl, isVideo });
-});
-
 // ------------------- BAKONG KHQR GENERATOR -------------------
 
 app.post('/generate-qr', (req, res) => {
@@ -135,7 +114,7 @@ app.post('/generate-qr', (req, res) => {
             expirationTimestamp: expirationTime
         };
 
-        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'SAMNANG MON', 'Phnom Penh', optionalData);
+        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'KhmerSmm', 'Phnom Penh', optionalData);
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
@@ -193,19 +172,6 @@ app.post('/api/order', async (req, res) => {
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Server Error!' });
     }
-});
-
-// ------------------- REAL-TIME CHAT -------------------
-
-io.on('connection', (socket) => {
-    socket.on('join_chat', (userData) => {
-        socket.userData = userData;
-        socket.join('support_room');
-    });
-
-    socket.on('send_message', (data) => {
-        io.to('support_room').emit('receive_message', data);
-    });
 });
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
