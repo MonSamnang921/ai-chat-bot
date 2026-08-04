@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhmerSMM - សេវាកម្មសង្គម</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col items-center p-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-6 border border-slate-200 mt-10">
+        <h1 class="text-2xl font-bold text-center text-blue-600 mb-2">KhmerSMM Panel</h1>
+        <p class="text-sm text-center text-slate-500 mb-6">ទិញសេវាកម្ម Followers, Likes និង Views</p>
+
+        <form id="orderForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">ជ្រើសរើសសេវាកម្ម</label>
+                <select id="service" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="1.00" data-name="1000 Facebook Likes">1,000 Facebook Likes - $1.00</option>
+                    <option value="2.50" data-name="1000 TikTok Followers">1,000 TikTok Followers - $2.50</option>
+                    <option value="5.00" data-name="1000 YouTube Views">1,000 YouTube Views - $5.00</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Link គណនី/វីដេអូ</label>
+                <input type="url" id="link" required placeholder="https://..." class="w-full border rounded-lg p-2.5 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors">
+                ទូទាត់ប្រាក់តាម KHQR
+            </button>
+        </form>
+
+        <div id="qrContainer" class="hidden mt-6 text-center border-t pt-4">
+            <h2 class="text-lg font-semibold text-slate-700 mb-2">ស្កែន QR Code ដើម្បីទូទាត់</h2>
+            <img id="qrImage" class="w-64 h-64 mx-auto border-2 border-blue-500 rounded-lg p-2" src="" alt="Bakong KHQR">
+            <p id="qrInfo" class="text-sm font-medium text-slate-600 mt-2"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const serviceSelect = document.getElementById('service');
+            const amount = serviceSelect.value;
+            const serviceName = serviceSelect.options[serviceSelect.selectedIndex].getAttribute('data-name');
+
+            const res = await fetch('/generate-qr', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount, serviceName })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('qrImage').src = data.qrCode;
+                document.getElementById('qrInfo').innerText = `${data.service} - $${data.amount}`;
+                document.getElementById('qrContainer').classList.remove('hidden');
+            } else {
+                alert('មានបញ្ហាក្នុងការបង្កើត KHQR');
+            }
+        });
+    </script>
+</body>
+</html>
