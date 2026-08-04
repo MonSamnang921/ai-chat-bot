@@ -33,7 +33,7 @@ app.post('/generate-qr', (req, res) => {
 
         const individualInfo = new IndividualInfo(
             'mon_samnang@bkrt',
-            'SAMNANG MON',
+            'KhmerSmm',
             'Phnom Penh',
             optionalData
         );
