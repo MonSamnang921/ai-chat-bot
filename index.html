@@ -37,6 +37,7 @@
 </head>
 <body>
 
+<!-- AUTHENTICATION SECTION -->
 <div id="auth-section" class="container py-5" style="max-width: 450px;">
     <div class="custom-card shadow">
         <h4 class="text-center fw-bold text-primary mb-4"><i class="fa-solid fa-rocket me-2"></i>KhmerSMM</h4>
@@ -58,6 +59,7 @@
     </div>
 </div>
 
+<!-- DASHBOARD SECTION -->
 <div id="dashboard-section" class="wrapper" style="display: none;">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -87,9 +89,9 @@
             </div>
         </div>
 
-        <!-- NEW ORDER TAB -->
+        <!-- TAB 1: NEW ORDER -->
         <div id="tab-new-order">
-            <!-- Platform Category Quick Filters -->
+            <!-- Platform Quick Filters -->
             <div class="row g-2 mb-4">
                 <div class="col-4 col-md-3"><div class="filter-btn active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-border-all me-1"></i> Everythings</div></div>
                 <div class="col-4 col-md-3"><div class="filter-btn" onclick="filterPlatform('TikTok', this)"><i class="fa-brands fa-tiktok me-1"></i> TikTok</div></div>
@@ -100,7 +102,7 @@
             </div>
 
             <div class="row">
-                <!-- Order Form Side -->
+                <!-- Order Form -->
                 <div class="col-lg-7">
                     <div class="custom-card">
                         <div class="mb-3">
@@ -128,27 +130,27 @@
                     </div>
                 </div>
 
-                <!-- Service Details Side -->
+                <!-- Service Details Box -->
                 <div class="col-lg-5">
                     <div class="custom-card">
                         <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-circle-info me-1"></i> Service Details</h6>
                         <div class="row g-2">
-                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-bolt text-warning d-block"></i><small class="text-muted">Start Time</small><div class="fw-bold" id="detailStart">Instant</div></div></div>
-                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-gauge-high text-info d-block"></i><small class="text-muted">Speed</small><div class="fw-bold" id="detailSpeed">100k/day</div></div></div>
-                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-shield-halved text-success d-block"></i><small class="text-muted">Guarantee</small><div class="fw-bold" id="detailGuarantee">30 Days</div></div></div>
-                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-clock text-primary d-block"></i><small class="text-muted">Average Time</small><div class="fw-bold" id="detailAvg">45 minutes</div></div></div>
+                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-bolt text-warning d-block"></i><small class="text-muted">Start Time</small><div class="fw-bold">Instant</div></div></div>
+                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-gauge-high text-info d-block"></i><small class="text-muted">Speed</small><div class="fw-bold">100k/day</div></div></div>
+                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-shield-halved text-success d-block"></i><small class="text-muted">Guarantee</small><div class="fw-bold">30 Days</div></div></div>
+                            <div class="col-6"><div class="info-box"><i class="fa-solid fa-clock text-primary d-block"></i><small class="text-muted">Average Time</small><div class="fw-bold">45 minutes</div></div></div>
                         </div>
                         <hr>
                         <div class="small">
                             <strong>More Details:</strong>
-                            <p class="text-muted mt-1" id="detailDesc">Select a service to view full specifications and instructions.</p>
+                            <p class="text-muted mt-1" id="detailDesc">Select a service to view full details.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ADD FUNDS TAB -->
+        <!-- TAB 2: ADD FUNDS (KHQR 10 MINS) -->
         <div id="tab-add-funds" style="display: none;">
             <div class="custom-card">
                 <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-qrcode me-2"></i> Bakong KHQR Deposit</h5>
@@ -163,13 +165,14 @@
                         <div id="merchantName" class="fw-bold text-secondary">SAMNANG MON</div>
                         <div id="displayAmount" class="fs-2 fw-bold text-dark">$1.00</div>
                         <img id="khqrImage" src="" class="img-fluid my-2" style="max-width: 240px;">
-                        <div class="text-muted small">Scan with Bakong or any Mobile Banking App</div>
+                        <div id="timerDisplay" class="text-danger fw-bold mt-2" style="font-size: 16px;"></div>
+                        <div class="text-muted small mt-1">Scan with Bakong or Mobile Banking App</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- TELEGRAM CONTACT TAB -->
+        <!-- TAB 3: TELEGRAM CONTACT -->
         <div id="tab-contact-admin" style="display: none;">
             <div class="custom-card text-center py-5">
                 <i class="fa-brands fa-telegram text-primary mb-3" style="font-size: 60px;"></i>
@@ -186,6 +189,7 @@
     let currentUser = null;
     let rawServicesList = [];
     let groupedCategories = {};
+    let qrTimerInterval = null;
 
     function switchForm(type) {
         document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
@@ -322,14 +326,48 @@
 
     async function generateKHQR() {
         const amount = parseFloat(document.getElementById('depositAmount').value);
-        const res = await fetch('/generate-qr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount }) });
+        if (isNaN(amount) || amount < 0.50) return alert('សូមបញ្ចូលទឹកប្រាក់យ៉ាងតិច $0.50');
+
+        const res = await fetch('/generate-qr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount })
+        });
         const data = await res.json();
+
         if (data.success) {
             document.getElementById('merchantName').innerText = data.merchantName;
             document.getElementById('displayAmount').innerText = `$${data.amount}`;
             document.getElementById('khqrImage').src = data.qrImage;
+            document.getElementById('khqrImage').style.opacity = "1";
             document.getElementById('khqrContainer').style.display = 'block';
-        } else { alert(data.message); }
+
+            if (qrTimerInterval) clearInterval(qrTimerInterval);
+            startTimer(10 * 60); // ១០ នាទី
+        } else {
+            alert(data.message);
+        }
+    }
+
+    function startTimer(duration) {
+        let timer = duration, minutes, seconds;
+        const display = document.getElementById('timerDisplay');
+
+        qrTimerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.innerHTML = `<i class="fa-regular fa-clock me-1"></i> ផុតកំណត់ក្នុងរយៈពេល: <strong>${minutes}:${seconds}</strong>`;
+
+            if (--timer < 0) {
+                clearInterval(qrTimerInterval);
+                display.innerHTML = "<span class='text-secondary'>QR Code នេះបានផុតកំណត់ហើយ! សូមបង្កើតថ្មី។</span>";
+                document.getElementById('khqrImage').style.opacity = "0.25";
+            }
+        }, 1000);
     }
 </script>
 </body>
