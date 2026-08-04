@@ -1,543 +1,193 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KhmerSMM - Web Service</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --brand-blue: #0d6efd;
-            --sidebar-dark: #121929;
-            --sidebar-card: #1e293b;
-            --bg-gray: #f4f6f9;
-        }
-        
-        body { background-color: var(--bg-gray); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; }
-        
-        /* Top Navigation Header Bar */
-        .top-navbar { background-color: var(--brand-blue); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .top-navbar .logo { font-size: 20px; font-weight: 900; letter-spacing: 0.5px; }
-        .top-nav-icons { display: flex; gap: 10px; }
-        .top-nav-icons .icon-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 14px; }
-        .top-nav-icons .icon-btn:hover { background: rgba(255,255,255,0.4); }
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const axios = require('axios');
+const http = require('http');
+const { BakongKHQR, khqrData, IndividualInfo } = require('bakong-khqr');
 
-        /* Main Layout */
-        .wrapper { display: flex; min-height: calc(100vh - 54px); }
-        .sidebar { width: 250px; background: var(--sidebar-dark); color: #fff; flex-shrink: 0; padding: 15px; }
-        .main-content { flex-grow: 1; padding: 20px; }
+const app = express();
+const server = http.createServer(app);
+const PORT = process.env.PORT || 10000;
 
-        /* Sidebar User Profile Box */
-        .user-profile-card { background: var(--sidebar-card); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; position: relative; border: 1px solid rgba(255,255,255,0.05); }
-        .user-profile-card .badge-new { position: absolute; top: 10px; right: 10px; background: #ff0055; font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
-        .avatar-box { width: 65px; height: 65px; border-radius: 50%; background: #00d2ff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; }
-        
-        /* Sidebar Menu Links */
-        .sidebar-menu { display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-menu .menu-item { color: #94a3b8; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
-        .sidebar-menu .menu-item:hover, .sidebar-menu .menu-item.active { background: var(--brand-blue); color: white; }
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname)));
 
-        /* Announcement Bar */
-        .announcement { text-align: center; color: var(--brand-blue); font-weight: 600; margin-bottom: 15px; }
+// -------------------------------------------------------------
+// SMM API CONFIGURATION (ភ្ជាប់ទៅ KhmerSMM)
+// -------------------------------------------------------------
+const SMM_API_URL = 'https://khmer-smm.com/api/v2';
+const SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78'; // API Key របស់អ្នក
+let globalPriceMarginPercent = 10; // បូកចំណេញ ១០% លើតម្លៃដើម
 
-        /* Stats Bar Box */
-        .stats-box { background: white; border-radius: 10px; padding: 12px 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-weight: 600; }
+// In-Memory Database (សម្រាប់រក្សាទុកព័ត៌មានអ្នកប្រើប្រាស់)
+const users = [];
 
-        /* Platform Quick Filter Buttons */
-        .platform-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .platform-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; font-weight: 700; color: #334155; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .platform-card:hover, .platform-card.active { border-color: var(--brand-blue); color: var(--brand-blue); background: #f0f6ff; }
-
-        /* Form & Cards Styling */
-        .panel-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; height: 100%; }
-        .nav-tabs-custom { display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
-        .nav-tabs-custom .tab-btn { padding: 8px 20px; border: none; background: none; font-weight: 700; color: #64748b; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-        .nav-tabs-custom .tab-btn.active { color: var(--brand-blue); border-bottom-color: var(--brand-blue); }
-
-        /* Service Detail Items */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .info-card-item { background: #f8fafc; border-radius: 8px; padding: 12px; text-align: center; }
-        .info-card-item i { font-size: 18px; margin-bottom: 4px; }
-
-        /* KHQR Box */
-        .khqr-box { max-width: 320px; margin: 0 auto; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .khqr-header { background: #e61b23; color: white; font-weight: 900; font-size: 20px; padding: 10px; }
-
-        /* Floating Widget */
-        .chat-widget { position: fixed; bottom: 20px; right: 20px; background: white; border-radius: 30px; padding: 8px 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid #e2e8f0; z-index: 999; }
-        .chat-btn { width: 40px; height: 40px; border-radius: 50%; background: #0088cc; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    </style>
-</head>
-<body>
-
-<!-- TOP NAVBAR -->
-<div class="top-navbar">
-    <div class="d-flex align-items-center gap-3">
-        <div class="logo"><i class="fa-solid fa-cloud-bolt me-1"></i> KHMER SMM</div>
-    </div>
-    <div class="top-nav-icons">
-        <a href="#" class="icon-btn" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-        <a href="#" class="icon-btn" onclick="showTab('add-funds')" title="Deposit"><i class="fa-solid fa-dollar-sign"></i></a>
-        <a href="#" class="icon-btn" onclick="showTab('contact-admin')" title="Support"><i class="fa-solid fa-headset"></i></a>
-        <a href="#" class="icon-btn" title="Profile"><i class="fa-solid fa-user"></i></a>
-    </div>
-</div>
-
-<!-- AUTH CONTAINER -->
-<div id="auth-section" class="container py-5" style="max-width: 420px;">
-    <div class="panel-card shadow-sm text-center">
-        <h4 class="fw-bold text-primary mb-4">KhmerSMM Login</h4>
-        <div class="nav nav-pills nav-justified mb-3">
-            <button class="nav-link active" onclick="switchForm('login')">Sign In</button>
-            <button class="nav-link" onclick="switchForm('register')">Sign Up</button>
-        </div>
-        <div id="login-form">
-            <input type="text" id="login-key" class="form-control mb-3" placeholder="Username / Email">
-            <input type="password" id="login-pass" class="form-control mb-3" placeholder="Password">
-            <button class="btn btn-primary w-100 fw-bold" onclick="handleLogin()">Sign In</button>
-        </div>
-        <div id="register-form" style="display: none;">
-            <input type="text" id="reg-user" class="form-control mb-3" placeholder="Username">
-            <input type="email" id="reg-email" class="form-control mb-3" placeholder="Email">
-            <input type="password" id="reg-pass" class="form-control mb-3" placeholder="Password">
-            <button class="btn btn-primary w-100 fw-bold" onclick="handleRegister()">Sign Up</button>
-        </div>
-    </div>
-</div>
-
-<!-- MAIN DASHBOARD -->
-<div id="dashboard-section" class="wrapper" style="display: none;">
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <div class="user-profile-card">
-            <span class="badge-new">NEW</span>
-            <div class="avatar-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" style="width: 50px;" alt="Avatar">
-            </div>
-            <div class="small text-muted mb-1">Balance: <strong class="text-success" id="sidebarBalance">$0.000000</strong></div>
-            <div class="fw-bold text-white" id="sidebarUser">User</div>
-        </div>
-
-        <div class="sidebar-menu">
-            <a class="menu-item active" onclick="showTab('new-order', this)"><i class="fa-solid fa-cart-shopping"></i> New order</a>
-            <a class="menu-item" onclick="showTab('add-funds', this)"><i class="fa-solid fa-wallet"></i> Add funds</a>
-            <a class="menu-item" onclick="showTab('contact-admin', this)"><i class="fa-brands fa-telegram"></i> Support Chat</a>
-            <a class="menu-item text-danger mt-4" onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-        <div class="announcement">
-            <i class="fa-solid fa-lock me-1"></i> ប្រព័ន្ធផ្ញើកាតឡើងវិញដោយស្វ័យប្រវត្តិ 🔒
-        </div>
-
-        <!-- TOP STATS BAR -->
-        <div class="stats-box">
-            <div>You are currently on: <span class="text-primary fw-bold" id="currentPageName">New order</span></div>
-            <div>Panel Orders: <span class="text-primary">3731360</span></div>
-            <div>My Orders: <span class="text-primary" id="topOrders">0</span></div>
-            <div>Total Spend: <span class="text-primary" id="topSpend">$0.0</span></div>
-            <div>Welcome <span class="text-primary" id="topUser">User</span> Your Balance is : <span class="text-success fw-bold" id="topBalance">$0.000000</span></div>
-        </div>
-
-        <!-- TAB: NEW ORDER -->
-        <div id="tab-new-order">
-            <!-- Platform Quick Filters -->
-            <div class="platform-grid">
-                <div class="platform-card active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-border-all text-primary"></i> Everythings</div>
-                <div class="platform-card" onclick="filterPlatform('TikTok', this)"><i class="fa-brands fa-tiktok text-dark"></i> TikTok</div>
-                <div class="platform-card" onclick="filterPlatform('Facebook', this)"><i class="fa-brands fa-facebook text-primary"></i> Facebook</div>
-                <div class="platform-card" onclick="filterPlatform('Facebook Live', this)"><i class="fa-brands fa-facebook text-danger"></i> Facebook Live</div>
-                <div class="platform-card" onclick="filterPlatform('YouTube', this)"><i class="fa-brands fa-youtube text-danger"></i> YouTube</div>
-                <div class="platform-card" onclick="filterPlatform('Telegram', this)"><i class="fa-brands fa-telegram text-info"></i> Telegram</div>
-                <div class="platform-card" onclick="filterPlatform('Instagram', this)"><i class="fa-brands fa-instagram text-warning"></i> Instagram</div>
-                <div class="platform-card" onclick="filterPlatform('Traffic', this)"><i class="fa-solid fa-globe text-secondary"></i> Website Traffic</div>
-            </div>
-
-            <div class="row g-3">
-                <!-- Left Form Section -->
-                <div class="col-lg-7">
-                    <div class="panel-card">
-                        <div class="nav-tabs-custom">
-                            <button class="tab-btn active" id="btnSingleOrder" onclick="toggleOrderType('single')"><i class="fa-solid fa-cart-plus me-1"></i> New Order</button>
-                            <button class="tab-btn" id="btnMassOrder" onclick="toggleOrderType('mass')"><i class="fa-solid fa-star me-1"></i> Mass order</button>
-                        </div>
-
-                        <!-- Single Order Form -->
-                        <div id="singleOrderBox">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold"><i class="fa-solid fa-magnifying-glass me-1 text-muted"></i> Search</label>
-                                <input type="text" id="searchInput" class="form-control" placeholder="Search service..." oninput="filterServicesBySearch()">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold"><i class="fa-solid fa-list me-1 text-primary"></i> Category</label>
-                                <select id="categorySelect" class="form-select" onchange="onCategoryChange()"></select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold"><i class="fa-solid fa-gear me-1 text-primary"></i> Service</label>
-                                <select id="serviceSelect" class="form-select" onchange="onServiceChange()"></select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Link</label>
-                                <input type="text" id="orderLink" class="form-control" placeholder="https://...">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Quantity</label>
-                                <input type="number" id="orderQuantity" class="form-control" placeholder="1000" oninput="calculateCharge()">
-                                <small class="text-muted" id="minMaxText">Min: 50 - Max: 1,000,000</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Average time <i class="fa-regular fa-circle-question text-muted"></i></label>
-                                <input type="text" id="avgTimeDisplay" class="form-control bg-light" readonly value="45 minutes">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Charge ($)</label>
-                                <input type="text" id="orderCharge" class="form-control bg-light fw-bold text-primary" readonly value="$0.0000">
-                            </div>
-
-                            <button class="btn btn-primary w-100 fw-bold py-2 mt-2" onclick="submitOrder()">Submit Order</button>
-                        </div>
-
-                        <!-- Mass Order Form -->
-                        <div id="massOrderBox" style="display: none;">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">One order per line in format:</label>
-                                <textarea id="massOrderInput" class="form-control" rows="8" placeholder="service_id|quantity|link&#10;service_id|quantity|link"></textarea>
-                            </div>
-                            <button class="btn btn-primary w-100 fw-bold py-2" onclick="alert('Mass order processed!')">Submit Mass Orders</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Service Details Section -->
-                <div class="col-lg-5">
-                    <div class="panel-card">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold mb-0 text-primary"><i class="fa-solid fa-circle-info me-1"></i> Service details</h6>
-                            <div class="input-group input-group-sm" style="width: 180px;">
-                                <input type="text" class="form-control" placeholder="Search For orders">
-                                <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <small class="fw-bold text-muted d-block mb-1">Example Link</small>
-                            <div class="p-2 bg-light rounded text-danger small"><i class="fa-solid fa-link me-1"></i> <span id="detailLink">https://facebook.com/profile</span></div>
-                        </div>
-
-                        <div class="info-grid">
-                            <div class="info-card-item">
-                                <i class="fa-solid fa-bolt text-info"></i>
-                                <div class="small text-muted">Start Time</div>
-                                <div class="fw-bold text-dark" id="detailStart">Instant</div>
-                            </div>
-                            <div class="info-card-item">
-                                <i class="fa-solid fa-gauge-high text-purple" style="color: #8b5cf6;"></i>
-                                <div class="small text-muted">Speed</div>
-                                <div class="fw-bold text-dark" id="detailSpeed">100k/day</div>
-                            </div>
-                            <div class="info-card-item">
-                                <i class="fa-solid fa-arrows-rotate text-success"></i>
-                                <div class="small text-muted">Guarantee</div>
-                                <div class="fw-bold text-dark" id="detailGuarantee">30 Days</div>
-                            </div>
-                            <div class="info-card-item">
-                                <i class="fa-solid fa-clock text-primary"></i>
-                                <div class="small text-muted">Avarage Time</div>
-                                <div class="fw-bold text-dark" id="detailAvg">45 minutes</div>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="small">
-                            <strong class="d-block mb-2">More Details</strong>
-                            <div class="text-muted" id="detailDesc">
-                                Link: Profile / Page Url<br>
-                                Start: Instant<br>
-                                Speed: High Speed<br>
-                                Quality: Global Real Accounts
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: ADD FUNDS (KHQR 10 MINS) -->
-        <div id="tab-add-funds" style="display: none;">
-            <div class="panel-card text-center py-4">
-                <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-qrcode me-2"></i> Bakong KHQR Deposit</h5>
-                <div class="input-group mb-3 mx-auto" style="max-width: 350px;">
-                    <span class="input-group-text">$</span>
-                    <input type="number" id="depositAmount" class="form-control" value="1.00" min="0.50" step="0.01">
-                    <button class="btn btn-danger fw-bold" onclick="generateKHQR()">Generate QR</button>
-                </div>
-                
-                <div id="khqrContainer" style="display: none;" class="mt-4">
-                    <div class="khqr-box p-3">
-                        <div class="khqr-header mb-3">KHQR</div>
-                        <div id="merchantName" class="fw-bold text-secondary">SAMNANG MON</div>
-                        <div id="displayAmount" class="fs-2 fw-bold text-dark">$1.00</div>
-                        <img id="khqrImage" src="" class="img-fluid my-2" style="max-width: 220px;">
-                        <div id="timerDisplay" class="text-danger fw-bold mt-2"></div>
-                        <div class="text-muted small mt-1">Scan with Bakong or Mobile Banking App</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: TELEGRAM CONTACT -->
-        <div id="tab-contact-admin" style="display: none;">
-            <div class="panel-card text-center py-5">
-                <i class="fa-brands fa-telegram text-primary mb-3" style="font-size: 70px;"></i>
-                <h4 class="fw-bold">Contact Support</h4>
-                <p class="text-muted">Need help with your orders or account balance? Chat with us directly.</p>
-                <a href="https://t.me/your_telegram_username" target="_blank" class="btn btn-primary fw-bold px-4 py-2 rounded-pill"><i class="fa-brands fa-telegram me-2"></i> Open Telegram Chat</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Floating Help Widget -->
-<div class="chat-widget" onclick="showTab('contact-admin')">
-    <div class="small fw-bold text-secondary">Need help? Tap to chat with us.</div>
-    <div class="chat-btn"><i class="fa-brands fa-telegram"></i></div>
-</div>
-
-<script>
-    let currentUser = null;
-    let rawServicesList = [];
-    let groupedCategories = {};
-    let qrTimerInterval = null;
-
-    function switchForm(type) {
-        document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
-        document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
+// -------------------------------------------------------------
+// 1. AUTHENTICATION ROUTES (ការចុះឈ្មោះ និង Login)
+// -------------------------------------------------------------
+app.post('/api/register', (req, res) => {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).json({ success: false, message: 'សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!' });
     }
 
-    function showTab(tabName, elem) {
-        document.getElementById('tab-new-order').style.display = tabName === 'new-order' ? 'block' : 'none';
-        document.getElementById('tab-add-funds').style.display = tabName === 'add-funds' ? 'block' : 'none';
-        document.getElementById('tab-contact-admin').style.display = tabName === 'contact-admin' ? 'block' : 'none';
-        
-        document.getElementById('currentPageName').innerText = tabName === 'new-order' ? 'New order' : (tabName === 'add-funds' ? 'Add funds' : 'Support');
+    const existingUser = users.find(u => 
+        u.username.toLowerCase() === username.trim().toLowerCase() || 
+        u.email.toLowerCase() === email.trim().toLowerCase()
+    );
 
-        if (elem) {
-            document.querySelectorAll('.sidebar-menu .menu-item').forEach(m => m.classList.remove('active'));
-            elem.classList.add('active');
-        }
+    if (existingUser) {
+        return res.status(400).json({ success: false, message: 'Username ឬ Email នេះមានគេប្រើរួចហើយ!' });
     }
 
-    function toggleOrderType(type) {
-        document.getElementById('btnSingleOrder').classList.toggle('active', type === 'single');
-        document.getElementById('btnMassOrder').classList.toggle('active', type === 'mass');
-        document.getElementById('singleOrderBox').style.display = type === 'single' ? 'block' : 'none';
-        document.getElementById('massOrderBox').style.display = type === 'mass' ? 'block' : 'none';
+    const newUser = { 
+        id: Date.now(), 
+        username: username.trim(), 
+        email: email.trim().toLowerCase(), 
+        password, 
+        balance: 0.00, 
+        myOrders: 0, 
+        totalSpend: 0.00 
+    };
+    users.push(newUser);
+    return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូម Sign In ដើម្បីចូលប្រើប្រាស់' });
+});
+
+app.post('/api/login', (req, res) => {
+    const { loginKey, password } = req.body;
+    const inputKey = (loginKey || '').trim().toLowerCase();
+    
+    const user = users.find(u => (u.email.toLowerCase() === inputKey || u.username.toLowerCase() === inputKey) && u.password === password);
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'ឈ្មោះ/អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!' });
     }
 
-    async function handleRegister() {
-        const username = document.getElementById('reg-user').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-pass').value;
-        const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
-        const data = await res.json();
-        alert(data.message);
-        if (data.success) switchForm('login');
-    }
+    return res.json({ success: true, message: 'ចូលប្រើប្រាស់ជោគជ័យ!', user });
+});
 
-    async function handleLogin() {
-        const loginKey = document.getElementById('login-key').value;
-        const password = document.getElementById('login-pass').value;
-        const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ loginKey, password }) });
-        const data = await res.json();
-        if (data.success) {
-            currentUser = data.user;
-            document.getElementById('sidebarUser').innerText = currentUser.username;
-            document.getElementById('topUser').innerText = currentUser.username;
-            document.getElementById('sidebarBalance').innerText = `$${currentUser.balance.toFixed(6)}`;
-            document.getElementById('topBalance').innerText = `$${currentUser.balance.toFixed(6)}`;
-            document.getElementById('topOrders').innerText = currentUser.myOrders;
-            document.getElementById('topSpend').innerText = `$${currentUser.totalSpend.toFixed(1)}`;
-            
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('dashboard-section').style.display = 'flex';
-            fetchApiServices();
-        } else { alert(data.message); }
-    }
+// -------------------------------------------------------------
+// 2. SMM SERVICES API (ទាញយកសេវាកម្មពិតពី KhmerSMM + បូកភាគរយចំណេញ)
+// -------------------------------------------------------------
+app.get('/api/services', async (req, res) => {
+    try {
+        const response = await axios.post(SMM_API_URL, new URLSearchParams({
+            key: SMM_API_KEY,
+            action: 'services'
+        }));
 
-    async function fetchApiServices() {
-        const res = await fetch('/api/services');
-        const data = await res.json();
-        if (data.success) {
-            rawServicesList = data.services;
-            filterPlatform('All');
-        }
-    }
-
-    function filterPlatform(platform, btnElem) {
-        if (btnElem) {
-            document.querySelectorAll('.platform-card').forEach(b => b.classList.remove('active'));
-            btnElem.classList.add('active');
-        }
-
-        groupedCategories = {};
-        rawServicesList.forEach(item => {
-            const cat = item.category || 'Other';
-            if (platform === 'All' || cat.toLowerCase().includes(platform.toLowerCase())) {
-                if (!groupedCategories[cat]) groupedCategories[cat] = [];
-                groupedCategories[cat].push(item);
-            }
-        });
-
-        const catSelect = document.getElementById('categorySelect');
-        catSelect.innerHTML = '';
-        Object.keys(groupedCategories).forEach(cat => {
-            let opt = document.createElement('option');
-            opt.value = cat;
-            opt.innerText = cat;
-            catSelect.appendChild(opt);
-        });
-        onCategoryChange();
-    }
-
-    function filterServicesBySearch() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        if (!query) return filterPlatform('All');
-
-        const serviceSelect = document.getElementById('serviceSelect');
-        serviceSelect.innerHTML = '';
-        rawServicesList.forEach(s => {
-            if (s.name.toLowerCase().includes(query) || s.service.toString().includes(query)) {
-                let opt = document.createElement('option');
-                opt.value = s.service;
-                opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
-                opt.setAttribute('data-rate', s.rate);
-                opt.setAttribute('data-min', s.min || 10);
-                opt.setAttribute('data-max', s.max || 1000000);
-                serviceSelect.appendChild(opt);
-            }
-        });
-        onServiceChange();
-    }
-
-    function onCategoryChange() {
-        const catValue = document.getElementById('categorySelect').value;
-        const serviceSelect = document.getElementById('serviceSelect');
-        serviceSelect.innerHTML = '';
-        (groupedCategories[catValue] || []).forEach(s => {
-            let opt = document.createElement('option');
-            opt.value = s.service;
-            opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
-            opt.setAttribute('data-rate', s.rate);
-            opt.setAttribute('data-min', s.min || 10);
-            opt.setAttribute('data-max', s.max || 1000000);
-            serviceSelect.appendChild(opt);
-        });
-        onServiceChange();
-    }
-
-    function onServiceChange() {
-        const opt = document.getElementById('serviceSelect').selectedOptions[0];
-        if (!opt) return;
-        document.getElementById('minMaxText').innerText = `Min: ${opt.getAttribute('data-min')} - Max: ${parseInt(opt.getAttribute('data-max')).toLocaleString()}`;
-        
-        // Update Service Details Card dynamically
-        const serviceId = opt.value;
-        const selectedObj = rawServicesList.find(s => s.service == serviceId);
-        if (selectedObj) {
-            document.getElementById('detailDesc').innerText = selectedObj.type ? `Type: ${selectedObj.type}` : 'Real Active Accounts - Instant Processing';
-        }
-        calculateCharge();
-    }
-
-    function calculateCharge() {
-        const opt = document.getElementById('serviceSelect').selectedOptions[0];
-        if (!opt) return;
-        const rate = parseFloat(opt.getAttribute('data-rate')) || 0;
-        const qty = parseInt(document.getElementById('orderQuantity').value) || 0;
-        document.getElementById('orderCharge').value = `$${(rate * (qty / 1000)).toFixed(4)}`;
-    }
-
-    async function submitOrder() {
-        const serviceId = document.getElementById('serviceSelect').value;
-        const link = document.getElementById('orderLink').value;
-        const quantity = document.getElementById('orderQuantity').value;
-        const chargeStr = document.getElementById('orderCharge').value.replace('$', '');
-
-        if (!link || !quantity) return alert('សូមបញ្ចូល Link និង Quantity!');
-
-        const res = await fetch('/api/order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: currentUser.username, service: serviceId, link, quantity, charge: chargeStr })
-        });
-        const data = await res.json();
-        alert(data.message);
-        if (data.success) {
-            currentUser.balance = data.newBalance;
-            currentUser.myOrders = data.myOrders;
-            currentUser.totalSpend = data.totalSpend;
-            document.getElementById('sidebarBalance').innerText = `$${currentUser.balance.toFixed(6)}`;
-            document.getElementById('topBalance').innerText = `$${currentUser.balance.toFixed(6)}`;
-            document.getElementById('topOrders').innerText = currentUser.myOrders;
-            document.getElementById('topSpend').innerText = `$${currentUser.totalSpend.toFixed(1)}`;
-        }
-    }
-
-    async function generateKHQR() {
-        const amount = parseFloat(document.getElementById('depositAmount').value);
-        if (isNaN(amount) || amount < 0.50) return alert('សូមបញ្ចូលទឹកប្រាក់យ៉ាងតិច $0.50');
-
-        const res = await fetch('/generate-qr', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount })
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            document.getElementById('merchantName').innerText = data.merchantName;
-            document.getElementById('displayAmount').innerText = `$${data.amount}`;
-            document.getElementById('khqrImage').src = data.qrImage;
-            document.getElementById('khqrImage').style.opacity = "1";
-            document.getElementById('khqrContainer').style.display = 'block';
-
-            if (qrTimerInterval) clearInterval(qrTimerInterval);
-            startTimer(10 * 60); // ១០ នាទី
+        if (Array.isArray(response.data)) {
+            // កែច្នៃតម្លៃដោយបូក Margin % ដែលបានកំណត់
+            const servicesWithMargin = response.data.map(item => {
+                const originalRate = parseFloat(item.rate) || 0;
+                const finalRate = originalRate + (originalRate * (globalPriceMarginPercent / 100));
+                return {
+                    ...item,
+                    rate: finalRate.toFixed(4)
+                };
+            });
+            return res.json({ success: true, services: servicesWithMargin });
         } else {
-            alert(data.message);
+            return res.status(400).json({ success: false, message: 'មិនអាចទាញយកសេវាកម្មបានទេ!' });
         }
+    } catch (error) {
+        console.error('Fetch Services Error:', error.message);
+        return res.status(500).json({ success: false, message: 'Server Error ក្នុងការទាញយក Services' });
     }
+});
 
-    function startTimer(duration) {
-        let timer = duration, minutes, seconds;
-        const display = document.getElementById('timerDisplay');
+// -------------------------------------------------------------
+// 3. ORDER SUBMISSION API (បង្កើត Order ពិតប្រាកដទៅ KhmerSMM)
+// -------------------------------------------------------------
+app.post('/api/order', async (req, res) => {
+    try {
+        const { username, service, link, quantity, charge } = req.body;
+        
+        const user = users.find(u => u.username === username || u.email === username);
+        if (!user) {
+            return res.status(403).json({ success: false, message: 'សូមចូលប្រើប្រាស់ប្រព័ន្ធជាមុនសិន!' });
+        }
 
-        qrTimerInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
+        const parsedCharge = parseFloat(charge) || 0;
+        if (user.balance < parsedCharge) {
+            return res.status(400).json({ success: false, message: 'ទឹកប្រាក់ក្នុងគណនីមិនគ្រប់គ្រាន់ទេ! សូមបញ្ចូលប្រាក់បន្ថែម។' });
+        }
 
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
+        // បញ្ជូន Order ទៅកាន់ KhmerSMM Main Provider API
+        const apiRes = await axios.post(SMM_API_URL, new URLSearchParams({
+            key: SMM_API_KEY,
+            action: 'add',
+            service: service,
+            link: link,
+            quantity: quantity
+        }));
 
-            display.innerHTML = `<i class="fa-regular fa-clock me-1"></i> QR ផុតកំណត់ក្នុងរយៈពេល: <strong>${minutes}:${seconds}</strong>`;
+        if (apiRes.data && apiRes.data.order) {
+            // កាត់លុយចេញពីគណនី និងកត់ត្រា Order
+            user.balance -= parsedCharge;
+            user.totalSpend += parsedCharge;
+            user.myOrders += 1;
 
-            if (--timer < 0) {
-                clearInterval(qrTimerInterval);
-                display.innerHTML = "<span class='text-secondary'>QR Code នេះបានផុតកំណត់ហើយ! សូមបង្កើតថ្មី។</span>";
-                document.getElementById('khqrImage').style.opacity = "0.2";
-            }
-        }, 1000);
+            return res.json({
+                success: true,
+                message: `បញ្ជាទិញជោគជ័យ! Order ID: ${apiRes.data.order}`,
+                newBalance: user.balance,
+                myOrders: user.myOrders,
+                totalSpend: user.totalSpend
+            });
+        } else {
+            return res.status(400).json({ 
+                success: false, 
+                message: apiRes.data.error || 'មានបញ្ហាក្នុងការបង្កើត Order ទៅកាន់ Provider!' 
+            });
+        }
+    } catch (error) {
+        console.error('Submit Order Error:', error.message);
+        return res.status(500).json({ success: false, message: 'Server Error ក្នុងការបញ្ជូន Order' });
     }
-</script>
-</body>
-</html>
+});
+
+// -------------------------------------------------------------
+// 4. BAKONG KHQR GENERATOR (១០ នាទី Expiration)
+// -------------------------------------------------------------
+app.post('/generate-qr', (req, res) => {
+    try {
+        const { amount } = req.body;
+        const parsedAmount = parseFloat(amount);
+        if (isNaN(parsedAmount) || parsedAmount < 0.50) {
+            return res.status(400).json({ success: false, message: 'ចំនួនទឹកប្រាក់យ៉ាងតិច $0.50' });
+        }
+
+        const expirationTime = Date.now() + (10 * 60 * 1000); // កំណត់ ១០ នាទី
+
+        const optionalData = {
+            currency: khqrData.currency.usd,
+            amount: parsedAmount,
+            mobileNumber: '85590217653',
+            storeLabel: 'KhmerSMM',
+            terminalLabel: 'Deposit',
+            billNumber: 'INV-' + Date.now().toString().slice(-6),
+            expirationTimestamp: expirationTime
+        };
+
+        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'SAMNANG MON', 'Phnom Penh', optionalData);
+        const khqr = new BakongKHQR();
+        const response = khqr.generateIndividual(individualInfo);
+
+        if (response && response.data && response.data.qr) {
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(response.data.qr)}`;
+            return res.json({ 
+                success: true, 
+                qrImage: qrImageUrl, 
+                amount: parsedAmount.toFixed(2), 
+                merchantName: 'SAMNANG MON' 
+            });
+        }
+        return res.status(400).json({ success: false, message: 'មិនអាចបង្កើត KHQR បានទេ' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error!' });
+    }
+});
+
+server.listen(PORT, () => console.log(`KhmerSMM Engine active on port ${PORT}`));
