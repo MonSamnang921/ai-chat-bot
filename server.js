@@ -1,15 +1,16 @@
 const express = require('express');
 const cors = require('cors');
-const { KHQR, BakongKHQR } = require('bakong-khqr');
+const path = require('path');
+const { BakongKHQR, khqrData, IndividualInfo } = require('bakong-khqr');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.')); // សម្រាប់ឱ្យ Server រកឃើញ index.html
+app.use(express.static(path.join(__dirname)));
 
-// Database បណ្តោះអាសន្នសម្រាប់ទុកគណនី (In-memory storage)
+// Database បណ្តោះអាសន្នសម្រាប់ទុកគណនី
 const users = [];
 
 // ------------------- API AUTHENTICATION -------------------
@@ -30,7 +31,6 @@ app.post('/api/register', (req, res) => {
     const newUser = { username, email, password };
     users.push(newUser);
 
-    console.log('User registered:', newUser);
     return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូមចូលប្រើប្រាស់ (Sign In)' });
 });
 
@@ -53,43 +53,47 @@ app.post('/api/login', (req, res) => {
 
 // ------------------- API KHQR GENERATOR -------------------
 
-app.post('/generate-qr', async (req, res) => {
+app.post('/generate-qr', (req, res) => {
     try {
-        const { amount } = req.body;
-        const bakongKhqr = new BakongKHQR();
-        
+        const { amount, service } = req.body;
+        const parsedAmount = parseFloat(amount) || 0.50;
+        const expirationTime = Date.now() + 10 * 60 * 1000;
+
         const optionalData = {
-            currency: KHQR.currency.usd,
-            amount: parseFloat(amount) || 1.00,
-            mobileNumber: "85512345678",
-            storeLabel: "KhmerSMM",
-            terminalLabel: "Online Store",
-            expirationTimestamp: Date.now() + (10 * 60 * 1000) // ពន្យារពេល 10 នាទី
+            currency: khqrData.currency.usd,
+            amount: parsedAmount,
+            mobileNumber: '85590217653',
+            storeLabel: 'KhmerSMM',
+            terminalLabel: service ? String(service).substring(0, 25) : 'Service',
+            billNumber: 'INV-' + Date.now().toString().slice(-6),
+            expirationTimestamp: expirationTime
         };
 
-        const individualInfo = new KHQR.IndividualInfo(
-            "mon_samnang@bkrt",
-            "MON SAMNANG",
-            "PHNOM PENH",
+        const individualInfo = new IndividualInfo(
+            'mon_samnang@bkrt',
+            'SAMNANG MON',
+            'Phnom Penh',
             optionalData
         );
 
-        const khqrData = bakongKhqr.generateIndividual(individualInfo);
+        const khqr = new BakongKHQR();
+        const response = khqr.generateIndividual(individualInfo);
 
-        if (khqrData && khqrData.data) {
-            const qrImageBase64 = await bakongKhqr.generateDataDataUrl(khqrData.data.qr);
+        if (response && response.data && response.data.qr) {
+            const qrText = response.data.qr;
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrText)}`;
+
             return res.json({
                 success: true,
-                qrCode: khqrData.data.qr,
-                qrImage: qrImageBase64,
-                md5: khqrData.data.md5
+                qrImage: qrImageUrl,
+                md5: response.data.md5
             });
         } else {
-            return res.status(500).json({ success: false, message: "មិនអាចបង្កើត KHQR បានទេ" });
+            return res.status(400).json({ success: false, message: 'មិនអាចបង្កើត KHQR បានទេ' });
         }
     } catch (error) {
-        console.error("KHQR Error:", error);
-        return res.status(500).json({ success: false, message: error.message });
+        console.error('KHQR Error:', error);
+        return res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
     }
 });
 
