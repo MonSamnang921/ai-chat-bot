@@ -21,10 +21,8 @@ const SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78';
 
 let globalPricePercentage = 10;
 
-// Admin Account: 090217653 / 090217653
-const users = [
-    { id: 1, username: '090217653', email: '090217653', password: '090217653', balance: 1000.00, role: 'admin', isBlocked: false, myOrders: 0, totalSpend: 0.00 }
-];
+// User List (In-Memory Storage)
+const users = [];
 
 // ------------------- AUTHENTICATION -------------------
 
@@ -39,7 +37,7 @@ app.post('/api/register', (req, res) => {
         return res.status(400).json({ success: false, message: 'Username ឬ Email នេះមានគេចុះឈ្មោះរួចហើយ!' });
     }
 
-    const newUser = { id: Date.now(), username: username.trim(), email: email.trim().toLowerCase(), password, balance: 0.00, role: 'user', isBlocked: false, myOrders: 0, totalSpend: 0.00 };
+    const newUser = { id: Date.now(), username: username.trim(), email: email.trim().toLowerCase(), password, balance: 0.00, myOrders: 0, totalSpend: 0.00 };
     users.push(newUser);
     return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូម Sign In ដើម្បីចូលប្រើប្រាស់' });
 });
@@ -51,45 +49,12 @@ app.post('/api/login', (req, res) => {
     const user = users.find(u => (u.email.toLowerCase() === inputKey || u.username.toLowerCase() === inputKey) && u.password === password);
     
     if (!user) return res.status(401).json({ success: false, message: 'ឈ្មោះ/អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!' });
-    if (user.isBlocked) return res.status(403).json({ success: false, message: 'គណនីរបស់អ្នកត្រូវបានបិទ!' });
 
     return res.json({
         success: true,
         message: 'ចូលប្រើប្រាស់ជោគជ័យ!',
-        user: { username: user.username, email: user.email, balance: user.balance, role: user.role, myOrders: user.myOrders, totalSpend: user.totalSpend }
+        user: { username: user.username, email: user.email, balance: user.balance, myOrders: user.myOrders, totalSpend: user.totalSpend }
     });
-});
-
-// ------------------- ADMIN CONTROLS -------------------
-
-app.get('/api/admin/users', (req, res) => {
-    const safeUsers = users.map(u => ({ username: u.username, email: u.email, balance: u.balance, role: u.role, isBlocked: u.isBlocked, myOrders: u.myOrders, totalSpend: u.totalSpend }));
-    return res.json({ success: true, users: safeUsers, currentPercentage: globalPricePercentage });
-});
-
-app.post('/api/admin/add-balance', (req, res) => {
-    const { email, amount } = req.body;
-    const user = users.find(u => u.email.toLowerCase() === (email || '').trim().toLowerCase() || u.username.toLowerCase() === (email || '').trim().toLowerCase());
-    if (!user) return res.status(404).json({ success: false, message: `រកមិនឃើញ User "${email}" ទេ!` });
-
-    const addAmount = parseFloat(amount) || 0;
-    user.balance += addAmount;
-    return res.json({ success: true, message: `បានបញ្ចូល $${addAmount.toFixed(2)} ទៅកាន់ ${user.username} រួចរាល់!`, newBalance: user.balance });
-});
-
-app.post('/api/admin/toggle-block', (req, res) => {
-    const { email } = req.body;
-    const user = users.find(u => u.email.toLowerCase() === (email || '').trim().toLowerCase() || u.username.toLowerCase() === (email || '').trim().toLowerCase());
-    if (!user) return res.status(404).json({ success: false, message: 'រកមិនឃើញ User នេះទេ!' });
-    if (user.role === 'admin') return res.status(400).json({ success: false, message: 'មិនអាច Block Admin បានទេ!' });
-
-    user.isBlocked = !user.isBlocked;
-    return res.json({ success: true, message: user.isBlocked ? `បានបិទ ${user.username}!` : `បានបើក ${user.username}!`, isBlocked: user.isBlocked });
-});
-
-app.post('/api/admin/set-price-margin', (req, res) => {
-    globalPricePercentage = parseFloat(req.body.percentage) || 0;
-    return res.json({ success: true, message: `បានកែប្រែភាគរយទៅ ${globalPricePercentage}% រួចរាល់!` });
 });
 
 // ------------------- BAKONG KHQR GENERATOR -------------------
@@ -114,7 +79,7 @@ app.post('/generate-qr', (req, res) => {
             expirationTimestamp: expirationTime
         };
 
-        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'KhmerSmm', 'Phnom Penh', optionalData);
+        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'SAMNANG MON', 'Phnom Penh', optionalData);
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
@@ -124,7 +89,7 @@ app.post('/generate-qr', (req, res) => {
                 success: true, 
                 qrImage: qrImageUrl, 
                 amount: parsedAmount.toFixed(2),
-                merchantName: 'SAMNANG MON',
+                merchantName: 'KhmerSmm',
                 billNo: optionalData.billNumber
             });
         } else {
@@ -155,7 +120,7 @@ app.post('/api/order', async (req, res) => {
     try {
         const { username, service, link, quantity, charge } = req.body;
         const user = users.find(u => u.username === username || u.email === username);
-        if (!user || user.isBlocked) return res.status(403).json({ success: false, message: 'Account មិនអាចដំណើរការបានទេ!' });
+        if (!user) return res.status(403).json({ success: false, message: 'Account មិនត្រឹមត្រូវទេ!' });
 
         const parsedCharge = parseFloat(charge) || 0;
         if (user.balance < parsedCharge) return res.status(400).json({ success: false, message: 'ទឹកប្រាក់មិនគ្រប់គ្រាន់ទេ!' });
