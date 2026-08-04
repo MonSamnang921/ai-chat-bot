@@ -1,13 +1,14 @@
 {
   "name": "khmersmm",
   "version": "1.0.0",
+  "description": "KhmerSMM Service with KHQR Payment",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "bakong-khqr": "^1.0.5",
-    "qrcode": "^1.5.3"
+    "bakong-khqr": "^1.0.9",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
   }
 }
