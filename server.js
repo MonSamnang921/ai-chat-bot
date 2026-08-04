@@ -33,35 +33,37 @@ const SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78';
 
 let globalPricePercentage = 10;
 
-// Admin Configured Credentials: 090217653 / កក
+// Admin Account Credentials: 090217653 / 090217653
 const users = [
-    { id: 1, username: 'Admin', email: '090217653', password: 'កក', balance: 1000.00, role: 'admin', isBlocked: false, myOrders: 0, totalSpend: 0.00 }
+    { id: 1, username: '090217653', email: '090217653', password: '090217653', balance: 1000.00, role: 'admin', isBlocked: false, myOrders: 0, totalSpend: 0.00 }
 ];
 
 // ------------------- AUTHENTICATION -------------------
 
 app.post('/api/register', (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ success: false, message: 'សូមបំពេញ អ៊ីមែល និង ពាក្យសម្ងាត់!' });
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).json({ success: false, message: 'សូមបំពេញ ឈ្មោះអ្នកប្រើ, អ៊ីមែល និង ពាក្យសម្ងាត់!' });
+    }
 
-    const existingUser = users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
-    if (existingUser) return res.status(400).json({ success: false, message: 'អ៊ីមែលនេះមានគេចុះឈ្មោះរួចហើយ!' });
+    const existingUser = users.find(u => u.username.toLowerCase() === username.trim().toLowerCase() || u.email.toLowerCase() === email.trim().toLowerCase());
+    if (existingUser) {
+        return res.status(400).json({ success: false, message: 'Username ឬ Email នេះមានគេចុះឈ្មោះរួចហើយ!' });
+    }
 
-    // បង្កើត Username ស្វ័យប្រវត្តិតាមរយៈផ្នែកខាងមុខនៃ Email
-    const username = email.split('@')[0];
-    const newUser = { id: Date.now(), username, email: email.trim().toLowerCase(), password, balance: 0.00, role: 'user', isBlocked: false, myOrders: 0, totalSpend: 0.00 };
+    const newUser = { id: Date.now(), username: username.trim(), email: email.trim().toLowerCase(), password, balance: 0.00, role: 'user', isBlocked: false, myOrders: 0, totalSpend: 0.00 };
     users.push(newUser);
-    return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូម Sign In ដោយប្រើប្រាស់អ៊ីមែលរបស់អ្នក' });
+    return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូម Sign In ដើម្បីចូលប្រើប្រាស់' });
 });
 
 app.post('/api/login', (req, res) => {
-    const { email, password } = req.body;
-    const inputKey = (email || '').trim().toLowerCase();
+    const { loginKey, password } = req.body;
+    const inputKey = (loginKey || '').trim().toLowerCase();
 
-    // ឆែកមើលការ Login ទាំងភ្ញៀវ (Email) និង Admin (090217653)
+    // ឆែកមើលការ Login តាម Username / Email របស់ភ្ញៀវ និង 090217653 របស់ Admin
     const user = users.find(u => (u.email.toLowerCase() === inputKey || u.username.toLowerCase() === inputKey) && u.password === password);
     
-    if (!user) return res.status(401).json({ success: false, message: 'អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!' });
+    if (!user) return res.status(401).json({ success: false, message: 'ឈ្មោះ/អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!' });
     if (user.isBlocked) return res.status(403).json({ success: false, message: 'គណនីរបស់អ្នកត្រូវ បានបិទ!' });
 
     return res.json({
@@ -134,7 +136,7 @@ app.post('/generate-qr', (req, res) => {
             expirationTimestamp: expirationTime
         };
 
-        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'SAMNANG MON', 'Phnom Penh', optionalData);
+        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'KhmerSmm', 'Phnom Penh', optionalData);
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
