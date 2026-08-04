@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { BakongKHQR } = require('bakong-khqr');
+const { BakongKHQR, khqrData, IndividualInfo } = require('bakong-khqr');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,34 +8,38 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// បម្រើទំព័រដើម HTML
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// API សម្រាប់បង្កើត KHQR Code
 app.post('/generate-qr', (req, res) => {
     try {
         const { amount } = req.body;
 
         const optionalData = {
-            currency: 'USD',
+            currency: khqrData.currency.usd,
             amount: parseFloat(amount) || 1.00,
-            mobileNumber: '85512345678', // អាចប្តូរតាមលេខទូរស័ព្ទគណនីបាគងរបស់អ្នក
+            mobileNumber: '85590217653',
             storeLabel: 'KhmerSMM Store',
-            terminalLabel: 'Online Web',
-            billNumber: 'INV-' + Date.now()
+            terminalLabel: 'Online Web'
         };
 
-        // បង្កើតទិន្នន័យ KHQR តាមរយៈ Instance របស់ BakongKHQR
-        const khqr = new BakongKHQR();
-        const khqrResponse = khqr.generateIndividual(optionalData);
+        // ដាក់ឈ្មោះបង្ហាញថា KhmerSMM
+        const individualInfo = new IndividualInfo(
+            'mon_samnang@bkrt',
+            'KhmerSMM',
+            'Phnom Penh',
+            optionalData
+        );
 
-        if (khqrResponse && khqrResponse.data) {
+        const khqr = new BakongKHQR();
+        const response = khqr.generateIndividual(individualInfo);
+
+        if (response && response.data && response.data.qr) {
             return res.json({
                 success: true,
-                qrImage: khqrResponse.data.qr,
-                md5: khqrResponse.data.md5
+                qrImage: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(response.data.qr)}`,
+                md5: response.data.md5
             });
         } else {
             return res.status(400).json({
@@ -44,10 +48,10 @@ app.post('/generate-qr', (req, res) => {
             });
         }
     } catch (error) {
-        console.error('KHQR Generation Error:', error);
+        console.error('KHQR Error:', error);
         return res.status(500).json({
             success: false,
-            message: 'មានបញ្ហាបច្ចេកទេសក្នុង Server: ' + error.message
+            message: 'Error: ' + error.message
         });
     }
 });
