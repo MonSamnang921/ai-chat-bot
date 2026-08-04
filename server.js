@@ -1,4 +1,13 @@
+const express = require('express');
+const app = express(); // 👈 ប្រកាស app នៅលើគេបែបនេះ
+
+app.use(express.json());
+app.use(express.static(__dirname)); // 👈 សម្រាប់ឱ្យដើរ admin.html
+
+// ... កូដចាស់ៗរបស់បងទាំងអស់នៅកណ្តាលនេះ ...
+
 // ================= ADMIN ADD/DEDUCT BALANCE ================= //
+// 👈 យកកូដ API មកដាក់នៅខាងក្រោមនេះ (ក្រោម app និងក្រោម users array)
 app.post('/api/admin/update-balance', (req, res) => {
     const { username, amount, type, adminKey } = req.body;
 
@@ -32,4 +41,10 @@ app.post('/api/admin/update-balance', (req, res) => {
         username: user.username,
         newBalance: user.balance
     });
+});
+
+// 👈 ដាក់ app.listen នៅក្រោមគេបង្អស់
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
