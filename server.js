@@ -150,7 +150,7 @@ app.post('/generate-qr', (req, res) => {
             expirationTimestamp: expirationTime
         };
 
-        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'SAMNANG MON', 'Phnom Penh', optionalData);
+        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'KhmerSmm', 'Phnom Penh', optionalData);
         const khqr = new BakongKHQR();
         const response = khqr.generateIndividual(individualInfo);
 
