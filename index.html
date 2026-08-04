@@ -3,32 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KhmerSMM - Social Media Panel</title>
+    <title>KhmerSMM - Dynamic SMM Panel</title>
+    <!-- Bootstrap 5 CSS & FontAwesome Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f4f7f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Khmer OS Battambang", sans-serif; min-height: 100vh; padding: 15px 10px; }
         .auth-card, .app-container { max-width: 600px; margin: 10px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 25px; }
         
-        /* Account Stats Header Bar Design */
         .account-stats-bar { width: 100%; background-color: #ffffff; border-radius: 8px; padding: 12px 15px; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 13px; color: #333333; margin-bottom: 20px; border: 1px solid #eef0f2; }
         .highlight-blue { color: #0066ff; font-weight: 700; }
 
-        /* Buttons & Forms */
         .btn-submit { background-color: #0d6efd; color: #fff; font-weight: bold; border-radius: 8px; width: 100%; padding: 12px; border: none; }
         .btn-submit:hover { background-color: #0b5ed7; }
         .nav-pills .nav-link { color: #555; font-weight: 600; border-radius: 8px; }
         .nav-pills .nav-link.active { background-color: #0d6efd; color: #fff; }
 
-        /* Category Filter Buttons Styling */
         .btn-category { width: 100%; background-color: #ffffff; border: 1.5px solid #0d6efd; color: #0d6efd; font-weight: 600; font-size: 13px; padding: 8px 5px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
         .btn-category:hover { background-color: #e7f1ff; color: #0b5ed7; }
         .btn-category.active { background-color: #0d6efd; color: #ffffff; border-color: #0d6efd; }
 
-        /* Input Controls */
         .custom-input, .custom-select { background-color: #f1f3f5 !important; border: 1px solid #e9ecef !important; border-radius: 10px !important; padding: 10px 14px !important; font-size: 14px !important; color: #333 !important; }
 
-        /* Add Funds Design */
         .amount-input { width: 100%; border: 2px solid #004d7a; border-radius: 10px; padding: 10px; font-size: 16px; text-align: center; margin-bottom: 12px; outline: none; }
         .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
         .amount-grid-bottom { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 15px; }
@@ -37,7 +33,6 @@
         .bonus-badge { position: absolute; top: 2px; right: 4px; font-size: 9px; font-weight: 800; color: #00ff88; }
         .bottom-btn { font-size: 12px; padding: 8px 2px; }
 
-        /* Support Popup Widget Design */
         .chat-widget-btn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #0066a2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 6px 16px rgba(0, 102, 162, 0.4); cursor: pointer; z-index: 9999; border: none; }
         .support-modal { display: none; flex-direction: column; position: fixed; bottom: 95px; right: 25px; width: 350px; max-width: 90vw; height: 580px; max-height: 85vh; background-color: #f8fafc; border-radius: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.18); overflow: hidden; z-index: 9998; }
         .support-header { background: linear-gradient(180deg, #005a92 0%, #0077be 100%); color: white; padding: 20px; }
@@ -49,7 +44,6 @@
         .nav-item-btn { display: flex; flex-direction: column; align-items: center; color: #718096; text-decoration: none; font-size: 11px; font-weight: 600; border: none; background: none; }
         .nav-item-btn.active { color: #0077be; }
 
-        /* Dashboard Hide/Show */
         #dashboard-section { display: none; }
         .khqr-card { display: none; width: 260px; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); margin: 20px auto 0 auto; border: 1px solid #e0e0e0; text-align: center; }
         .khqr-header { background-color: #E11919; padding: 8px 15px; color: #fff; font-weight: 800; font-size: 18px; text-align: left; }
@@ -57,6 +51,7 @@
 </head>
 <body>
 
+    <!-- 1. AUTHENTICATION SECTION -->
     <div id="auth-section" class="auth-card">
         <h3 class="text-center fw-bold text-primary mb-4"><i class="fa-solid fa-rocket me-2"></i>KhmerSMM</h3>
 
@@ -79,14 +74,15 @@
         </div>
     </div>
 
+    <!-- 2. MAIN DASHBOARD SECTION -->
     <div id="dashboard-section" class="app-container">
         
         <div class="account-stats-bar">
             <div>You are currently on: <span class="highlight-blue" id="currentPageName">New Order</span></div>
             <div>Panel Orders: <span class="highlight-blue">3731198</span></div>
-            <div>My Orders: <span class="highlight-blue" id="myOrdersCount">29</span></div>
-            <div>Total Spend: <span class="highlight-blue" id="totalSpendAmount">$23.1</span></div>
-            <div>Welcome <span class="highlight-blue" id="accountUsername">nang150</span> Your Balance is : <span class="highlight-blue" id="accountBalance">$0.001768</span></div>
+            <div>My Orders: <span class="highlight-blue" id="myOrdersCount">0</span></div>
+            <div>Total Spend: <span class="highlight-blue" id="totalSpendAmount">$0.0</span></div>
+            <div>Welcome <span class="highlight-blue" id="accountUsername">User</span> Your Balance is : <span class="highlight-blue" id="accountBalance">$10.00</span></div>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -97,7 +93,9 @@
             <button class="btn btn-sm btn-outline-danger" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
 
+        <!-- ORDER FORM VIEW -->
         <div id="order-view">
+            <!-- Platform Filter Buttons -->
             <div class="row g-2 mb-3">
                 <div class="col-6 col-md-3"><button type="button" class="btn btn-category active" onclick="filterPlatform('all', this)">📑 Everythings</button></div>
                 <div class="col-6 col-md-3"><button type="button" class="btn btn-category" onclick="filterPlatform('instagram', this)">📸 Instagram</button></div>
@@ -108,10 +106,7 @@
             <div class="mb-3">
                 <label class="fw-bold mb-1"><i class="fa-solid fa-shapes text-primary"></i> Category</label>
                 <select id="categorySelect" class="form-select custom-select" onchange="onCategoryChange()">
-                    <option value="ig_followers" data-platform="instagram">📸 Instagram - Followers [ Old Accounts +Posts ] [ High Speed ] 🆕</option>
-                    <option value="ig_likes" data-platform="instagram">📸 Instagram - Likes [ High Quality ]</option>
-                    <option value="tt_views" data-platform="tiktok">🎵 TikTok - Video Views [ Instant ]</option>
-                    <option value="fb_followers" data-platform="facebook">📘 Facebook - Profile Followers [ Fast ]</option>
+                    <option value="">កំពុងទាញយកព័ត៌មានពី API...</option>
                 </select>
             </div>
 
@@ -128,12 +123,7 @@
             <div class="mb-3">
                 <label class="fw-bold mb-1">Quantity</label>
                 <input type="number" id="orderQuantity" class="form-control custom-input" oninput="calculateCharge()">
-                <div class="small text-muted mt-1" id="quantityRangeText">Min: 50 - Max: 100 000</div>
-            </div>
-
-            <div class="mb-3">
-                <label class="fw-bold mb-1">Average time <i class="fa-solid fa-circle-info text-dark"></i></label>
-                <input type="text" id="averageTime" class="form-control custom-input" readonly value="42 minutes">
+                <div class="small text-muted mt-1" id="quantityRangeText">Min: 0 - Max: 0</div>
             </div>
 
             <div class="mb-3">
@@ -141,9 +131,10 @@
                 <input type="text" id="orderCharge" class="form-control custom-input" readonly value="$0.00">
             </div>
 
-            <button type="button" class="btn-submit" onclick="submitOrder()">Submit</button>
+            <button type="button" class="btn-submit" onclick="submitOrder()"><i class="fa-solid fa-paper-plane me-1"></i> Submit Order</button>
         </div>
 
+        <!-- ADD FUNDS VIEW -->
         <div id="deposit-view" style="display: none;" class="text-center">
             <input type="number" id="customAmount" class="amount-input" placeholder="Enter amount (e.g. 5, 10, 40, 100)" oninput="clearActiveButtons()">
             <button type="button" class="btn-submit mb-3" onclick="submitDeposit()">Submit</button>
@@ -154,21 +145,10 @@
                 <button type="button" class="btn-amount" onclick="selectAmount(15, this)">$15 <span class="bonus-badge">+3%</span></button>
                 <button type="button" class="btn-amount" onclick="selectAmount(30, this)">$30 <span class="bonus-badge">+3%</span></button>
                 <button type="button" class="btn-amount" onclick="selectAmount(50, this)">$50 <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount" onclick="selectAmount(100, this)">$100 <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount" onclick="selectAmount(200, this)">$200 <span class="bonus-badge">+5%</span></button>
-                <button type="button" class="btn-amount" onclick="selectAmount(500, this)">$500 <span class="bonus-badge">+5%</span></button>
-                <button type="button" class="btn-amount" onclick="selectAmount(1000, this)">$1000 <span class="bonus-badge">+10%</span></button>
+                <button type="button" class="btn-amount" onclick="selectAmount(100, this)">$100 <span class="bonus-badge">+10%</span></button>
             </div>
 
-            <div class="amount-grid-bottom">
-                <button type="button" class="btn-amount bottom-btn" onclick="selectAmount(5.5, this)">5.5$</button>
-                <button type="button" class="btn-amount bottom-btn" onclick="selectAmount(10, this)">10$ <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount bottom-btn" onclick="selectAmount(15, this)">15$ <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount bottom-btn" onclick="selectAmount(25, this)">25$ <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount bottom-btn active" onclick="selectAmount(50, this)">50$ <span class="bonus-badge">+3%</span></button>
-                <button type="button" class="btn-amount bottom-btn" onclick="selectAmount(99, this)">99$ <span class="bonus-badge">+3%</span></button>
-            </div>
-
+            <!-- KHQR Card -->
             <div id="khqr-card" class="khqr-card p-3">
                 <div class="khqr-header">KHQR</div>
                 <div class="fw-bold mt-2 fs-6">KhmerSMM</div>
@@ -180,6 +160,7 @@
 
     </div>
 
+    <!-- 3. FLOATING SUPPORT CHAT WIDGET -->
     <button class="chat-widget-btn" onclick="toggleSupportModal()"><i class="fa-solid fa-comment-dots"></i></button>
 
     <div class="support-modal" id="supportModal">
@@ -188,7 +169,7 @@
                 <div style="width:38px; height:38px; background:#fff; border-radius:50%; color:#0066a2; display:flex; align-items:center; justify-content:center; font-weight:bold;"><i class="fa-solid fa-crown"></i></div>
                 <div><span class="badge bg-light text-dark">EN</span> <button class="btn btn-sm btn-light rounded-circle" onclick="toggleSupportModal()">✕</button></div>
             </div>
-            <div class="fw-bold fs-5">សួស្តី <span id="supportUserName">Nang150</span> 👋<br>ខ្ញុំនៅទីនេះដើម្បីជួយបង</div>
+            <div class="fw-bold fs-5">សួស្តី <span id="supportUserName">User</span> 👋<br>ខ្ញុំនៅទីនេះដើម្បីជួយបង</div>
         </div>
 
         <div class="support-body">
@@ -199,39 +180,12 @@
                 </div>
                 <i class="fa-solid fa-chevron-right text-primary"></i>
             </a>
-
-            <a href="https://t.me/p0zz_zin" target="_blank" class="support-card">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="card-icon-box"><i class="fa-solid fa-shield-halved"></i></div>
-                    <div><div class="fw-bold" style="font-size:14px;">បោះបង់ ឬ បង្កើនល្បឿន</div><div class="small text-muted">ពិនិត្យការបញ្ជាទិញ និងសុំផ្លាស់ប្តូរ</div></div>
-                </div>
-                <i class="fa-solid fa-chevron-right text-primary"></i>
-            </a>
-
-            <div class="support-card" onclick="toggleSupportModal()">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="card-icon-box green"><i class="fa-solid fa-robot"></i></div>
-                    <div><div class="fw-bold" style="font-size:14px;">មើលសេវាកម្ម និងតម្លៃ</div><div class="small text-muted">សួរជំនួយការ — ចម្លើយភ្លាមៗ</div></div>
-                </div>
-                <i class="fa-solid fa-chevron-right text-primary"></i>
-            </div>
-        </div>
-
-        <div class="support-footer-nav">
-            <button class="nav-item-btn active"><i class="fa-solid fa-house"></i><span>ដើម</span></button>
-            <button class="nav-item-btn" onclick="window.open('https://t.me/p0zz_zin', '_blank')"><i class="fa-regular fa-comment"></i><span>សារ</span></button>
-            <button class="nav-item-btn"><i class="fa-regular fa-circle-question"></i><span>ជំនួយ</span></button>
         </div>
     </div>
 
 <script>
-    const servicesData = {
-        ig_followers: [{ id: 10759, name: "10759 - Instagram Followers [ Max 100K ] | Old Accounts +Posts | Low Drop | Cancel Enable", rate: 0.90, min: 50, max: 100000, time: "42 minutes" }],
-        ig_likes: [{ id: 20114, name: "20114 - Instagram Likes [ HQ Accounts ] | Instant", rate: 0.30, min: 20, max: 50000, time: "5 minutes" }],
-        tt_views: [{ id: 30441, name: "30441 - TikTok Video Views [ Fast Speed ]", rate: 0.10, min: 100, max: 1000000, time: "2 minutes" }],
-        fb_followers: [{ id: 40512, name: "40512 - Facebook Profile Followers [ Non Drop ]", rate: 1.20, min: 100, max: 200000, time: "1 hour" }]
-    };
-
+    let rawServicesList = [];
+    let groupedCategories = {};
     let chosenAmount = 50;
 
     function switchForm(type) {
@@ -268,10 +222,10 @@
                 document.getElementById('dashboard-section').style.display = 'block';
                 document.getElementById('accountUsername').innerText = data.user.username;
                 document.getElementById('supportUserName').innerText = data.user.username;
-                document.getElementById('accountBalance').innerText = `$${parseFloat(data.user.balance).toFixed(6)}`;
-                document.getElementById('myOrdersCount').innerText = data.user.myOrders;
-                document.getElementById('totalSpendAmount').innerText = `$${parseFloat(data.user.totalSpend).toFixed(1)}`;
-                onCategoryChange();
+                document.getElementById('accountBalance').innerText = `$${parseFloat(data.user.balance).toFixed(2)}`;
+                
+                // Fetch Services ចេញពី API ភ្លាមៗ
+                fetchApiServices();
             } else { alert(data.message); }
         } catch (e) { alert('មានបញ្ហាក្នុងការភ្ជាប់ទៅ Server!'); }
     }
@@ -289,18 +243,70 @@
         document.getElementById('currentPageName').innerText = type === 'order' ? 'New Order' : 'Add funds';
     }
 
+    async function fetchApiServices() {
+        try {
+            const res = await fetch('/api/services');
+            const data = await res.json();
+            
+            if (data.success && Array.isArray(data.services)) {
+                rawServicesList = data.services;
+                groupedCategories = {};
+
+                rawServicesList.forEach(item => {
+                    const cat = item.category || 'Other Services';
+                    if (!groupedCategories[cat]) groupedCategories[cat] = [];
+                    groupedCategories[cat].push(item);
+                });
+
+                renderCategories();
+            } else {
+                alert('មិនអាចទាញយក Services ពី Provider បានទេ!');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('មានបញ្ហាក្នុងការភ្ជាប់ទៅ API!');
+        }
+    }
+
+    function renderCategories() {
+        const catSelect = document.getElementById('categorySelect');
+        catSelect.innerHTML = '';
+
+        Object.keys(groupedCategories).forEach(catName => {
+            let opt = document.createElement('option');
+            opt.value = catName;
+            opt.innerText = catName;
+            
+            // Platform auto detect
+            const lower = catName.toLowerCase();
+            if (lower.includes('instagram') || lower.includes('ig')) opt.setAttribute('data-platform', 'instagram');
+            else if (lower.includes('tiktok')) opt.setAttribute('data-platform', 'tiktok');
+            else if (lower.includes('facebook') || lower.includes('fb')) opt.setAttribute('data-platform', 'facebook');
+            else opt.setAttribute('data-platform', 'other');
+
+            catSelect.appendChild(opt);
+        });
+
+        onCategoryChange();
+    }
+
     function onCategoryChange() {
         const catValue = document.getElementById('categorySelect').value;
         const serviceSelect = document.getElementById('serviceSelect');
         serviceSelect.innerHTML = '';
 
-        (servicesData[catValue] || []).forEach(s => {
+        const list = groupedCategories[catValue] || [];
+
+        list.forEach(s => {
             let opt = document.createElement('option');
-            opt.value = s.id; opt.innerText = s.name;
-            opt.setAttribute('data-rate', s.rate); opt.setAttribute('data-min', s.min);
-            opt.setAttribute('data-max', s.max); opt.setAttribute('data-time', s.time);
+            opt.value = s.service;
+            opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
+            opt.setAttribute('data-rate', s.rate);
+            opt.setAttribute('data-min', s.min);
+            opt.setAttribute('data-max', s.max);
             serviceSelect.appendChild(opt);
         });
+
         onServiceChange();
     }
 
@@ -309,7 +315,6 @@
         if (!selectedOption) return;
 
         document.getElementById('quantityRangeText').innerText = `Min: ${selectedOption.getAttribute('data-min')} - Max: ${selectedOption.getAttribute('data-max')}`;
-        document.getElementById('averageTime').value = selectedOption.getAttribute('data-time');
         document.getElementById('orderQuantity').value = selectedOption.getAttribute('data-min');
         calculateCharge();
     }
@@ -333,6 +338,30 @@
             if (match && firstIndex === -1) firstIndex = i;
         }
         if (firstIndex !== -1) { select.selectedIndex = firstIndex; onCategoryChange(); }
+    }
+
+    async function submitOrder() {
+        const serviceId = document.getElementById('serviceSelect').value;
+        const link = document.getElementById('orderLink').value;
+        const quantity = document.getElementById('orderQuantity').value;
+
+        if (!link || !quantity) return alert('សូមបំពេញ Link និង Quantity ឱ្យបានត្រឹមត្រូវ!');
+
+        try {
+            const res = await fetch('/api/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ service: serviceId, link: link, quantity: quantity })
+            });
+
+            const data = await res.json();
+            alert(data.message);
+            if (data.success) {
+                document.getElementById('orderLink').value = '';
+            }
+        } catch (e) {
+            alert('មានបញ្ហាក្នុងការផ្ញើ Order!');
+        }
     }
 
     function selectAmount(amount, btnElement) {
@@ -365,12 +394,6 @@
     function toggleSupportModal() {
         const modal = document.getElementById('supportModal');
         modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'flex' : 'none';
-    }
-
-    function submitOrder() {
-        const link = document.getElementById('orderLink').value;
-        if (!link) return alert('សូមបញ្ចូល Link ជាមុនសិន!');
-        alert('បញ្ជាទិញជោគជ័យ!');
     }
 </script>
 
