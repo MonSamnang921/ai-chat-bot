@@ -19,7 +19,6 @@
         .khqr-merchant { font-size: 15px; font-weight: 700; color: #444; }
 
         .custom-input, .custom-select { background-color: #f1f3f5 !important; border: 1px solid #e9ecef !important; border-radius: 10px !important; padding: 10px 14px !important; }
-        #admin-view { display: none; background: #fff8e6; border: 1px solid #ffe69c; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -36,7 +35,7 @@
         <div id="login-form">
             <div class="mb-3">
                 <label class="fw-bold">Email / Username</label>
-                <input type="text" id="login-key" class="form-control custom-input" placeholder="អ៊ីមែល/ឈ្មោះអ្នកប្រើ ឬ 090217653">
+                <input type="text" id="login-key" class="form-control custom-input" placeholder="អ៊ីមែល ឬ ឈ្មោះអ្នកប្រើ">
             </div>
             <div class="mb-3">
                 <label class="fw-bold">Password</label>
@@ -70,50 +69,7 @@
                 <h5 class="fw-bold m-0" id="welcomeUser">Welcome</h5>
                 <small class="text-muted">Balance: <strong class="text-success" id="userBalance">$0.00</strong></small>
             </div>
-            <div>
-                <button class="btn btn-sm btn-outline-warning me-1" id="btnAdminTab" style="display:none;" onclick="toggleAdminView()"><i class="fa-solid fa-lock me-1"></i> Admin Controls</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Logout</button>
-            </div>
-        </div>
-
-        <!-- Admin View Panel -->
-        <div id="admin-view">
-            <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-user-gear text-warning me-2"></i>Admin Management</h5>
-            
-            <div class="card p-3 mb-3 border-0 shadow-sm">
-                <h6 class="fw-bold text-primary"><i class="fa-solid fa-percent me-1"></i> កែប្រែភាគរយចំណេញសេវាកម្ម (%)</h6>
-                <div class="row g-2">
-                    <div class="col-8"><input type="number" id="priceMarginInput" class="form-control" placeholder="10"></div>
-                    <div class="col-4"><button class="btn btn-primary w-100 fw-bold" onclick="updatePriceMargin()">រក្សាទុក</button></div>
-                </div>
-            </div>
-
-            <div class="card p-3 mb-3 border-0 shadow-sm">
-                <h6 class="fw-bold text-success"><i class="fa-solid fa-wallet me-1"></i> បញ្ចូលលុយឱ្យភ្ញៀវ (Add Balance)</h6>
-                <div class="row g-2">
-                    <div class="col-5"><input type="text" id="adminTargetEmail" class="form-control" placeholder="អ៊ីមែល/Username ភ្ញៀវ"></div>
-                    <div class="col-4"><input type="number" id="adminAddAmount" class="form-control" placeholder="ចំនួន ($)"></div>
-                    <div class="col-3"><button class="btn btn-success w-100 fw-bold" onclick="adminAddBalance()">បញ្ចូល</button></div>
-                </div>
-            </div>
-
-            <div class="card p-3 border-0 shadow-sm">
-                <h6 class="fw-bold text-dark"><i class="fa-solid fa-users me-1"></i> ភ្ញៀវទាំងអស់</h6>
-                <div class="table-responsive">
-                    <table class="table table-sm text-center mb-0" style="font-size: 13px;">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Email</th>
-                                <th>Balance</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminUsersTable"></tbody>
-                    </table>
-                </div>
-            </div>
+            <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Logout</button>
         </div>
 
         <!-- Order Services Section -->
@@ -166,7 +122,7 @@
             </div>
         </div>
 
-        <!-- Telegram Contact Only Section -->
+        <!-- Telegram Contact Section -->
         <div class="card p-4 shadow-sm border-0 mb-4 text-center">
             <div class="mb-3">
                 <i class="fa-brands fa-telegram text-primary" style="font-size: 50px;"></i>
@@ -174,7 +130,6 @@
             <h5 class="fw-bold text-dark mb-2">ទាក់ទងមកកាន់ Admin</h5>
             <p class="text-muted small mb-3">ប្រសិនបើបងមានបញ្ហា ឬចង់សាកសួរព័ត៌មានបន្ថែម សូមចុចប៊ូតុងខាងក្រោមដើម្បីផ្ញើសារតាម Telegram៖</p>
             <div>
-                <!-- ផ្លាស់ប្ដូរ Link Telegram របស់បងត្រង់នេះ -->
                 <a href="https://t.me/your_telegram_username" target="_blank" class="btn btn-success fw-bold px-4 py-2" style="border-radius: 10px;">
                     <i class="fa-brands fa-telegram me-2 fs-5"></i> Chat via Telegram
                 </a>
@@ -229,10 +184,6 @@
             document.getElementById('userBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
             document.getElementById('auth-section').style.display = 'none';
             document.getElementById('dashboard-section').style.display = 'block';
-
-            if (currentUser.role === 'admin') {
-                document.getElementById('btnAdminTab').style.display = 'inline-block';
-            }
 
             fetchApiServices();
         } else { alert(data.message); }
@@ -309,76 +260,6 @@
             currentUser.balance = data.newBalance;
             document.getElementById('userBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
         }
-    }
-
-    // Admin Panel Logic
-    function toggleAdminView() {
-        const adminView = document.getElementById('admin-view');
-        adminView.style.display = adminView.style.display === 'block' ? 'none' : 'block';
-        if (adminView.style.display === 'block') loadAdminUsers();
-    }
-
-    async function loadAdminUsers() {
-        const res = await fetch('/api/admin/users');
-        const data = await res.json();
-        if (data.success) {
-            document.getElementById('priceMarginInput').value = data.currentPercentage;
-            const tbody = document.getElementById('adminUsersTable');
-            tbody.innerHTML = '';
-            data.users.forEach(u => {
-                if(u.role === 'admin') return;
-                tbody.innerHTML += `<tr>
-                    <td><b>${u.username}</b></td>
-                    <td>${u.email}</td>
-                    <td class="text-success">$${u.balance.toFixed(2)}</td>
-                    <td>${u.isBlocked ? '<span class="badge bg-danger">Blocked</span>' : '<span class="badge bg-success">Active</span>'}</td>
-                    <td>
-                        <button class="btn btn-sm ${u.isBlocked ? 'btn-outline-success' : 'btn-outline-danger'}" onclick="toggleBlockUser('${u.email}')">
-                            ${u.isBlocked ? 'Unblock' : 'Block'}
-                        </button>
-                    </td>
-                </tr>`;
-            });
-        }
-    }
-
-    async function adminAddBalance() {
-        const email = document.getElementById('adminTargetEmail').value;
-        const amount = document.getElementById('adminAddAmount').value;
-
-        if (!email || !amount) return alert('សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!');
-
-        const res = await fetch('/api/admin/add-balance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, amount })
-        });
-        const data = await res.json();
-        alert(data.message);
-        if (data.success) loadAdminUsers();
-    }
-
-    async function updatePriceMargin() {
-        const percentage = document.getElementById('priceMarginInput').value;
-        const res = await fetch('/api/admin/set-price-margin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ percentage })
-        });
-        const data = await res.json();
-        alert(data.message);
-        if (data.success) fetchApiServices();
-    }
-
-    async function toggleBlockUser(email) {
-        const res = await fetch('/api/admin/toggle-block', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email })
-        });
-        const data = await res.json();
-        alert(data.message);
-        if (data.success) loadAdminUsers();
     }
 
     // KHQR Generator
