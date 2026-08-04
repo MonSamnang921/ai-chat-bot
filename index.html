@@ -24,7 +24,8 @@
         .msg-self { background: #0d6efd; color: #fff; margin-left: auto; text-align: right; }
         .msg-other { background: #e9ecef; color: #333; margin-right: auto; }
         .chat-img, .chat-video { max-width: 220px; border-radius: 8px; margin-top: 5px; display: block; }
-        .custom-input { background-color: #f1f3f5 !important; border: 1px solid #e9ecef !important; border-radius: 10px !important; padding: 10px 14px !important; }
+        .custom-input, .custom-select { background-color: #f1f3f5 !important; border: 1px solid #e9ecef !important; border-radius: 10px !important; padding: 10px 14px !important; }
+        #admin-view { display: none; background: #fff8e6; border: 1px solid #ffe69c; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -70,12 +71,81 @@
 
     <!-- Dashboard Section -->
     <div id="dashboard-section" class="app-container" style="display: none;">
-        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-3">
             <div>
                 <h5 class="fw-bold m-0" id="welcomeUser">Welcome</h5>
                 <small class="text-muted">Balance: <strong class="text-success" id="userBalance">$0.00</strong></small>
             </div>
-            <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Logout</button>
+            <div>
+                <button class="btn btn-sm btn-outline-warning me-1" id="btnAdminTab" style="display:none;" onclick="toggleAdminView()"><i class="fa-solid fa-lock me-1"></i> Admin Controls</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Admin View Panel -->
+        <div id="admin-view">
+            <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-user-gear text-warning me-2"></i>Admin Management</h5>
+            
+            <div class="card p-3 mb-3 border-0 shadow-sm">
+                <h6 class="fw-bold text-primary"><i class="fa-solid fa-percent me-1"></i> កែប្រែភាគរយចំណេញសេវាកម្ម (%)</h6>
+                <div class="row g-2">
+                    <div class="col-8"><input type="number" id="priceMarginInput" class="form-control" placeholder="10"></div>
+                    <div class="col-4"><button class="btn btn-primary w-100 fw-bold" onclick="updatePriceMargin()">រក្សាទុក</button></div>
+                </div>
+            </div>
+
+            <div class="card p-3 mb-3 border-0 shadow-sm">
+                <h6 class="fw-bold text-success"><i class="fa-solid fa-wallet me-1"></i> បញ្ចូលលុយឱ្យភ្ញៀវ (Add Balance)</h6>
+                <div class="row g-2">
+                    <div class="col-5"><input type="email" id="adminTargetEmail" class="form-control" placeholder="អ៊ីមែលភ្ញៀវ"></div>
+                    <div class="col-4"><input type="number" id="adminAddAmount" class="form-control" placeholder="ចំនួន ($)"></div>
+                    <div class="col-3"><button class="btn btn-success w-100 fw-bold" onclick="adminAddBalance()">បញ្ចូល</button></div>
+                </div>
+            </div>
+
+            <div class="card p-3 border-0 shadow-sm">
+                <h6 class="fw-bold text-dark"><i class="fa-solid fa-users me-1"></i> ភ្ញៀវទាំងអស់</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm text-center mb-0" style="font-size: 13px;">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Services Section (មុខងារកុម្ម៉ង់សេវាកម្ម) -->
+        <div class="card p-3 mb-4 shadow-sm border-0">
+            <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-cart-shopping me-2"></i>New Order (កុម្ម៉ង់សេវាកម្ម)</h6>
+            <div class="mb-3">
+                <label class="fw-bold mb-1">Category</label>
+                <select id="categorySelect" class="form-select custom-select" onchange="onCategoryChange()"></select>
+            </div>
+            <div class="mb-3">
+                <label class="fw-bold mb-1">Service</label>
+                <select id="serviceSelect" class="form-select custom-select" onchange="onServiceChange()"></select>
+            </div>
+            <div class="mb-3">
+                <label class="fw-bold mb-1">Link</label>
+                <input type="text" id="orderLink" class="form-control custom-input" placeholder="https://...">
+            </div>
+            <div class="mb-3">
+                <label class="fw-bold mb-1">Quantity</label>
+                <input type="number" id="orderQuantity" class="form-control custom-input" placeholder="1000" oninput="calculateCharge()">
+            </div>
+            <div class="mb-3">
+                <label class="fw-bold mb-1">Charge ($)</label>
+                <input type="text" id="orderCharge" class="form-control custom-input" readonly value="$0.0000">
+            </div>
+            <button class="btn btn-primary w-100 fw-bold py-2" onclick="submitOrder()"><i class="fa-solid fa-paper-plane me-1"></i> Submit Order</button>
         </div>
 
         <!-- KHQR Deposit Card -->
@@ -120,6 +190,8 @@
 <script>
     const socket = io();
     let currentUser = null;
+    let rawServicesList = [];
+    let groupedCategories = {};
 
     function switchForm(type) {
         document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
@@ -163,10 +235,160 @@
             document.getElementById('userBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
             document.getElementById('auth-section').style.display = 'none';
             document.getElementById('dashboard-section').style.display = 'block';
+
+            if (currentUser.role === 'admin') {
+                document.getElementById('btnAdminTab').style.display = 'inline-block';
+            }
+
             socket.emit('join_chat', currentUser);
+            fetchApiServices();
         } else { alert(data.message); }
     }
 
+    // Services Logic
+    async function fetchApiServices() {
+        const res = await fetch('/api/services');
+        const data = await res.json();
+        if (data.success) {
+            rawServicesList = data.services;
+            groupedCategories = {};
+            rawServicesList.forEach(item => {
+                const cat = item.category || 'Other Services';
+                if (!groupedCategories[cat]) groupedCategories[cat] = [];
+                groupedCategories[cat].push(item);
+            });
+            renderCategories();
+        }
+    }
+
+    function renderCategories() {
+        const catSelect = document.getElementById('categorySelect');
+        catSelect.innerHTML = '';
+        Object.keys(groupedCategories).forEach(catName => {
+            let opt = document.createElement('option');
+            opt.value = catName;
+            opt.innerText = catName;
+            catSelect.appendChild(opt);
+        });
+        onCategoryChange();
+    }
+
+    function onCategoryChange() {
+        const catValue = document.getElementById('categorySelect').value;
+        const serviceSelect = document.getElementById('serviceSelect');
+        serviceSelect.innerHTML = '';
+        (groupedCategories[catValue] || []).forEach(s => {
+            let opt = document.createElement('option');
+            opt.value = s.service;
+            opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
+            opt.setAttribute('data-rate', s.rate);
+            serviceSelect.appendChild(opt);
+        });
+        onServiceChange();
+    }
+
+    function onServiceChange() { calculateCharge(); }
+
+    function calculateCharge() {
+        const selectedOption = document.getElementById('serviceSelect').selectedOptions[0];
+        if (!selectedOption) return;
+        const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+        const qty = parseInt(document.getElementById('orderQuantity').value) || 0;
+        document.getElementById('orderCharge').value = `$${(rate * (qty / 1000)).toFixed(4)}`;
+    }
+
+    async function submitOrder() {
+        const serviceId = document.getElementById('serviceSelect').value;
+        const link = document.getElementById('orderLink').value;
+        const quantity = document.getElementById('orderQuantity').value;
+        const chargeStr = document.getElementById('orderCharge').value.replace('$', '');
+
+        if (!link || !quantity) return alert('សូមបញ្ចូល Link និង ចំនួន Quantity!');
+
+        const res = await fetch('/api/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: currentUser.username, service: serviceId, link: link, quantity: quantity, charge: chargeStr })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) {
+            currentUser.balance = data.newBalance;
+            document.getElementById('userBalance').innerText = `$${currentUser.balance.toFixed(2)}`;
+        }
+    }
+
+    // Admin Panel Logic
+    function toggleAdminView() {
+        const adminView = document.getElementById('admin-view');
+        adminView.style.display = adminView.style.display === 'block' ? 'none' : 'block';
+        if (adminView.style.display === 'block') loadAdminUsers();
+    }
+
+    async function loadAdminUsers() {
+        const res = await fetch('/api/admin/users');
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('priceMarginInput').value = data.currentPercentage;
+            const tbody = document.getElementById('adminUsersTable');
+            tbody.innerHTML = '';
+            data.users.forEach(u => {
+                if(u.role === 'admin') return;
+                tbody.innerHTML += `<tr>
+                    <td><b>${u.username}</b></td>
+                    <td>${u.email}</td>
+                    <td class="text-success">$${u.balance.toFixed(2)}</td>
+                    <td>${u.isBlocked ? '<span class="badge bg-danger">Blocked</span>' : '<span class="badge bg-success">Active</span>'}</td>
+                    <td>
+                        <button class="btn btn-sm ${u.isBlocked ? 'btn-outline-success' : 'btn-outline-danger'}" onclick="toggleBlockUser('${u.email}')">
+                            ${u.isBlocked ? 'Unblock' : 'Block'}
+                        </button>
+                    </td>
+                </tr>`;
+            });
+        }
+    }
+
+    async function adminAddBalance() {
+        const email = document.getElementById('adminTargetEmail').value;
+        const amount = document.getElementById('adminAddAmount').value;
+
+        if (!email || !amount) return alert('សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!');
+
+        const res = await fetch('/api/admin/add-balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, amount })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) loadAdminUsers();
+    }
+
+    async function updatePriceMargin() {
+        const percentage = document.getElementById('priceMarginInput').value;
+        const res = await fetch('/api/admin/set-price-margin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ percentage })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) fetchApiServices();
+    }
+
+    async function toggleBlockUser(email) {
+        const res = await fetch('/api/admin/toggle-block', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) loadAdminUsers();
+    }
+
+    // KHQR Generator
     async function generateKHQR() {
         const amount = parseFloat(document.getElementById('depositAmount').value);
         if (isNaN(amount) || amount < 0.50 || amount > 100000) {
@@ -188,6 +410,7 @@
         } else { alert(data.message); }
     }
 
+    // Live Chat Logic
     function sendTextMessage() {
         const text = document.getElementById('chatText').value.trim();
         if (!text) return;
