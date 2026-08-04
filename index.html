@@ -6,7 +6,6 @@
     <title>KhmerSMM - Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="/socket.io/socket.io.js"></script>
     <style>
         body { background-color: #f4f7f6; font-family: sans-serif; padding: 15px 10px; }
         .app-container { max-width: 800px; margin: 10px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 25px; }
@@ -19,11 +18,6 @@
         .khqr-amount { font-size: 28px; font-weight: 800; color: #111; margin-top: 5px; }
         .khqr-merchant { font-size: 15px; font-weight: 700; color: #444; }
 
-        .chat-box { height: 320px; overflow-y: auto; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; background: #f8f9fa; }
-        .chat-msg { margin-bottom: 12px; max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
-        .msg-self { background: #0d6efd; color: #fff; margin-left: auto; text-align: right; }
-        .msg-other { background: #e9ecef; color: #333; margin-right: auto; }
-        .chat-img, .chat-video { max-width: 220px; border-radius: 8px; margin-top: 5px; display: block; }
         .custom-input, .custom-select { background-color: #f1f3f5 !important; border: 1px solid #e9ecef !important; border-radius: 10px !important; padding: 10px 14px !important; }
         #admin-view { display: none; background: #fff8e6; border: 1px solid #ffe69c; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
     </style>
@@ -122,7 +116,7 @@
             </div>
         </div>
 
-        <!-- Order Services Section (មុខងារកុម្ម៉ង់សេវាកម្ម) -->
+        <!-- Order Services Section -->
         <div class="card p-3 mb-4 shadow-sm border-0">
             <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-cart-shopping me-2"></i>New Order (កុម្ម៉ង់សេវាកម្ម)</h6>
             <div class="mb-3">
@@ -172,23 +166,23 @@
             </div>
         </div>
 
-        <!-- Live Chat Card -->
-        <div class="card p-3 shadow-sm border-0 mb-4">
-            <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-comments me-2"></i>Live Support Chat</h6>
-            <div class="chat-box mb-3" id="chatBox"></div>
-            <div class="input-group">
-                <input type="file" id="mediaInput" class="d-none" accept="image/*,video/*" onchange="uploadAndSendMedia()">
-                <button class="btn btn-outline-secondary" title="ផ្ញើរូបភាព/វីដេអូ" onclick="document.getElementById('mediaInput').click()">
-                    <i class="fa-solid fa-paperclip"></i>
-                </button>
-                <input type="text" id="chatText" class="form-control" placeholder="សរសេរសារនៅទីនេះ..." onkeypress="if(event.key==='Enter') sendTextMessage()">
-                <button class="btn btn-primary fw-bold" onclick="sendTextMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        <!-- Telegram Contact Only Section -->
+        <div class="card p-4 shadow-sm border-0 mb-4 text-center">
+            <div class="mb-3">
+                <i class="fa-brands fa-telegram text-primary" style="font-size: 50px;"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">ទាក់ទងមកកាន់ Admin</h5>
+            <p class="text-muted small mb-3">ប្រសិនបើបងមានបញ្ហា ឬចង់សាកសួរព័ត៌មានបន្ថែម សូមចុចប៊ូតុងខាងក្រោមដើម្បីផ្ញើសារតាម Telegram៖</p>
+            <div>
+                <!-- ផ្លាស់ប្ដូរ Link Telegram របស់បងត្រង់នេះ -->
+                <a href="https://t.me/your_telegram_username" target="_blank" class="btn btn-success fw-bold px-4 py-2" style="border-radius: 10px;">
+                    <i class="fa-brands fa-telegram me-2 fs-5"></i> Chat via Telegram
+                </a>
             </div>
         </div>
     </div>
 
 <script>
-    const socket = io();
     let currentUser = null;
     let rawServicesList = [];
     let groupedCategories = {};
@@ -240,7 +234,6 @@
                 document.getElementById('btnAdminTab').style.display = 'inline-block';
             }
 
-            socket.emit('join_chat', currentUser);
             fetchApiServices();
         } else { alert(data.message); }
     }
@@ -409,47 +402,6 @@
             document.getElementById('khqrDisplayContainer').style.display = 'block';
         } else { alert(data.message); }
     }
-
-    // Live Chat Logic
-    function sendTextMessage() {
-        const text = document.getElementById('chatText').value.trim();
-        if (!text) return;
-        socket.emit('send_message', { sender: currentUser.username, type: 'text', content: text });
-        document.getElementById('chatText').value = '';
-    }
-
-    async function uploadAndSendMedia() {
-        const file = document.getElementById('mediaInput').files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('mediaFile', file);
-
-        const res = await fetch('/api/upload-media', { method: 'POST', body: formData });
-        const data = await res.json();
-
-        if (data.success) {
-            const type = data.isVideo ? 'video' : 'image';
-            socket.emit('send_message', { sender: currentUser.username, type, content: data.url });
-        }
-    }
-
-    socket.on('receive_message', (data) => {
-        const chatBox = document.getElementById('chatBox');
-        const isSelf = data.sender === currentUser.username;
-        let contentHtml = '';
-
-        if (data.type === 'text') contentHtml = `<div>${data.content}</div>`;
-        else if (data.type === 'image') contentHtml = `<img src="${data.content}" class="chat-img">`;
-        else if (data.type === 'video') contentHtml = `<video src="${data.content}" controls class="chat-video"></video>`;
-
-        chatBox.innerHTML += `
-            <div class="chat-msg ${isSelf ? 'msg-self' : 'msg-other'}">
-                <small class="fw-bold d-block mb-1">${data.sender}</small>
-                ${contentHtml}
-            </div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    });
 </script>
 </body>
 </html>
