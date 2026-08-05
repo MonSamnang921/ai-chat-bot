@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KhmerSMM - Web Service</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Sign-In SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
@@ -51,7 +52,7 @@
     .btn-submit { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; }
     .btn-submit:hover { background-color: #0369a1; }
 
-    /* Login Box embedded inside sidebar or modal */
+    /* Login Box Container */
     .login-box-container { max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; }
   </style>
 </head>
@@ -95,7 +96,7 @@
       
       <div style="margin-bottom: 15px; color: #888; font-size: 13px;">— OR —</div>
 
-      <!-- Google Sign-In Button -->
+      <!-- Google Sign-In Button ( Client ID ពិតប្រាកដ) -->
       <div id="g_id_onload"
            data-client_id="781995105719-0ne5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
            data-callback="handleCredentialResponse"
