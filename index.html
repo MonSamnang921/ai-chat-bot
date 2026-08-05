@@ -17,7 +17,6 @@
         * { box-sizing: border-box; }
         body { background-color: var(--bg-gray); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; margin: 0; padding: 0; }
         
-        /* Top Header Bar */
         .top-navbar { 
             background-color: var(--brand-blue); 
             color: white; 
@@ -58,10 +57,8 @@
             border: 1px solid rgba(255,255,255,0.4);
         }
 
-        /* Layout Structure */
-        .wrapper { display: flex; position: relative; }
+        .wrapper { display: flex; position: relative; width: 100%; min-height: calc(100vh - 58px); }
         
-        /* Sidebar Menu Drawer */
         .sidebar { 
             width: 260px; 
             background: var(--sidebar-dark); 
@@ -89,26 +86,23 @@
         .sidebar-overlay.active { display: block; }
 
         @media (min-width: 992px) {
-            .sidebar { position: static; left: 0; flex-shrink: 0; min-height: calc(100vh - 58px); }
+            .sidebar { position: static; left: 0; flex-shrink: 0; }
             .sidebar-overlay { display: none !important; }
             .btn-toggle-menu { display: none; }
         }
 
         .main-content { flex-grow: 1; padding: 15px; width: 100%; max-width: 100%; }
 
-        /* User Card */
         .user-profile-card { background: var(--sidebar-card); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .avatar-box { width: 60px; height: 60px; border-radius: 50%; background: #00d2ff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
         .sidebar-menu { display: flex; flex-direction: column; gap: 4px; }
         .sidebar-menu .menu-item { color: #94a3b8; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .sidebar-menu .menu-item:hover, .sidebar-menu .menu-item.active { background: var(--brand-blue); color: white; }
 
-        /* Stats Section */
         .stats-box { background: transparent; padding: 10px 0; text-align: center; margin-bottom: 10px; font-weight: 600; color: #333; line-height: 1.8; }
         .stats-box .val-blue { color: var(--brand-blue); font-weight: 800; }
         .stats-box .val-green { color: #10b981; font-weight: 800; }
 
-        /* Platform Grid Buttons */
         .platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .platform-card { 
             background: white; 
@@ -128,7 +122,6 @@
         }
         .platform-card.active { background: #eaf2ff; border-width: 2px; }
 
-        /* Card Panels */
         .panel-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         
         .order-type-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
@@ -137,14 +130,12 @@
 
         .custom-field { background-color: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px 12px !important; }
 
-        /* KHQR Display Card */
         .khqr-box { max-width: 320px; margin: 0 auto; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .khqr-header { background: #e61b23; color: white; font-weight: 900; font-size: 18px; padding: 10px; }
     </style>
 </head>
 <body>
 
-<!-- TOP NAVBAR -->
 <div class="top-navbar">
     <button class="btn-toggle-menu" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
     <div class="top-nav-icons">
@@ -155,7 +146,6 @@
     </div>
 </div>
 
-<!-- AUTH CONTAINER -->
 <div id="auth-section" class="container py-5" style="max-width: 420px;">
     <div class="panel-card text-center">
         <h4 class="fw-bold text-primary mb-4"><i class="fa-solid fa-cloud-bolt me-2"></i>KhmerSMM</h4>
@@ -177,12 +167,9 @@
     </div>
 </div>
 
-<!-- MAIN DASHBOARD -->
 <div id="dashboard-section" class="wrapper" style="display: none;">
-    <!-- SIDEBAR OVERLAY FOR MOBILE -->
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- SIDEBAR -->
     <div class="sidebar" id="sidebarDrawer">
         <div class="user-profile-card">
             <div class="avatar-box">
@@ -200,9 +187,7 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
     <div class="main-content">
-        <!-- TOP STATS BAR -->
         <div class="stats-box">
             <div>You are currently on: <span class="val-blue" id="currentPageName">New order</span></div>
             <div>Panel Orders: <span class="val-blue">3731377</span></div>
@@ -211,9 +196,7 @@
             <div>Welcome <span class="val-blue" id="topUser">user</span> Your Balance is : <span class="val-green" id="topBalance">$0.000000</span></div>
         </div>
 
-        <!-- TAB: NEW ORDER -->
         <div id="tab-new-order">
-            <!-- Platform Quick Filters -->
             <div class="platform-grid">
                 <div class="platform-card active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-list-check"></i> Everythings</div>
                 <div class="platform-card" onclick="filterPlatform('TikTok', this)"><i class="fa-brands fa-tiktok text-dark"></i> TikTok</div>
@@ -229,7 +212,6 @@
                     <div class="order-type-btn" id="btnMassOrder" onclick="toggleOrderType('mass')"><i class="fa-solid fa-star me-1"></i> Mass order</div>
                 </div>
 
-                <!-- Single Order Form -->
                 <div id="singleOrderBox">
                     <div class="mb-3">
                         <label class="form-label fw-bold"><i class="fa-solid fa-magnifying-glass text-muted me-1"></i> Search</label>
@@ -265,7 +247,6 @@
                     <button class="btn btn-primary w-100 fw-bold py-2 mt-2" style="border-radius:10px;" onclick="submitOrder()">Submit Order</button>
                 </div>
 
-                <!-- Mass Order Form -->
                 <div id="massOrderBox" style="display: none;">
                     <div class="mb-3">
                         <label class="form-label fw-bold">One order per line in format:</label>
@@ -276,7 +257,6 @@
             </div>
         </div>
 
-        <!-- TAB: ADD FUNDS (Bakong Static KHQR) -->
         <div id="tab-add-funds" style="display: none;">
             <div class="panel-card text-center py-4">
                 <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-qrcode me-2"></i> Bakong KHQR Deposit</h5>
@@ -286,8 +266,6 @@
                     <div class="khqr-header mb-3">KHQR</div>
                     <div class="fw-bold text-dark fs-5">SAMNANG MON</div>
                     <div class="text-muted small mb-2">Bakong ID: <strong class="text-primary">mon_samnang@bkrt</strong></div>
-                    
-                    <!-- បង្ហាញរូបភាព STATIC khqr.jpg ពិតប្រាកដដែលស្កេនបាន ១០០% -->
                     <img src="/khqr.jpg" alt="Bakong KHQR" class="img-fluid my-2" style="max-width: 220px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px;">
                     <div class="text-muted small mt-2">Scan with Bakong or Any Mobile Banking App</div>
                 </div>
@@ -300,7 +278,6 @@
             </div>
         </div>
 
-        <!-- TAB: TELEGRAM CONTACT -->
         <div id="tab-contact-admin" style="display: none;">
             <div class="panel-card text-center py-5">
                 <i class="fa-brands fa-telegram text-primary mb-3" style="font-size: 70px;"></i>
@@ -371,33 +348,47 @@
     async function handleLogin() {
         const loginKey = document.getElementById('login-key').value;
         const password = document.getElementById('login-pass').value;
-        const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ loginKey, password }) });
-        const data = await res.json();
-        if (data.success) {
-            currentUser = data.user;
-            document.getElementById('sidebarUser').innerText = currentUser.username;
-            document.getElementById('topUser').innerText = currentUser.username;
-            document.getElementById('sidebarBalance').innerText = `$${(currentUser.balance || 0).toFixed(6)}`;
-            document.getElementById('topBalance').innerText = `$${(currentUser.balance || 0).toFixed(6)}`;
-            document.getElementById('topOrders').innerText = currentUser.myOrders || 0;
-            document.getElementById('topSpend').innerText = `$${(currentUser.totalSpend || 0).toFixed(1)}`;
+        
+        try {
+            const res = await fetch('/api/login', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ loginKey, password }) 
+            });
+            const data = await res.json();
             
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('dashboard-section').style.display = 'block';
-            fetchApiServices();
-        } else { alert(data.message); }
+            if (data.success) {
+                currentUser = data.user;
+                document.getElementById('sidebarUser').innerText = currentUser.username;
+                document.getElementById('topUser').innerText = currentUser.username;
+                document.getElementById('sidebarBalance').innerText = `$${(currentUser.balance || 0).toFixed(6)}`;
+                document.getElementById('topBalance').innerText = `$${(currentUser.balance || 0).toFixed(6)}`;
+                document.getElementById('topOrders').innerText = currentUser.myOrders || 0;
+                document.getElementById('topSpend').innerText = `$${(currentUser.totalSpend || 0).toFixed(1)}`;
+                
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('dashboard-section').style.display = 'flex';
+                
+                showTab('new-order');
+                fetchApiServices();
+            } else { 
+                alert(data.message); 
+            }
+        } catch (err) {
+            alert("Login error: " + err.message);
+        }
     }
 
     async function fetchApiServices() {
         try {
             const res = await fetch('/api/services');
             const data = await res.json();
-            if (data.success) {
+            if (data.success && data.services) {
                 rawServicesList = data.services;
                 filterPlatform('All');
             }
         } catch (e) {
-            console.log("Error loading services");
+            console.log("Error loading services:", e);
         }
     }
 
@@ -490,7 +481,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                userEmail: currentUser ? currentUser.email || currentUser.username : 'Guest',
+                userEmail: currentUser ? currentUser.username : 'Guest',
                 serviceName: serviceId, 
                 link: link, 
                 quantity: quantity, 
@@ -501,7 +492,6 @@
         alert(data.message);
     }
 
-    // Function ផ្ញើប្រាក់កក់/ទូទាត់ប្រាក់ ទៅកាន់ Telegram Bot
     async function submitDeposit() {
         const amount = document.getElementById('depositAmount').value;
         if (!amount || amount <= 0) {
