@@ -14,11 +14,12 @@
             --primary-blue: #0d6efd;
             --bg-light: #f4f7f6;
             --khqr-red: #e10b17;
+            --telegram-color: #0088cc;
         }
         body {
             background-color: var(--bg-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 50px;
+            padding-bottom: 80px;
         }
         .navbar-custom {
             background-color: var(--primary-blue);
@@ -90,6 +91,7 @@
             padding: 8px;
             font-weight: 600;
             transition: all 0.2s;
+            cursor: pointer;
         }
         .btn-amount:hover, .btn-amount.active {
             background-color: #1a73e8;
@@ -103,6 +105,30 @@
             font-size: 14px;
             color: #333;
             margin-bottom: 20px;
+        }
+
+        /* --- CONTACT TELEGRAM FLOATING BUTTON --- */
+        .float-contact-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--telegram-color);
+            color: white;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        .float-contact-btn:hover {
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
         }
 
         /* --- BAKONG KHQR OFFICIAL CARD STYLES --- */
@@ -177,6 +203,20 @@
             font-size: 18px;
             z-index: 10;
         }
+        .qr-expired-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -208,19 +248,19 @@
 
         <!-- Quick Platform Filter Grid -->
         <div class="platform-grid">
-            <button class="btn btn-platform active" onclick="filterCategory('all')">
+            <button class="btn btn-platform active" onclick="filterCategory('all', this)">
                 <i class="fa-solid fa-list-check"></i> Everythings
             </button>
-            <button class="btn btn-platform" onclick="filterCategory('TikTok')">
+            <button class="btn btn-platform" onclick="filterCategory('TikTok', this)">
                 <i class="fa-brands fa-tiktok"></i> TikTok
             </button>
-            <button class="btn btn-platform" onclick="filterCategory('Facebook')">
+            <button class="btn btn-platform" onclick="filterCategory('Facebook', this)">
                 <i class="fa-brands fa-facebook"></i> Facebook
             </button>
-            <button class="btn btn-platform" onclick="filterCategory('YouTube')">
+            <button class="btn btn-platform" onclick="filterCategory('YouTube', this)">
                 <i class="fa-brands fa-youtube"></i> YouTube
             </button>
-            <button class="btn btn-platform" onclick="filterCategory('Telegram')">
+            <button class="btn btn-platform" onclick="filterCategory('Telegram', this)">
                 <i class="fa-brands fa-telegram"></i> Telegram
             </button>
         </div>
@@ -289,17 +329,17 @@
 
             <label class="form-label fw-bold">ជ្រើសរើសចំនួនទឹកប្រាក់ (Select Amount)</label>
             <div class="amount-grid">
-                <button type="button" class="btn btn-amount active" onclick="setAmount(0.5, this)">$0.50</button>
-                <button type="button" class="btn btn-amount" onclick="setAmount(1, this)">$1.00</button>
-                <button type="button" class="btn btn-amount" onclick="setAmount(5, this)">$5.00</button>
-                <button type="button" class="btn btn-amount" onclick="setAmount(10, this)">$10.00</button>
-                <button type="button" class="btn btn-amount" onclick="setAmount(50, this)">$50.00</button>
-                <button type="button" class="btn btn-amount" onclick="setAmount(100, this)">$100.00</button>
+                <button type="button" class="btn btn-amount active" onclick="selectQuickAmount(0.5, this)">$0.50</button>
+                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(1, this)">$1.00</button>
+                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(5, this)">$5.00</button>
+                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(10, this)">$10.00</button>
+                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(50, this)">$50.00</button>
+                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(100, this)">$100.00</button>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Amount ($)</label>
-                <input type="number" id="deposit-amount" class="form-control form-control-lg fw-bold" value="0.50" min="0.5" max="100000" step="0.5">
+                <input type="number" id="deposit-amount" class="form-control form-control-lg fw-bold" value="0.50" min="0.5" max="100000" step="0.01" oninput="resetAmountButtons()">
             </div>
 
             <button class="btn btn-primary w-100 py-3 fw-bold fs-5" onclick="generateKHQR()">
@@ -309,18 +349,26 @@
 
     </div>
 
-    <!-- BAKONG KHQR POPUP MODAL (NEW DESIGN) -->
-    <div class="modal fade" id="qrModal" tabindex="-1">
+    <!-- FLOATING TELEGRAM BUTTON (អណ្តែតនៅជ្រុងខាងស្តាំក្រោម) -->
+    <!-- ផ្លាស់ប្តូរ t.me/your_admin_username ទៅជា Username Telegram របស់អ្នក -->
+    <a href="https://t.me/your_admin_username" target="_blank" class="float-contact-btn">
+        <i class="fa-brands fa-telegram fa-xl"></i>
+        <span>Telegram Admin</span>
+    </a>
+
+    <!-- BAKONG KHQR POPUP MODAL -->
+    <div class="modal fade" id="qrModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 bg-transparent">
-                
-                <!-- KHQR Standalone Card -->
                 <div class="khqr-card-container">
                     <div class="khqr-header">
                         <div class="khqr-logo-text">KH<span style="border: 2px solid #fff; padding: 0 4px; border-radius: 4px; margin-left: 2px;">QR</span></div>
                     </div>
                     <div class="khqr-body">
-                        <div class="khqr-merchant">KhmerSMM</div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="khqr-merchant">KhmerSMM</div>
+                            <div class="badge bg-danger fs-6" id="timer-badge">05:00</div>
+                        </div>
                         <div>
                             <span class="khqr-amount" id="display-card-amount">0.50</span>
                             <span class="khqr-currency">USD</span>
@@ -328,17 +376,23 @@
                         
                         <div class="khqr-divider"></div>
 
-                        <div class="khqr-qr-box">
+                        <div class="khqr-qr-box" id="qr-wrapper">
                             <div id="qrcode-container"></div>
-                            <div class="khqr-center-icon">$</div>
+                            <div class="khqr-center-icon" id="qr-center-dollar">$</div>
+                            
+                            <!-- Expiration Overlay -->
+                            <div id="expired-overlay" class="qr-expired-overlay d-none">
+                                <i class="fa-solid fa-clock-rotate-left fa-3x text-danger mb-2"></i>
+                                <span class="fw-bold text-dark">QR Code ផុតកំណត់!</span>
+                                <button class="btn btn-sm btn-primary mt-2 fw-bold" onclick="generateKHQR()">បង្កើត QR ថ្មី</button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="text-center mt-3">
-                    <button type="button" class="btn btn-light px-4 rounded-pill fw-bold" data-bs-dismiss="modal">បិទ (Close)</button>
+                    <button type="button" class="btn btn-light px-4 rounded-pill fw-bold" data-bs-dismiss="modal" onclick="clearQRTimer()">បិទ (Close)</button>
                 </div>
-
             </div>
         </div>
     </div>
@@ -347,6 +401,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         let allServices = [];
+        let categoryServicesMap = {};
+        let countdownInterval = null;
 
         async function fetchServices() {
             try {
@@ -354,53 +410,56 @@
                 const data = await res.json();
                 if(data.success) {
                     allServices = data.services;
-                    populateCategories(allServices);
+                    
+                    categoryServicesMap = {};
+                    allServices.forEach(s => {
+                        if(!categoryServicesMap[s.category]) {
+                            categoryServicesMap[s.category] = [];
+                        }
+                        categoryServicesMap[s.category].push(s);
+                    });
+
+                    populateCategories(Object.keys(categoryServicesMap));
                 }
             } catch (e) {
                 console.error("Error loading services:", e);
             }
         }
 
-        function populateCategories(services) {
-            const categories = [...new Set(services.map(s => s.category))];
+        function populateCategories(categories) {
             const select = document.getElementById('category-select');
-            select.innerHTML = '';
+            let html = '';
             categories.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat;
-                opt.textContent = cat;
-                select.appendChild(opt);
+                html += `<option value="${cat}">${cat}</option>`;
             });
+            select.innerHTML = html;
             onCategoryChange();
         }
 
-        function filterCategory(platform) {
+        function filterCategory(platform, btnElement) {
             document.querySelectorAll('.btn-platform').forEach(b => b.classList.remove('active'));
-            if(event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
-            }
+            if(btnElement) btnElement.classList.add('active');
 
             if(platform === 'all') {
-                populateCategories(allServices);
+                populateCategories(Object.keys(categoryServicesMap));
             } else {
-                const filtered = allServices.filter(s => s.category.toLowerCase().includes(platform.toLowerCase()));
-                populateCategories(filtered);
+                const filteredCats = Object.keys(categoryServicesMap).filter(cat => 
+                    cat.toLowerCase().includes(platform.toLowerCase())
+                );
+                populateCategories(filteredCats);
             }
         }
 
         function onCategoryChange() {
             const selectedCat = document.getElementById('category-select').value;
             const serviceSelect = document.getElementById('service-select');
-            serviceSelect.innerHTML = '';
-
-            const services = allServices.filter(s => s.category === selectedCat);
+            const services = categoryServicesMap[selectedCat] || [];
+            
+            let html = '';
             services.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s.service;
-                opt.dataset.rate = s.rate;
-                opt.textContent = `${s.service} - ${s.name} ($${s.rate}/1000)`;
-                serviceSelect.appendChild(opt);
+                html += `<option value="${s.service}" data-rate="${s.rate}">${s.service} - ${s.name} ($${s.rate}/1000)</option>`;
             });
+            serviceSelect.innerHTML = html;
             updatePrice();
         }
 
@@ -413,6 +472,8 @@
                 const rate = parseFloat(selectedOption.dataset.rate);
                 const total = (rate / 1000) * qty;
                 document.getElementById('total-price').textContent = `$${total.toFixed(4)}`;
+            } else {
+                document.getElementById('total-price').textContent = `$0.0000`;
             }
         }
 
@@ -439,10 +500,43 @@
             }
         }
 
-        function setAmount(val, btn) {
-            document.getElementById('deposit-amount').value = val.toFixed(2);
+        function selectQuickAmount(val, btnElement) {
             document.querySelectorAll('.btn-amount').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            btnElement.classList.add('active');
+            document.getElementById('deposit-amount').value = val.toFixed(2);
+        }
+
+        function resetAmountButtons() {
+            document.querySelectorAll('.btn-amount').forEach(b => b.classList.remove('active'));
+        }
+
+        function startQRTimer(durationSeconds) {
+            clearQRTimer();
+            let timer = durationSeconds;
+            const timerBadge = document.getElementById('timer-badge');
+            const expiredOverlay = document.getElementById('expired-overlay');
+            
+            expiredOverlay.classList.add('d-none');
+
+            countdownInterval = setInterval(() => {
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+
+                timerBadge.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (--timer < 0) {
+                    clearQRTimer();
+                    timerBadge.textContent = "00:00";
+                    expiredOverlay.classList.remove('d-none');
+                }
+            }, 1000);
+        }
+
+        function clearQRTimer() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
         }
 
         async function generateKHQR() {
@@ -462,7 +556,6 @@
                 const data = await res.json();
 
                 if(data.success) {
-                    // Update display amount on card
                     document.getElementById('display-card-amount').textContent = amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     
                     document.getElementById('qrcode-container').innerHTML = '';
@@ -472,7 +565,11 @@
                         height: 220,
                         correctLevel : QRCode.CorrectLevel.M
                     });
-                    new bootstrap.Modal(document.getElementById('qrModal')).show();
+                    
+                    const qrModal = new bootstrap.Modal(document.getElementById('qrModal'));
+                    qrModal.show();
+                    
+                    startQRTimer(300);
                 } else {
                     alert("មិនអាចបង្កើត QR Code បានទេ: " + data.message);
                 }
