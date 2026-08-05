@@ -247,12 +247,20 @@
     <nav class="navbar navbar-custom text-white d-flex justify-content-between align-items-center">
         <h5 class="m-0 font-weight-bold"><i class="fa-solid fa-bars me-2"></i> KHMER SMM</h5>
         
-        <div class="d-flex align-items-center gap-3">
-            <button class="btn-dollar-nav" data-bs-toggle="modal" data-bs-target="#addFundsModal" title="បញ្ចូលប្រាក់ (Add Funds)">
+        <div class="d-flex align-items-center gap-2">
+            <!-- ប៊ូតុងសញ្ញាដុល្លារ ($) -->
+            <button class="btn-dollar-nav me-2" data-bs-toggle="modal" data-bs-target="#addFundsModal" title="បញ្ចូលប្រាក់ (Add Funds)">
                 <i class="fa-solid fa-dollar-sign"></i>
             </button>
 
-            <div id="auth-section">
+            <!-- ផ្នែក Auth Buttons -->
+            <div id="auth-buttons" class="d-flex gap-2">
+                <button class="btn btn-sm btn-light fw-bold" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                <button class="btn btn-sm btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal">Sign Up</button>
+            </div>
+
+            <!-- Google Login Section -->
+            <div id="google-auth-section">
                 <div id="g_id_onload"
                     data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
                     data-callback="handleCredentialResponse">
@@ -346,6 +354,56 @@
         <span>Telegram Admin</span>
     </a>
 
+    <!-- REGISTER (SIGN UP) MODAL -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 p-3" style="border-radius: 16px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold"><i class="fa-solid fa-user-plus text-warning me-2"></i>ចុះឈ្មោះគណនីថ្មី (Sign Up)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">ឈ្មោះពេញ (Full Name)</label>
+                        <input type="text" id="reg-name" class="form-control" placeholder="បញ្ចូលឈ្មោះ">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">អ៉ីមែល (Email)</label>
+                        <input type="email" id="reg-email" class="form-control" placeholder="example@gmail.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">លេខសំងាត់ (Password)</label>
+                        <input type="password" id="reg-password" class="form-control" placeholder="យ៉ាងហោចណាស់ ៦ ខ្ទង់">
+                    </div>
+                    <button class="btn btn-warning w-100 py-2 fw-bold text-white fs-6" onclick="handleRegister()">ចុះឈ្មោះ (Sign Up)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 p-3" style="border-radius: 16px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold"><i class="fa-solid fa-right-to-bracket text-primary me-2"></i>ចូលប្រព័ន្ធ (Login)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">អ៉ីមែល (Email)</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="example@gmail.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">លេខសំងាត់ (Password)</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="បញ្ចូលលេខសំងាត់">
+                    </div>
+                    <button class="btn btn-primary w-100 py-2 fw-bold fs-6" onclick="handleLogin()">ចូលប្រព័ន្ធ (Login)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ADD FUNDS MODAL -->
     <div class="modal fade" id="addFundsModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -438,12 +496,80 @@
         let allServices = [];
         let categoryServicesMap = {};
         let countdownInterval = null;
-        
-        // Variable សម្រាប់រក្សាទុក Balance របស់ភ្ញៀវ
         let userBalance = 0.0000;
 
         function updateBalanceDisplay() {
             document.getElementById('user-balance').textContent = `$${userBalance.toFixed(4)}`;
+        }
+
+        /* មុខងារ Registration */
+        async function handleRegister() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+
+            if (!name || !email || !password) {
+                alert("សូមបំពេញព័ត៌មានឱ្យបានគ្រប់គ្រាន់!");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert("ចុះឈ្មោះជោគជ័យ! 🎉");
+                    document.getElementById('user-name').textContent = data.user.name;
+                    userBalance = data.user.balance || 0;
+                    updateBalanceDisplay();
+
+                    // បិទ Modal
+                    const regModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                    if (regModal) regModal.hide();
+                } else {
+                    alert("បរាជ័យ: " + data.message);
+                }
+            } catch (e) {
+                alert("មានបញ្ហាក្នុងការតភ្ជាប់ទៅ Server");
+            }
+        }
+
+        /* មុខងារ Login */
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                alert("សូមបញ្ចូល Email និង Password!");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert("ចូលប្រព័ន្ធជោគជ័យ! ស្វាគមន៍ " + data.user.name);
+                    document.getElementById('user-name').textContent = data.user.name;
+                    userBalance = data.user.balance || 0;
+                    updateBalanceDisplay();
+
+                    const logModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                    if (logModal) logModal.hide();
+                } else {
+                    alert("បរាជ័យ: " + data.message);
+                }
+            } catch (e) {
+                alert("មានបញ្ហាក្នុងការតភ្ជាប់ទៅ Server");
+            }
         }
 
         async function fetchServices() {
@@ -452,7 +578,6 @@
                 const data = await res.json();
                 if(data.success) {
                     allServices = data.services;
-                    
                     categoryServicesMap = {};
                     allServices.forEach(s => {
                         if(!categoryServicesMap[s.category]) {
@@ -460,7 +585,6 @@
                         }
                         categoryServicesMap[s.category].push(s);
                     });
-
                     populateCategories(Object.keys(categoryServicesMap));
                 }
             } catch (e) {
@@ -522,7 +646,6 @@
             document.getElementById('total-price').textContent = `$${total.toFixed(4)}`;
         }
 
-        /* មុខងារត្រួតពិនិត្យការទិញ (SUBMIT ORDER WITH BALANCE CHECK) */
         async function submitOrder() {
             const serviceId = document.getElementById('service-select').value;
             const link = document.getElementById('order-link').value;
@@ -534,17 +657,13 @@
                 return;
             }
 
-            // ១. ពិនិត្យមើលថាតើប្រាក់គ្រប់គ្រាន់ឬទេ?
             if (userBalance < totalCharge || userBalance === 0) {
                 alert("សមតុល្យប្រាក់របស់អ្នកមិនគ្រប់គ្រាន់ទេ! ($" + userBalance.toFixed(4) + ")\nសូមចុចបញ្ចូលប្រាក់ជាមុនសិន។");
-                
-                // បើក Add Funds Pop-up ជូនភ្ញៀវដោយស្វ័យប្រវត្តិ
                 const addFundsModal = new bootstrap.Modal(document.getElementById('addFundsModal'));
                 addFundsModal.show();
                 return;
             }
 
-            // ២. បើប្រាក់គ្រប់គ្រាន់ ផ្ញើការកុម្ម៉ង់ទៅ Backend
             try {
                 const res = await fetch('/api/order', {
                     method: 'POST',
@@ -554,10 +673,8 @@
                 const data = await res.json();
                 
                 if(data.success) {
-                    // កាត់ប្រាក់ចេញពី Balance
                     userBalance -= totalCharge;
                     updateBalanceDisplay();
-
                     alert("ទិញបានជោគជ័យ! 🎉\nOrder ID: " + (data.data.order || 'N/A'));
                 } else {
                     alert("ការកុម្ម៉ង់បរាជ័យ! " + (data.message || ''));
