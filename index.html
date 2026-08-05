@@ -210,22 +210,22 @@
                 <p class="mb-1"><strong>Instruction:</strong></p>
                 <p class="mb-1">• ស្កែនបង់ប្រាក់តាមរយៈ Bakong KHQR (ABA, ACLEDA, Sathapana, etc.)</p>
                 <p class="mb-1">• ទឹកប្រាក់នឹងចូលក្នុង Account របស់អ្នកដោយស្វ័យប្រវត្តិ 24/7</p>
-                <p class="mb-0 text-danger">• ចំនួនទឹកប្រាក់អប្បបរមា (Minimum): $1.00</p>
+                <p class="mb-0 text-danger">• ចំនួនទឹកប្រាក់អប្បបរមា (Minimum): $0.50 | អតិបរមា (Maximum): $100,000.00</p>
             </div>
 
             <label class="form-label fw-bold">ជ្រើសរើសចំនួនទឹកប្រាក់ (Select Amount)</label>
             <div class="amount-grid">
-                <button type="button" class="btn btn-amount active" onclick="setAmount(1, this)">$1.00</button>
-                <button type="button" class="btn btn-amount" onclick="setAmount(2, this)">$2.00</button>
+                <button type="button" class="btn btn-amount active" onclick="setAmount(0.5, this)">$0.50</button>
+                <button type="button" class="btn btn-amount" onclick="setAmount(1, this)">$1.00</button>
                 <button type="button" class="btn btn-amount" onclick="setAmount(5, this)">$5.00</button>
                 <button type="button" class="btn btn-amount" onclick="setAmount(10, this)">$10.00</button>
-                <button type="button" class="btn btn-amount" onclick="setAmount(20, this)">$20.00</button>
                 <button type="button" class="btn btn-amount" onclick="setAmount(50, this)">$50.00</button>
+                <button type="button" class="btn btn-amount" onclick="setAmount(100, this)">$100.00</button>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Amount ($)</label>
-                <input type="number" id="deposit-amount" class="form-control form-control-lg fw-bold" value="1.00" min="1" step="0.5">
+                <input type="number" id="deposit-amount" class="form-control form-control-lg fw-bold" value="0.50" min="0.5" max="100000" step="0.5">
             </div>
 
             <button class="btn btn-primary w-100 py-3 fw-bold fs-5" onclick="generateKHQR()">
@@ -350,9 +350,10 @@
         }
 
         async function generateKHQR() {
-            const amount = document.getElementById('deposit-amount').value;
-            if(!amount || amount < 1) {
-                alert("សូមបញ្ចូលទឹកប្រាក់យ៉ាងតិច $1.00");
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+            
+            if(isNaN(amount) || amount < 0.5 || amount > 100000) {
+                alert("សូមបញ្ចូលទឹកប្រាក់ចាប់ពី $0.50 រហូតដល់ $100,000.00!");
                 return;
             }
 
