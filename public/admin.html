@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Khmer SMM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { min-height: 100vh; background: #0d6efd; color: white; padding: 20px; }
+        .card-custom { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar">
+            <h4 class="fw-bold mb-4"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</h4>
+            <ul class="nav flex-column gap-2">
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-bold active" href="#"><i class="fa-solid fa-users me-2"></i>គ្រប់គ្រង Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="/" target="_blank"><i class="fa-solid fa-globe me-2"></i>ទៅកាន់ Website</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 p-4">
+            <h3 class="fw-bold mb-4">គ្រប់គ្រងសមតុល្យប្រាក់ (Users & Balance Management)</h3>
+
+            <div class="card card-custom p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold m-0"><i class="fa-solid fa-list me-2 text-primary"></i>បញ្ជីអ្នកប្រើប្រាស់ (Registered Users)</h5>
+                    <button class="btn btn-sm btn-primary fw-bold" onclick="loadUsers()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>ឈ្មោះ (Name)</th>
+                                <th>អ៉ីមែល (Email)</th>
+                                <th>សមតុល្យ (Balance)</th>
+                                <th>សកម្មភាព (Action)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr>
+                                <td colspan="5" class="text-center">កំពុងទាញយកទិន្នន័យ...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL កែសម្រួល BALANCE -->
+<div class="modal fade" id="editBalanceModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 p-3" style="border-radius: 16px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="fw-bold"><i class="fa-solid fa-wallet text-success me-2"></i>កែប្រែ Balance</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">User Email</label>
+                    <input type="text" id="modal-user-email" class="form-control" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Balance ថ្មី ($)</label>
+                    <input type="number" id="modal-user-balance" class="form-control fw-bold fs-5 text-success" step="0.01">
+                </div>
+                <button class="btn btn-success w-100 py-2 fw-bold" onclick="saveBalance()">រក្សាទុក (Save)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    async function loadUsers() {
+        try {
+            const res = await fetch('/api/admin/users');
+            const data = await res.json();
+
+            if (data.success) {
+                const tbody = document.getElementById('users-table-body');
+                if(data.users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">មិនទាន់មាន User ចុះឈ្មោះនៅឡើយទេ</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                data.users.forEach(u => {
+                    html += `
+                        <tr>
+                            <td>${u.id}</td>
+                            <td class="fw-bold">${u.name}</td>
+                            <td>${u.email}</td>
+                            <td class="text-success fw-bold">$${(u.balance || 0).toFixed(4)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary fw-bold" onclick="openEditModal('${u.email}', ${u.balance || 0})">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i> កែ Balance
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            }
+        } catch (e) {
+            alert("មានបញ្ហាក្នុងការទាញយកទិន្នន័យ Users");
+        }
+    }
+
+    function openEditModal(email, currentBalance) {
+        document.getElementById('modal-user-email').value = email;
+        document.getElementById('modal-user-balance').value = currentBalance;
+        const modal = new bootstrap.Modal(document.getElementById('editBalanceModal'));
+        modal.show();
+    }
+
+    async function saveBalance() {
+        const email = document.getElementById('modal-user-email').value;
+        const newBalance = document.getElementById('modal-user-balance').value;
+
+        try {
+            const res = await fetch('/api/admin/update-balance', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ email, newBalance })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                alert(data.message);
+                const modalEl = document.getElementById('editBalanceModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                loadUsers();
+            } else {
+                alert("បរាជ័យ: " + data.message);
+            }
+        } catch (e) {
+            alert("មានបញ្ហាក្នុងការរក្សាទុក");
+        }
+    }
+
+    window.onload = loadUsers;
+</script>
+</body>
+</html>
