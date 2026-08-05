@@ -1,100 +1,51 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const TelegramBot = require('node-telegram-bot-api');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// ==================== CONFIGURATION ====================
-// Telegram Bot Config (Token ថ្មី)
-const TELEGRAM_BOT_TOKEN = '8884737754:AAHa6uxDX_ufkr6UVEo4e0HX1dOAGLySTQk';
-
-// ⚠️ សូមប្តូរ ADMIN_CHAT_ID នេះទៅជា Telegram Chat ID ពិតប្រាកដរបស់បង (ឧទាហរណ៍៖ '123456789')
-const ADMIN_CHAT_ID = '123456789'; 
-
-// Initialize Telegram Bot (polling: false ដើម្បីការពារ Error 409 Conflict)
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
-
-// Middleware (កែប្រែមកប្រើ Root Directory ដោយមិនប្រើ folder 'public')
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname)));
-
-// Helper Function: ផ្ញើសារជូនដំណឹងទៅ Telegram Admin
-function sendTelegramNotification(message) {
-  if (ADMIN_CHAT_ID === '123456789') {
-    console.log('⚠️ សូមប្តូរ ADMIN_CHAT_ID ក្នុង server.js ជាមុនសិន!');
-  }
+// Function បង្កើត KHQR ត្រឹមត្រូវតាម Standard Bakong
+async function generateBakongQR(amount) {
+  const bakongAccountId = 'mon_samnang@bkrt'; // គណនី Bakong របស់បង
+  const merchantName = 'SAMNANG MON';
   
-  bot.sendMessage(ADMIN_CHAT_ID, message, { parse_mode: 'HTML' })
-    .then(() => console.log('✅ Telegram alert sent successfully!'))
-    .catch((err) => console.error('❌ Telegram Send Error:', err.message));
+  // Dynamic QR Code API Payload
+  try {
+    const response = await fetch('https://api-bakong.nbc.gov.kh/v1/generate_khqr', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        bakongAccountId: bakongAccountId,
+        merchantName: merchantName,
+        accountInformation: bakongAccountId,
+        acquisitionId: "000000",
+        amount: parseFloat(amount),
+        currency: "USD"
+      })
+    });
+    
+    const data = await response.json();
+    if (data && data.data && data.data.qr) {
+      // យក QR String ដែលបង្កើតរួចទៅ Render ជា QR Code Image
+      showQRCodeImage(data.data.qr);
+    } else {
+      // ប្រសិនបើ API ទាមទារ Dev Token ប្រើប្រាស់ Quick API URL ខាងក្រោម
+      generateFallbackQR(amount);
+    }
+  } catch (error) {
+    generateFallbackQR(amount);
+  }
 }
 
-// ==================== API ROUTES ====================
-
-// 1. API សម្រាប់ទទួលសំណើបាញ់លុយ (Submit Deposit / Add Funds)
-app.post('/api/deposit', (req, res) => {
-  const { userEmail, amount } = req.body;
-
-  if (!userEmail || !amount) {
-    return res.status(400).json({ success: false, message: 'ព័ត៌មានមិនគ្រប់គ្រាន់!' });
-  }
-
-  const telegramMsg = `
-<b>💰 មានសំណើបាញ់លុយថ្មី (New Deposit Request)</b>
-----------------------------------
-📧 <b>អ៊ីមែលអតិថិជន:</b> ${userEmail}
-💵 <b>ចំនួនទឹកប្រាក់:</b> $${parseFloat(amount).toFixed(2)}
-🏦 <b>ទូទាត់តាម:</b> Bakong KHQR (mon_samnang@bkrt)
-⏰ <b>ម៉ោង:</b> ${new Date().toLocaleString('km-KH')}
-----------------------------------
-<i>សូមពិនិត្យមើលគណនីធនាគារ និងបញ្ចូលសមតុល្យជូនអតិថិជន!</i>
-  `;
-
-  sendTelegramNotification(telegramMsg);
-
-  res.json({
-    success: true,
-    message: 'សំណើដាក់ប្រាក់ត្រូវបានផ្ញើទៅកាន់ Admin រួចរាល់!'
-  });
-});
-
-// 2. API សម្រាប់ទទួលការកម្ម៉ង់សេវាកម្ម (New Order)
-app.post('/api/order', (req, res) => {
-  const { userEmail, serviceName, link, quantity, totalPrice } = req.body;
-
-  if (!userEmail || !serviceName || !link || !quantity) {
-    return res.status(400).json({ success: false, message: 'ព័ត៌មានមិនគ្រប់គ្រាន់!' });
-  }
-
-  const telegramMsg = `
-<b>🛒 មានការកម្ម៉ង់ថ្មី (New Order Alert)</b>
-----------------------------------
-📧 <b>អតិថិជន:</b> ${userEmail}
-📦 <b>សេវាកម្ម:</b> ${serviceName}
-🔗 <b>Link:</b> ${link}
-🔢 <b>ចំនួន:</b> ${quantity}
-💵 <b>កាត់ប្រាក់អស់:</b> $${parseFloat(totalPrice).toFixed(2)}
-⏰ <b>ម៉ោង:</b> ${new Date().toLocaleString('km-KH')}
-----------------------------------
-  `;
-
-  sendTelegramNotification(telegramMsg);
-
-  res.json({
-    success: true,
-    message: 'ការកម្ម៉ង់ត្រូវបានបញ្ជូនជោគជ័យ!'
-  });
-});
-
-// Serve index.html ពី Root Directory ដោយផ្ទាល់ (ដោះស្រាយ Error ENOENT)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// ==================== START SERVER ====================
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-});
+// វិធីទី ២ លឿនជាង៖ ប្រើប្រាស់ QR Server ជាមួយ String បង្កើតតាម Format ផ្លូវការ
+function generateFallbackQR(amount) {
+  // Bakong KHQR Payload Generator Standard
+  const qrContainer = document.getElementById('qrcode');
+  qrContainer.innerHTML = ''; // Clear Old QR
+  
+  // បង្កើត Image URL សម្រាប់ Scan Bakong
+  const bakongDeepLink = `https://khqr.nbc.org.kh/qr?account=${encodeURIComponent('mon_samnang@bkrt')}&amount=${amount}&currency=USD`;
+  
+  const qrImg = document.createElement('img');
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(bakongDeepLink)}`;
+  qrImg.alt = "Bakong KHQR";
+  qrImg.style.width = "220px";
+  
+  qrContainer.appendChild(qrImg);
+}
