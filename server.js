@@ -23,6 +23,9 @@ const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 const BAKONG_ACCOUNT_ID = 'mon_samnang@bkrt';
 const MERCHANT_NAME = 'SAMNANG MON';
 
+// បញ្ជីស្ដុកអ្នកប្រើប្រាស់ (In-Memory Database)
+const users = [];
+
 // ==========================================
 // 0. ROOT ROUTE
 // ==========================================
@@ -40,8 +43,47 @@ app.get('/', (req, res) => {
 });
 
 // ==========================================
-// 1. GOOGLE AUTHENTICATION API
+// 1. AUTHENTICATION APIs
 // ==========================================
+
+// Register (Sign Up)
+app.post('/api/auth/register', (req, res) => {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+        return res.status(400).json({ success: false, message: 'សូមបញ្ចូលព័ត៌មានឱ្យបានគ្រប់គ្រាន់!' });
+    }
+
+    const existingUser = users.find(u => u.email === email);
+    if (existingUser) {
+        return res.status(400).json({ success: false, message: 'អ៉ីមែលនេះមានក្នុងប្រព័ន្ធរួចហើយ!' });
+    }
+
+    const newUser = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        balance: 0.0000
+    };
+
+    users.push(newUser);
+    res.json({ success: true, user: { name: newUser.name, email: newUser.email, balance: newUser.balance } });
+});
+
+// Login
+app.post('/api/auth/login', (req, res) => {
+    const { email, password } = req.body;
+
+    const user = users.find(u => u.email === email && u.password === password);
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'អ៉ីមែល ឬ លេខសំងាត់មិនត្រឹមត្រូវទេ!' });
+    }
+
+    res.json({ success: true, user: { name: user.name, email: user.email, balance: user.balance } });
+});
+
+// Google Login
 app.post('/api/auth/google', async (req, res) => {
     const { token } = req.body;
     try {
@@ -55,7 +97,8 @@ app.post('/api/auth/google', async (req, res) => {
             googleId: payload['sub'],
             email: payload['email'],
             name: payload['name'],
-            picture: payload['picture']
+            picture: payload['picture'],
+            balance: 0.0000
         };
 
         res.json({ success: true, user: user });
@@ -112,14 +155,13 @@ app.post('/api/order', async (req, res) => {
 });
 
 // ==========================================
-// 4. BAKONG DYNAMIC KHQR GENERATOR (FIXED EXPIRATION ERROR)
+// 4. BAKONG DYNAMIC KHQR GENERATOR
 // ==========================================
 app.post('/api/generate-khqr', (req, res) => {
     const { amount, orderId } = req.body;
 
     try {
-        // កំណត់ Expiration Timestamp ឱ្យត្រូវតាមលក្ខខណ្ឌរបស់ Bakong SDK (កំណត់ត្រឹម ១៥ នាទីបន្ទាប់)
-        const expirationTimestamp = Date.now() + (15 * 60 * 1000);
+        const expirationTimestamp = Date.now() + (15 * 60 * 1000); // 15 នាទី
 
         const optionalData = {
             currency: khqrData.currency.usd,
