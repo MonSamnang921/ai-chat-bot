@@ -3,26 +3,37 @@ const axios = require('axios');
 const { OAuth2Client } = require('google-auth-library');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// កំណត់ Serve ឯកសារ Static ចេញពី Folder 'public'
+// Serve Static Files
+app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- Config ព័ត៌មានរបស់អ្នក ---
+// --- Config ---
 const KHMER_SMM_API_URL = 'https://khmer-smm.com/api/v2';
 const KHMER_SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78';
 const GOOGLE_CLIENT_ID = '781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // ==========================================
-// ROOT ROUTE
+// ROOT ROUTE (ស្វែងរក index.html ដោយស្វ័យប្រវត្តិ)
 // ==========================================
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    const publicPath = path.join(__dirname, 'public', 'index.html');
+    const rootPath = path.join(__dirname, 'index.html');
+
+    if (fs.existsSync(publicPath)) {
+        res.sendFile(publicPath);
+    } else if (fs.existsSync(rootPath)) {
+        res.sendFile(rootPath);
+    } else {
+        res.status(404).send("រកមិនឃើញ index.html ទេ! សូមពិនិត្យមើលឈ្មោះឯកសារក្នុង GitHub របស់អ្នក។");
+    }
 });
 
 // ==========================================
@@ -97,17 +108,13 @@ app.post('/api/order', async (req, res) => {
 });
 
 // ==========================================
-// 4. BAKONG Dynamic KHQR GENERATOR (វិធីសាស្ត្រថ្មីមិនប្រើ Module)
+// 4. BAKONG Dynamic KHQR GENERATOR
 // ==========================================
 app.post('/api/generate-khqr', (req, res) => {
     const { amount, orderId } = req.body;
 
     try {
-        // បង្កើត Bakong KHQR String តាមទម្រង់ស្តង់ដារ Merchant
-        // ព័ត៌មានគណនីរបស់អ្នក mon_samnang@bkrt និងឈ្មោះ SAMNANG MON
         const qrString = `00020101021230520016mon_samnang@bkrt0111SAMNANG MON5204599953038405404${parseFloat(amount).toFixed(2)}5802KH5911SAMNANG MON6010Phnom Penh62160712SMM-${orderId}6304`;
-        
-        // គណនា MD5 Hash សម្រាប់ពិនិត្យប្រតិបត្តិការ
         const md5 = crypto.createHash('md5').update(qrString).digest('hex');
 
         res.json({
@@ -120,5 +127,5 @@ app.post('/api/generate-khqr', (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
