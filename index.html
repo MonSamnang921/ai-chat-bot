@@ -12,6 +12,7 @@
             --sidebar-dark: #121929;
             --sidebar-card: #1e293b;
             --bg-gray: #f4f6f9;
+            --btn-dark-blue: #004b7a;
         }
         
         * { box-sizing: border-box; }
@@ -132,6 +133,42 @@
 
         .khqr-box { max-width: 320px; margin: 0 auto; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .khqr-header { background: #e61b23; color: white; font-weight: 900; font-size: 18px; padding: 10px; }
+
+        /* Style សម្រាប់ Quick Deposit Grid */
+        .amount-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .btn-amount {
+            background-color: var(--btn-dark-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 5px;
+            font-weight: 700;
+            font-size: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-amount:hover, .btn-amount.active {
+            background-color: var(--brand-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 102, 255, 0.3);
+        }
+
+        .badge-btn::after {
+            content: attr(data-bonus);
+            position: absolute;
+            top: 3px;
+            right: 5px;
+            font-size: 10px;
+            color: #00ff88;
+            font-weight: 800;
+        }
     </style>
 </head>
 <body>
@@ -196,6 +233,7 @@
             <div>Welcome <span class="val-blue" id="topUser">user</span> Your Balance is : <span class="val-green" id="topBalance">$0.000000</span></div>
         </div>
 
+        <!-- TAB: NEW ORDER -->
         <div id="tab-new-order">
             <div class="platform-grid">
                 <div class="platform-card active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-list-check"></i> Everythings</div>
@@ -257,27 +295,53 @@
             </div>
         </div>
 
+        <!-- TAB: ADD FUNDS -->
         <div id="tab-add-funds" style="display: none;">
             <div class="panel-card text-center py-4">
                 <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-qrcode me-2"></i> Bakong KHQR Deposit</h5>
-                <p class="text-muted small">សូមស្កែន QR ខាងក្រោមតាមរយៈ App ធនាគារ រួចបញ្ចូលចំនួនទឹកប្រាក់ដែលបានវេរ និងចុច បញ្ជូនសំណើ</p>
+                <p class="text-muted small">សូមជ្រើសរើសចំនួនទឹកប្រាក់ ឬបញ្ចូលចំនួន រួចចុច Submit ដើម្បីស្កែន KHQR</p>
                 
                 <div class="khqr-box p-3 mb-4">
                     <div class="khqr-header mb-3">KHQR</div>
                     <div class="fw-bold text-dark fs-5">SAMNANG MON</div>
                     <div class="text-muted small mb-2">Bakong ID: <strong class="text-primary">mon_samnang@bkrt</strong></div>
-                    <img src="/khqr.jpg" alt="Bakong KHQR" class="img-fluid my-2" style="max-width: 220px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px;">
-                    <div class="text-muted small mt-2">Scan with Bakong or Any Mobile Banking App</div>
+                    <img src="/khqr.jpg" alt="Bakong KHQR" class="img-fluid my-2" style="max-width: 200px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px;">
+                    <div class="text-muted small mt-1">Scan with Bakong or Any Mobile Banking App</div>
                 </div>
 
-                <div class="input-group mb-3 mx-auto" style="max-width: 350px;">
-                    <span class="input-group-text">$</span>
-                    <input type="number" id="depositAmount" class="form-control" placeholder="1.00" step="0.01">
-                    <button class="btn btn-success fw-bold" onclick="submitDeposit()"><i class="fa-solid fa-paper-plane me-1"></i> Submit Deposit</button>
+                <div class="mb-3 mx-auto" style="max-width: 450px;">
+                    <input type="number" id="depositAmount" class="form-control text-center fs-5 custom-field mb-2" value="3" placeholder="Enter amount ($)">
+                    <button class="btn btn-primary w-100 fw-bold py-2 fs-6 mb-4" style="border-radius: 10px; background-color: var(--btn-dark-blue);" onclick="submitDeposit()">Submit</button>
+                </div>
+
+                <div class="amount-grid mx-auto" style="max-width: 500px;">
+                    <button type="button" class="btn-amount" onclick="selectAmount(3, this)">$3</button>
+                    <button type="button" class="btn-amount" onclick="selectAmount(5, this)">$5</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(15, this)">$15</button>
+                    
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(30, this)">$30</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(50, this)">$50</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(100, this)">$100</button>
+                    
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+5%" onclick="selectAmount(200, this)">$200</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+5%" onclick="selectAmount(500, this)">$500</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+10%" onclick="selectAmount(1000, this)">$1000</button>
+
+                    <button type="button" class="btn-amount" onclick="selectAmount(5.5, this)">5.5$</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(10, this)">10$</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(15, this)">15$</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(25, this)">25$</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(50, this)">50$</button>
+                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(99, this)">99$</button>
+                </div>
+
+                <div class="mt-4 text-muted small">
+                    Powered by <a href="#" class="text-primary text-decoration-none fw-bold">khmer-system.com</a>
                 </div>
             </div>
         </div>
 
+        <!-- TAB: CONTACT ADMIN -->
         <div id="tab-contact-admin" style="display: none;">
             <div class="panel-card text-center py-5">
                 <i class="fa-brands fa-telegram text-primary mb-3" style="font-size: 70px;"></i>
@@ -333,6 +397,12 @@
         document.getElementById('btnMassOrder').classList.toggle('active', type === 'mass');
         document.getElementById('singleOrderBox').style.display = type === 'single' ? 'block' : 'none';
         document.getElementById('massOrderBox').style.display = type === 'mass' ? 'block' : 'none';
+    }
+
+    function selectAmount(val, elem) {
+        document.getElementById('depositAmount').value = val;
+        document.querySelectorAll('.btn-amount').forEach(btn => btn.classList.remove('active'));
+        if (elem) elem.classList.add('active');
     }
 
     async function handleRegister() {
@@ -509,7 +579,6 @@
         const data = await res.json();
         if (data.success) {
             alert('✅ បញ្ជូនសំណើជោគជ័យ! Admin នឹងពិនិត្យ និងបញ្ចូលតុល្យភាពជូនក្នុងពេលឆាប់ៗ។');
-            document.getElementById('depositAmount').value = '';
         } else {
             alert('❌ មានបញ្ហា៖ ' + data.message);
         }
