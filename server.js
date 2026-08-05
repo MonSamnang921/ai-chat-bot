@@ -9,24 +9,32 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Point ទៅកាន់ folder public
-const publicPath = path.join(__dirname, 'public');
-app.use(express.static(publicPath));
+// Serve static files ទាំងចេញពី Root និង Folder public
+app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Sample Data
+// Sample Users Data
 let usersData = [
     { id: '1', name: 'Mon Samnang', email: 'samnang@gmail.com', balance: 50.00 },
     { id: '2', name: 'Nang User', email: 'nang@gmail.com', balance: 12.50 }
 ];
 
-// 1. Root Endpoint -> Direct ទៅកាន់ index.html
+// 1. Root Route -> ស្វែងរក index.html នៅ Root ឬក្នុង public
 app.get('/', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'), (err) => {
+        if (err) {
+            res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        }
+    });
 });
 
-// 2. Admin Endpoint -> Direct ទៅកាន់ admin.html
+// 2. Admin Route -> ស្វែងរក admin.html ក្នុង public ឬនៅ Root
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(publicPath, 'admin.html'));
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'), (err) => {
+        if (err) {
+            res.sendFile(path.join(__dirname, 'admin.html'));
+        }
+    });
 });
 
 // 3. API Endpoints
@@ -58,12 +66,7 @@ app.post('/api/admin/update-balance', (req, res) => {
     });
 });
 
-// Catch-all Route សម្រាប់ការពារ "Not Found" ពេលបាញ់ទៅ Path ផ្សេងៗ
-app.get('*', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
-});
-
-// Port Handling សម្រាប់ Render
+// Port Handling
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
