@@ -7,21 +7,21 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ==================== CONFIGURATION ====================
-// Telegram Bot Config (Token ថ្មីរបស់បង)
+// Telegram Bot Config (Token ថ្មី)
 const TELEGRAM_BOT_TOKEN = '8884737754:AAHa6uxDX_ufkr6UVEo4e0HX1dOAGLySTQk';
 
-// ⚠️ សូមប្តូរ ADMIN_CHAT_ID នេះទៅជា Telegram Chat ID ពិតប្រាកដរបស់បង
+// ⚠️ សូមប្តូរ ADMIN_CHAT_ID នេះទៅជា Telegram Chat ID ពិតប្រាកដរបស់បង (ឧទាហរណ៍៖ '123456789')
 const ADMIN_CHAT_ID = '123456789'; 
 
 // Initialize Telegram Bot (polling: false ដើម្បីការពារ Error 409 Conflict)
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
 
-// Middleware
+// Middleware (កែប្រែមកប្រើ Root Directory ដោយមិនប្រើ folder 'public')
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname)));
 
-// Helper Function: ផ្ញើសារចូល Telegram Admin
+// Helper Function: ផ្ញើសារជូនដំណឹងទៅ Telegram Admin
 function sendTelegramNotification(message) {
   if (ADMIN_CHAT_ID === '123456789') {
     console.log('⚠️ សូមប្តូរ ADMIN_CHAT_ID ក្នុង server.js ជាមុនសិន!');
@@ -34,7 +34,7 @@ function sendTelegramNotification(message) {
 
 // ==================== API ROUTES ====================
 
-// 1. API សម្រាប់ទទួលសំណើបញ្ជូនប្រាក់ (Submit Deposit / Add Funds)
+// 1. API សម្រាប់ទទួលសំណើបាញ់លុយ (Submit Deposit / Add Funds)
 app.post('/api/deposit', (req, res) => {
   const { userEmail, amount } = req.body;
 
@@ -42,7 +42,6 @@ app.post('/api/deposit', (req, res) => {
     return res.status(400).json({ success: false, message: 'ព័ត៌មានមិនគ្រប់គ្រាន់!' });
   }
 
-  // សារជូនដំណឹងទៅ Telegram Admin
   const telegramMsg = `
 <b>💰 មានសំណើបាញ់លុយថ្មី (New Deposit Request)</b>
 ----------------------------------
@@ -70,7 +69,6 @@ app.post('/api/order', (req, res) => {
     return res.status(400).json({ success: false, message: 'ព័ត៌មានមិនគ្រប់គ្រាន់!' });
   }
 
-  // សារជូនដំណឹងទៅ Telegram Admin
   const telegramMsg = `
 <b>🛒 មានការកម្ម៉ង់ថ្មី (New Order Alert)</b>
 ----------------------------------
@@ -78,7 +76,7 @@ app.post('/api/order', (req, res) => {
 📦 <b>សេវាកម្ម:</b> ${serviceName}
 🔗 <b>Link:</b> ${link}
 🔢 <b>ចំនួន:</b> ${quantity}
-កាត់ប្រាក់អស់: <b>$${parseFloat(totalPrice).toFixed(2)}</b>
+💵 <b>កាត់ប្រាក់អស់:</b> $${parseFloat(totalPrice).toFixed(2)}
 ⏰ <b>ម៉ោង:</b> ${new Date().toLocaleString('km-KH')}
 ----------------------------------
   `;
@@ -91,9 +89,9 @@ app.post('/api/order', (req, res) => {
   });
 });
 
-// Serve index.html សម្រាប់ Root Path
+// Serve index.html ពី Root Directory ដោយផ្ទាល់ (ដោះស្រាយ Error ENOENT)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ==================== START SERVER ====================
