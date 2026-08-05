@@ -4,7 +4,7 @@ const { OAuth2Client } = require('google-auth-library');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const crypto = require('crypto');
+const { BakongKHQR, khqrData, IndividualInfo } = require('bakong-khqr');
 
 const app = express();
 app.use(express.json());
@@ -20,9 +20,7 @@ const KHMER_SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78';
 const GOOGLE_CLIENT_ID = '781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-// ==========================================
-// ROOT ROUTE (ស្វែងរក index.html ដោយស្វ័យប្រវត្តិ)
-// ==========================================
+// ROOT ROUTE
 app.get('/', (req, res) => {
     const publicPath = path.join(__dirname, 'public', 'index.html');
     const rootPath = path.join(__dirname, 'index.html');
@@ -32,13 +30,11 @@ app.get('/', (req, res) => {
     } else if (fs.existsSync(rootPath)) {
         res.sendFile(rootPath);
     } else {
-        res.status(404).send("រកមិនឃើញ index.html ទេ! សូមពិនិត្យមើលឈ្មោះឯកសារក្នុង GitHub របស់អ្នក។");
+        res.status(404).send("រកមិនឃើញ index.html ទេ!");
     }
 });
 
-// ==========================================
 // 1. GOOGLE AUTHENTICATION API
-// ==========================================
 app.post('/api/auth/google', async (req, res) => {
     const { token } = req.body;
     try {
@@ -61,9 +57,7 @@ app.post('/api/auth/google', async (req, res) => {
     }
 });
 
-// ==========================================
 // 2. KHMER SMM SERVICES API
-// ==========================================
 app.get('/api/services', async (req, res) => {
     try {
         const response = await axios.post(KHMER_SMM_API_URL, {
@@ -87,9 +81,7 @@ app.get('/api/services', async (req, res) => {
     }
 });
 
-// ==========================================
 // 3. SUBMIT ORDER TO KHMER SMM
-// ==========================================
 app.post('/api/order', async (req, res) => {
     const { serviceId, link, quantity } = req.body;
     try {
@@ -107,23 +99,41 @@ app.post('/api/order', async (req, res) => {
     }
 });
 
-// ==========================================
-// 4. BAKONG Dynamic KHQR GENERATOR
-// ==========================================
+// 4. BAKONG DYNAMIC KHQR GENERATOR (ផ្លូវការជាមួយ SDK)
 app.post('/api/generate-khqr', (req, res) => {
     const { amount, orderId } = req.body;
 
     try {
-        const qrString = `00020101021230520016mon_samnang@bkrt0111SAMNANG MON5204599953038405404${parseFloat(amount).toFixed(2)}5802KH5911SAMNANG MON6010Phnom Penh62160712SMM-${orderId}6304`;
-        const md5 = crypto.createHash('md5').update(qrString).digest('hex');
+        const optionalData = {
+            currency: khqrData.currency.usd,
+            amount: parseFloat(amount),
+            mobileNumber: "",
+            storeLabel: "Khmer SMM",
+            terminalLabel: "Online Store",
+            billNumber: `SMM-${orderId || Date.now()}`
+        };
 
-        res.json({
-            success: true,
-            qrString: qrString,
-            md5: md5
-        });
+        const individualInfo = new IndividualInfo(
+            "mon_samnang@bkrt",
+            "SAMNANG MON",
+            "Phnom Penh",
+            optionalData
+        );
+
+        const khqr = new BakongKHQR();
+        const response = khqr.generateIndividual(individualInfo);
+
+        if (response.status.code === 0) {
+            res.json({
+                success: true,
+                qrString: response.data.qr,
+                md5: response.data.md5
+            });
+        } else {
+            res.status(400).json({ success: false, message: response.status.message });
+        }
     } catch (error) {
-        res.status(400).json({ success: false, message: "មិនអាចបង្កើត QR បានទេ" });
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 
