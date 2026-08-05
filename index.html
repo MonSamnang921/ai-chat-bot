@@ -256,7 +256,7 @@
             <!-- ផ្នែក Auth Buttons -->
             <div id="auth-buttons" class="d-flex gap-2">
                 <button class="btn btn-sm btn-light fw-bold" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-                <button class="btn btn-sm btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal">Sign Up</button>
+                <button class="btn btn-sm btn-warning fw-bold text-white" data-bs-toggle="modal" data-bs-target="#registerModal">Sign Up</button>
             </div>
 
             <!-- Google Login Section -->
@@ -502,7 +502,6 @@
             document.getElementById('user-balance').textContent = `$${userBalance.toFixed(4)}`;
         }
 
-        /* មុខងារ Registration */
         async function handleRegister() {
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
@@ -527,8 +526,8 @@
                     userBalance = data.user.balance || 0;
                     updateBalanceDisplay();
 
-                    // បិទ Modal
-                    const regModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                    const regModalEl = document.getElementById('registerModal');
+                    const regModal = bootstrap.Modal.getInstance(regModalEl);
                     if (regModal) regModal.hide();
                 } else {
                     alert("បរាជ័យ: " + data.message);
@@ -538,7 +537,6 @@
             }
         }
 
-        /* មុខងារ Login */
         async function handleLogin() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
@@ -562,7 +560,8 @@
                     userBalance = data.user.balance || 0;
                     updateBalanceDisplay();
 
-                    const logModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                    const logModalEl = document.getElementById('loginModal');
+                    const logModal = bootstrap.Modal.getInstance(logModalEl);
                     if (logModal) logModal.hide();
                 } else {
                     alert("បរាជ័យ: " + data.message);
@@ -774,6 +773,8 @@
             }).then(res => res.json()).then(data => {
                 if(data.success) {
                     document.getElementById('user-name').textContent = data.user.name;
+                    userBalance = data.user.balance || 0;
+                    updateBalanceDisplay();
                     alert("ចូលប្រព័ន្ធជោគជ័យ! ស្វាគមន៍ " + data.user.name);
                 }
             });
