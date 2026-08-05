@@ -3,170 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KhmerSMM - Portal & Services</title>
-  <!-- Google Sign-In SDK -->
+  <title>KhmerSMM - Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f9;
-      margin: 0;
-      padding: 20px;
+    :root {
+      --primary: #0284c7;
+      --sidebar-bg: #1e293b;
+      --body-bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text: #334155;
     }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .card {
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    h2, h3 { color: #333; margin-top: 0; }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #0284c7;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover { background: #0369a1; }
-    .user-info { display: none; text-align: left; }
-    .profile-img { width: 70px; height: 70px; border-radius: 50%; margin-bottom: 10px; }
-    .divider { margin: 15px 0; color: #888; font-size: 14px; }
-    .service-box { text-align: left; background: #fafafa; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-top: 15px; display: none; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--body-bg); color: var(--text); display: flex; min-height: 100vh; }
+
+    /* Layout Sidebar & Main Content */
+    .sidebar { width: 240px; background-color: var(--sidebar-bg); color: #fff; padding: 20px 10px; display: flex; flex-direction: column; gap: 10px; }
+    .sidebar-brand { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 20px; color: #38bdf8; }
+    .user-profile-card { background: #0f172a; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
+    .user-profile-card img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 8px; }
+    .nav-item { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 6px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+    .nav-item:hover, .nav-item.active { background-color: var(--primary); color: #fff; }
+
+    .main-content { flex: 1; padding: 20px; overflow-y: auto; }
+    
+    /* Top Stats Bar */
+    .stats-bar { background: var(--card-bg); padding: 15px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .stats-item { font-size: 14px; font-weight: 600; }
+    .stats-item span { color: var(--primary); }
+
+    /* Category Buttons */
+    .filter-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .filter-btn { background: var(--card-bg); border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Order Section (Left Form + Right Details) */
+    .order-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 900px) { .order-container { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 13px; }
+    .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
+    .form-control:focus { border-color: var(--primary); }
+
+    .btn-submit { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    .btn-submit:hover { background-color: #0369a1; }
+
+    /* Auth Box */
+    .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 999; }
+    .auth-box { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Login / Signup Form Card -->
-    <div class="card" id="authCard">
+  <!-- Google Login Modal (បង្ហាញពេលមិនទាន់ Login) -->
+  <div id="authModal" class="auth-overlay">
+    <div class="auth-box">
       <h2>KhmerSMM Login</h2>
-      <div id="authForm">
-        <input type="text" id="username" placeholder="Username">
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="handleSignUp()">Sign Up</button>
-        
-        <div class="divider">or</div>
-
-        <!-- Google Sign-In Button -->
-        <div id="g_id_onload"
-             data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
-
-        <div class="g_id_signin"
-             data-type="standard"
-             data-size="large"
-             data-theme="outline"
-             data-text="continue_with"
-             data-shape="rectangular"
-             data-logo_alignment="left">
-        </div>
-      </div>
-
-      <!-- ផ្នែកបង្ហាញ Profile ពេល Login ចូលរួច -->
-      <div id="userInfo" class="user-info">
-        <div style="display: flex; align-items: center; gap: 15px;">
-          <img id="userImg" class="profile-img" src="https://via.placeholder.com/70" alt="Profile">
-          <div>
-            <h3 id="userName" style="margin:0;"></h3>
-            <p id="userEmail" style="margin: 5px 0; color: #666;"></p>
-            <p style="margin: 0;"><b>Balance:</b> $<span id="userBalance">0.00</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ផ្នែកបង្ហាញបញ្ជីសេវាកម្មគ្រប់មុខ (Services Listing) -->
-    <div class="card service-box" id="serviceSection">
-      <h3>📋 បញ្ជីសេវាកម្មទាំងអស់ (All Services)</h3>
+      <p style="margin: 10px 0 20px 0; color: #666; font-size: 14px;">សូមចូលប្រើប្រាស់គណនី Google របស់អ្នក</p>
       
-      <label><b>ជ្រើសរើសប្រភេទសេវាកម្ម (Category):</b></label>
-      <select id="categorySelect" onchange="filterServices()">
-        <option value="">-- ទាំងអស់ --</option>
-      </select>
-
-      <label style="margin-top: 10px; display: block;"><b>ជ្រើសរើសសេវាកម្មជាក់លាក់ (Service):</b></label>
-      <select id="serviceSelect">
-        <option value="">-- សូមជ្រើសរើស Category ជាមុន --</option>
-      </select>
-
-      <label style="margin-top: 10px; display: block;"><b>Link / URL:</b></label>
-      <input type="text" id="orderLink" placeholder="https://t.me/... ឬ Link ផ្សេងៗ">
-
-      <label style="margin-top: 10px; display: block;"><b>ចំនួន (Quantity):</b></label>
-      <input type="number" id="orderQuantity" placeholder="1000">
-
-      <button onclick="alert('✅ បញ្ជាទិញសេវាកម្មជោគជ័យ!')" style="background: #10b981;">ដាក់បញ្ជាទិញ (New Order)</button>
+      <div id="g_id_onload"
+           data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
+           data-callback="handleCredentialResponse"
+           data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
     </div>
   </div>
 
+  <!-- Sidebar ខាងឆ្វេង -->
+  <div class="sidebar">
+    <div class="sidebar-brand"><i class="fa-solid fa-rocket"></i> KHMER SMM</div>
+    
+    <div class="user-profile-card">
+      <img id="userImg" src="https://via.placeholder.com/60" alt="User">
+      <div id="userName" style="font-weight: bold; font-size: 14px;">User Account</div>
+      <div style="font-size: 12px; color: #38bdf8; margin-top: 4px;">Balance: $<span id="userBalance">0.00</span></div>
+    </div>
+
+    <a href="#" class="nav-item active"><i class="fa-solid fa-cart-shopping"></i> New order</a>
+    <a href="#" class="nav-item"><i class="fa-solid fa-list-check"></i> My Orders</a>
+    <a href="#" class="nav-item"><i class="fa-solid fa-wallet"></i> Add funds</a>
+    <a href="#" class="nav-item"><i class="fa-solid fa-cubes"></i> Services</a>
+  </div>
+
+  <!-- Main Content ខាងស្តាំ -->
+  <div class="main-content">
+    
+    <!-- Stats Bar ខាងលើ -->
+    <div class="stats-bar">
+      <div class="stats-item">Welcome <span id="welcomeUser">User</span></div>
+      <div class="stats-item">Your Balance: $<span id="topBalance">0.00</span></div>
+    </div>
+
+    <!-- Quick Filter Category Buttons -->
+    <div class="filter-buttons">
+      <div class="filter-btn" onclick="filterByCategory('Telegram')"><i class="fa-brands fa-telegram" style="color: #0088cc;"></i> Telegram</div>
+      <div class="filter-btn" onclick="filterByCategory('Facebook')"><i class="fa-brands fa-facebook" style="color: #1877f2;"></i> Facebook</div>
+      <div class="filter-btn" onclick="filterByCategory('TikTok')"><i class="fa-brands fa-tiktok"></i> TikTok</div>
+      <div class="filter-btn" onclick="filterByCategory('YouTube')"><i class="fa-brands fa-youtube" style="color: red;"></i> YouTube</div>
+    </div>
+
+    <!-- Order Form & Details -->
+    <div class="order-container">
+      
+      <!-- Form ជ្រើសរើស និងដាក់ Order -->
+      <div class="card">
+        <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-cart-plus"></i> New Order</h3>
+        
+        <div class="form-group">
+          <label><i class="fa-solid fa-layer-group"></i> Category</label>
+          <select id="categorySelect" class="form-control" onchange="onCategoryChange()">
+            <option value="">-- Select Category --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-gear"></i> Service</label>
+          <select id="serviceSelect" class="form-control" onchange="updateServiceInfo()">
+            <option value="">-- Select Service --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Link / URL</label>
+          <input type="text" id="orderLink" class="form-control" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" id="orderQuantity" class="form-control" placeholder="1000">
+        </div>
+
+        <button class="btn-submit" onclick="alert('Order Placed Successfully!')">Submit Order</button>
+      </div>
+
+      <!-- Service Details Box -->
+      <div class="card" style="background: #f8fafc;">
+        <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-circle-info"></i> Service Details</h3>
+        <div id="serviceDetails">
+          <p style="color: #64748b; font-size: 14px;">សូមជ្រើសរើស Service ដើម្បីមើលព័ត៌មានលម្អិត...</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
   <script>
-    let allServicesData = [];
-
-    async function handleSignUp() {
-      const username = document.getElementById('username').value;
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      if (!username || !email || !password) {
-        alert('សូមបំពេញព័ត៌មានទាំងអស់!');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password })
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert('🎉 ' + data.message);
-          showUserSession(data.user.username, data.user.email, '', data.user.balance);
-        } else {
-          alert('❌ ' + data.message);
-        }
-      } catch (err) {
-        alert('❌ មានបញ្ហាភ្ជាប់ទៅ Server!');
-      }
-    }
+    let servicesData = [];
 
     async function handleCredentialResponse(response) {
       const data = parseJwt(response.credential);
-      try {
-        const res = await fetch('/api/google-login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: data.email, name: data.name, googleId: data.sub })
-        });
-        const result = await res.json();
-        if (result.success) {
-          alert('🎉 Google Login ជោគជ័យ!');
-          showUserSession(result.user.username, result.user.email, data.picture, result.user.balance);
-        }
-      } catch (err) {
-        alert('❌ Google Login បរាជ័យ!');
-      }
+      document.getElementById('authModal').style.display = 'none';
+      document.getElementById('userName').innerText = data.name;
+      document.getElementById('welcomeUser').innerText = data.name;
+      document.getElementById('userImg').src = data.picture;
+      
+      fetchServices();
     }
 
     function parseJwt(token) {
@@ -175,52 +171,57 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
-    function showUserSession(name, email, imgUrl, balance) {
-      document.getElementById('authForm').style.display = 'none';
-      document.getElementById('userName').innerText = name;
-      document.getElementById('userEmail').innerText = email;
-      document.getElementById('userBalance').innerText = balance.toFixed(2);
-      if(imgUrl) document.getElementById('userImg').src = imgUrl;
-      document.getElementById('userInfo').style.display = 'block';
-      document.getElementById('serviceSection').style.display = 'block';
-      
-      // ពេល Login ចូលរួច ទាញយកបញ្ជីសេវាកម្មមកបង្ហាញស្វ័យប្រវត្តិ
-      fetchServices();
-    }
-
-    // ទាញយក Services ពី Backend
     async function fetchServices() {
       try {
         const res = await fetch('/api/services');
-        const services = await res.json();
-        allServicesData = services;
-
+        servicesData = await res.json();
+        
+        const categories = [...new Set(servicesData.map(s => s.category))];
         const categorySelect = document.getElementById('categorySelect');
-        const categories = [...new Set(services.map(s => s.category))];
-
-        categorySelect.innerHTML = '<option value="">-- ជ្រើសរើស Category ទាំងអស់ --</option>';
+        categorySelect.innerHTML = '<option value="">-- Select Category --</option>';
+        
         categories.forEach(cat => {
           categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
         });
       } catch (err) {
-        console.error('Failed to load services');
+        console.error(err);
       }
     }
 
-    // Filter Services តាម Category ដែលបានជ្រើសរើស
-    function filterServices() {
-      const selectedCat = document.getElementById('categorySelect').value;
+    function filterByCategory(platform) {
+      const categorySelect = document.getElementById('categorySelect');
+      const found = Array.from(categorySelect.options).find(opt => opt.value.toLowerCase().includes(platform.toLowerCase()));
+      if(found) {
+        categorySelect.value = found.value;
+        onCategoryChange();
+      }
+    }
+
+    function onCategoryChange() {
+      const cat = document.getElementById('categorySelect').value;
       const serviceSelect = document.getElementById('serviceSelect');
+      serviceSelect.innerHTML = '<option value="">-- Select Service --</option>';
 
-      serviceSelect.innerHTML = '<option value="">-- ជ្រើសរើសសេវាកម្ម --</option>';
-
-      const filtered = selectedCat ? allServicesData.filter(s => s.category === selectedCat) : allServicesData;
-
+      const filtered = servicesData.filter(s => s.category === cat);
       filtered.forEach(s => {
-        serviceSelect.innerHTML += `<option value="${s.service}">[ID: ${s.service}] ${s.name} - Rate: $${s.rate}</option>`;
+        serviceSelect.innerHTML += `<option value="${s.service}">[${s.service}] ${s.name} - $${s.rate}</option>`;
       });
     }
-  </script>
 
+    function updateServiceInfo() {
+      const serviceId = document.getElementById('serviceSelect').value;
+      const service = servicesData.find(s => s.service == serviceId);
+      const detailsDiv = document.getElementById('serviceDetails');
+
+      if(service) {
+        detailsDiv.innerHTML = `
+          <p><b>Service Name:</b> ${service.name}</p>
+          <p><b>Price per 1000:</b> <span style="color: green; font-weight: bold;">$${service.rate}</span></p>
+          <p><b>Category:</b> ${service.category}</p>
+          <p style="margin-top: 10px; font-size: 13px; color: #475569;"><b>Start Time:</b> Instant<br><b>Speed:</b> Fast Speed</p>
+        `;
+      }
+    }
+  </script>
 </body>
 </html>
