@@ -13,6 +13,7 @@
         :root {
             --primary-blue: #0d6efd;
             --bg-light: #f4f7f6;
+            --khqr-red: #e10b17;
         }
         body {
             background-color: var(--bg-light);
@@ -102,6 +103,79 @@
             font-size: 14px;
             color: #333;
             margin-bottom: 20px;
+        }
+
+        /* --- BAKONG KHQR OFFICIAL CARD STYLES --- */
+        .khqr-card-container {
+            width: 320px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+        }
+        .khqr-header {
+            background-color: var(--khqr-red);
+            padding: 12px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%);
+        }
+        .khqr-logo-text {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+        }
+        .khqr-body {
+            padding: 20px;
+            text-align: left;
+        }
+        .khqr-merchant {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .khqr-amount {
+            font-size: 24px;
+            font-weight: 800;
+            color: #000;
+        }
+        .khqr-currency {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+        }
+        .khqr-divider {
+            border-top: 2px dashed #cbd5e1;
+            margin: 15px 0;
+        }
+        .khqr-qr-box {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        .khqr-center-icon {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            background-color: #000000;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 18px;
+            z-index: 10;
         }
     </style>
 </head>
@@ -235,14 +309,36 @@
 
     </div>
 
-    <!-- KHQR POPUP MODAL -->
+    <!-- BAKONG KHQR POPUP MODAL (NEW DESIGN) -->
     <div class="modal fade" id="qrModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-center p-4">
-                <h5 class="fw-bold mb-3">ស្កែនតាម App ធនាគារដើម្បីទូទាត់</h5>
-                <div id="qrcode-container" class="d-flex justify-content-center my-3"></div>
-                <p class="text-muted small mb-3">ឈ្មោះគណនី: <strong>SAMNANG MON</strong></p>
-                <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">បិទ</button>
+            <div class="modal-content border-0 bg-transparent">
+                
+                <!-- KHQR Standalone Card -->
+                <div class="khqr-card-container">
+                    <div class="khqr-header">
+                        <div class="khqr-logo-text">KH<span style="border: 2px solid #fff; padding: 0 4px; border-radius: 4px; margin-left: 2px;">QR</span></div>
+                    </div>
+                    <div class="khqr-body">
+                        <div class="khqr-merchant">KhmerSMM</div>
+                        <div>
+                            <span class="khqr-amount" id="display-card-amount">0.50</span>
+                            <span class="khqr-currency">USD</span>
+                        </div>
+                        
+                        <div class="khqr-divider"></div>
+
+                        <div class="khqr-qr-box">
+                            <div id="qrcode-container"></div>
+                            <div class="khqr-center-icon">$</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-light px-4 rounded-pill fw-bold" data-bs-dismiss="modal">បិទ (Close)</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -366,11 +462,15 @@
                 const data = await res.json();
 
                 if(data.success) {
+                    // Update display amount on card
+                    document.getElementById('display-card-amount').textContent = amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    
                     document.getElementById('qrcode-container').innerHTML = '';
                     new QRCode(document.getElementById('qrcode-container'), {
                         text: data.qrString,
                         width: 220,
-                        height: 220
+                        height: 220,
+                        correctLevel : QRCode.CorrectLevel.M
                     });
                     new bootstrap.Modal(document.getElementById('qrModal')).show();
                 } else {
