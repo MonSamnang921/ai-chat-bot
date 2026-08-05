@@ -1,10 +1,37 @@
-<div id="qr-modal" style="text-align: center;">
-  <h3>ស្កេនទូទាត់ប្រាក់តាម Bakong KHQR</h3>
-  <!-- បង្ហាញរូបភាព QR Code ពិតប្រាកដចេញពី App ធនាគារ -->
-  <img src="bakong-qr.jpg" alt="Bakong QR" style="width: 250px; border-radius: 8px;">
-  
-  <p style="font-size: 18px; font-weight: bold; margin-top: 10px;">
-    ចំនួនទឹកប្រាក់ត្រូវទូទាត់: <span id="display-amount" style="color: green;">$0.00</span>
-  </p>
-  <p style="color: #666; font-size: 13px;">(សូមបញ្ចូលចំនួនទឹកប្រាក់ខាងលើ ពេលធ្វើការស្កេនទូទាត់)</p>
-</div>
+<!-- TAB 3: ADD FUNDS (Bakong KHQR) -->
+      <div id="addFundsTab" class="tab-section" style="display: none;">
+        <div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
+          <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-wallet"></i> បញ្ចូលប្រាក់ (Add Funds)</h3>
+          <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+            សូមស្កែន **Bakong KHQR** ខាងក្រោមតាមរយៈ App ធនាគារណាក៏បាន (ABA, ACELEDA, Bakong...)
+          </p>
+
+          <!-- Real KHQR Display Box -->
+          <div style="background: #ffffff; border: 2px solid #e2e8f0; padding: 20px; border-radius: 12px; display: inline-block; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+            <div style="background: #e11d48; color: #ffffff; font-weight: bold; padding: 6px 16px; border-radius: 6px; font-size: 14px; margin-bottom: 12px; display: inline-block;">
+              <i class="fa-solid fa-qrcode"></i> KHQR
+            </div>
+
+            <!-- រូបភាព KHQR ពិតប្រាកដដែលបង Upload ទៅ GitHub -->
+            <div>
+              <img src="/khqr.jpg" alt="Bakong KHQR" style="width: 230px; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; padding: 5px;">
+            </div>
+
+            <div style="margin-top: 12px; font-size: 15px; font-weight: bold; color: #0f172a;">
+              SAMNANG MÔN
+            </div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">
+              Bakong ID: <strong style="color: #0284c7;">mon_samnang@bkrt</strong>
+            </div>
+          </div>
+
+          <div class="form-group" style="text-align: left;">
+            <label><i class="fa-solid fa-dollar-sign"></i> ចំនួនទឹកប្រាក់ដែលបានវេរ ($):</label>
+            <input type="number" id="depositAmount" class="form-control" placeholder="1.00" step="0.01">
+          </div>
+
+          <button class="btn-submit" onclick="submitDeposit()" style="background: #10b981;">
+            <i class="fa-solid fa-paper-plane"></i> បញ្ជូនសំណើដាក់លុយ (Submit Deposit)
+          </button>
+        </div>
+      </div>
