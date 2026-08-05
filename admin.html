@@ -2,63 +2,73 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KhmerSMM - Admin Balance Control</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 25px; border-radius: 12px; width: 320px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        h2 { text-align: center; margin-bottom: 20px; color: #38bdf8; }
-        input, select, button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #334155; box-sizing: border-box; }
-        input, select { background: #0f172a; color: #fff; }
-        button { background: #0284c7; color: white; border: none; font-weight: bold; cursor: pointer; }
-        button:hover { background: #0369a1; }
-        #result { margin-top: 15px; font-weight: bold; text-align: center; }
+        body { background-color: #0f172a; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .admin-card { background: #1e293b; border-radius: 16px; padding: 30px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        .form-control, .form-select { background-color: #e2e8f0; border: none; height: 48px; font-weight: bold; }
+        .btn-update { background-color: #0284c7; border: none; height: 48px; font-weight: bold; border-radius: 8px; }
+        .btn-update:hover { background-color: #0369a1; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Admin Balance Control</h2>
-    <input type="password" id="adminKey" placeholder="បញ្ចូល Admin Key (123456)">
-    <input type="text" id="username" placeholder="Username (ឧ. nang)">
-    <input type="number" step="0.01" id="amount" placeholder="ចំនួនទឹកប្រាក់ ($)">
-    <select id="type">
-        <option value="add">➕ បន្ថែម Balance (+)</option>
-        <option value="deduct">➖ កាត់ Balance (-)</option>
-    </select>
-    <button onclick="updateBalance()">បញ្ជាក់ (Update)</button>
+<div class="admin-card text-center">
+    <h3 class="fw-bold mb-4 text-info">Admin Balance Control</h3>
 
-    <div id="result"></div>
+    <form id="adminForm" onsubmit="handleUpdate(event)">
+        <div class="mb-3">
+            <input type="password" id="adminPass" class="form-control text-center" placeholder="••••••" required>
+        </div>
+        <div class="mb-3">
+            <input type="text" id="username" class="form-control text-center" placeholder="ឈ្មោះអ្នកប្រើ (e.g. nang)" required>
+        </div>
+        <div class="mb-3">
+            <input type="number" id="amount" class="form-control text-center" placeholder="ចំនួនទឹកប្រាក់ ($)" step="0.01" required>
+        </div>
+        <div class="mb-3">
+            <select id="action" class="form-select text-center fw-bold">
+                <option value="add">+ បន្ថែម Balance (+)</option>
+                <option value="subtract">- ដក Balance (-)</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 btn-update mb-3">បញ្ជាក់ (Update)</button>
+    </form>
+
+    <div id="statusMsg" class="fw-bold fs-6"></div>
 </div>
 
 <script>
-async function updateBalance() {
-    const adminKey = document.getElementById('adminKey').value;
+async function handleUpdate(e) {
+    e.preventDefault();
+    const statusDiv = document.getElementById('statusMsg');
+    statusDiv.innerHTML = '<span class="text-warning">កំពុងដំណើរការ...</span>';
+
+    const adminPass = document.getElementById('adminPass').value;
     const username = document.getElementById('username').value;
     const amount = document.getElementById('amount').value;
-    const type = document.getElementById('type').value;
-    const resultDiv = document.getElementById('result');
-
-    resultDiv.style.color = '#fbbf24';
-    resultDiv.innerText = 'កំពុងដំណើរការ...';
+    const action = document.getElementById('action').value;
 
     try {
         const res = await fetch('/api/admin/update-balance', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ adminKey, username, amount, type })
+            body: JSON.stringify({ adminPass, username, amount, action })
         });
+
         const data = await res.json();
 
-        if (data.success) {
-            resultDiv.style.color = '#4ade80';
-            resultDiv.innerText = `✅ ${data.message} Balance ថ្មី: $${data.newBalance.toFixed(2)}`;
+        if (res.ok && data.success) {
+            statusDiv.innerHTML = `<span class="text-success"><i class="fa-solid fa-circle-check me-1"></i> ${data.message}</span>`;
         } else {
-            resultDiv.style.color = '#f87171';
-            resultDiv.innerText = `❌ ${data.message}`;
+            statusDiv.innerHTML = `<span class="text-danger"><i class="fa-solid fa-circle-xmark me-1"></i> ${data.message || 'បរាជ័យ!'}</span>`;
         }
     } catch (err) {
-        resultDiv.style.color = '#f87171';
-        resultDiv.innerText = '❌ មានបញ្ហាភ្ជាប់ទៅ Server!';
+        statusDiv.innerHTML = `<span class="text-danger"><i class="fa-solid fa-triangle-exclamation me-1"></i> មានបញ្ហាភ្ជាប់ទៅ Server!</span>`;
     }
 }
 </script>
