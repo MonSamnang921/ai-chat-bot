@@ -3,11 +3,14 @@ const axios = require('axios');
 const { OAuth2Client } = require('google-auth-library');
 const { BakongKHQR, khqrData, MerchantInfo } = require("bakong-khqr");
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public')); // សម្រាប់ Serve ឯកសារ Frontend
+
+// កំណត់ Serve ឯកសារ Static ចេញពី Folder 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Config ព័ត៌មានរបស់អ្នក ---
 const KHMER_SMM_API_URL = 'https://khmer-smm.com/api/v2';
@@ -17,6 +20,13 @@ const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const BAKONG_ID = 'mon_samnang@bkrt';
 const MERCHANT_NAME = 'SAMNANG MON';
+
+// ==========================================
+// ROOT ROUTE (ដោះស្រាយបញ្ហា Cannot GET /)
+// ==========================================
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // ==========================================
 // 1. GOOGLE AUTHENTICATION API
@@ -130,4 +140,5 @@ app.post('/api/generate-khqr', (req, res) => {
     }
 });
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
