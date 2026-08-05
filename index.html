@@ -9,6 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- QRCode Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
         :root {
             --primary-blue: #0d6efd;
@@ -154,13 +157,14 @@
             box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
         }
 
+        /* KHQR Card UI */
         .khqr-card-container {
-            width: 320px;
+            width: 330px;
             margin: 0 auto;
             background: #ffffff;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border: 1px solid #e2e8f0;
         }
         .khqr-header {
@@ -209,6 +213,7 @@
             justify-content: center;
             align-items: center;
             padding: 10px;
+            min-height: 220px;
         }
         .khqr-center-icon {
             position: absolute;
@@ -451,7 +456,7 @@
     </div>
 
     <!-- BAKONG KHQR POPUP MODAL -->
-    <div class="modal fade" id="qrModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal fade" id="qrModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 bg-transparent">
                 <div class="khqr-card-container">
@@ -481,6 +486,9 @@
                             </div>
                         </div>
                     </div>
+                    <div class="p-2 text-center bg-light border-top">
+                        <button type="button" class="btn btn-sm btn-secondary w-100 fw-bold" data-bs-dismiss="modal">បិទ (Close)</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -489,9 +497,9 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- ADMIN SYNC & FRONTEND LOGIC -->
+    <!-- FRONTEND & KHQR LOGIC -->
     <script>
-        // --- មុខងារសម្រាប់ SYNC ទៅ ADMIN DASHBOARD ---
+        // --- SYNC TO ADMIN DASHBOARD ---
         function syncUserToAdmin(name, email) {
             if (!email) return;
             fetch('/api/register', {
@@ -500,9 +508,7 @@
                 body: JSON.stringify({ name: name, email: email })
             })
             .then(res => res.json())
-            .then(data => {
-                console.log("Admin Register Sync:", data);
-            })
+            .then(data => console.log("Admin Register Sync:", data))
             .catch(err => console.error("Sync Error:", err));
         }
 
@@ -516,13 +522,9 @@
                 return;
             }
 
-            // Sync ទៅកាន់ Admin Panel ភ្លាមៗ
             syncUserToAdmin(name, email);
-
-            // Update UI
             document.getElementById('user-name').innerText = name || email.split('@')[0];
             
-            // បិទ Modal
             const modalEl = document.getElementById('registerModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
             if (modal) modal.hide();
@@ -537,13 +539,9 @@
                 return;
             }
 
-            // Sync ទៅកាន់ Admin Panel
             syncUserToAdmin('', email);
-
-            // Update UI
             document.getElementById('user-name').innerText = email.split('@')[0];
 
-            // បិទ Modal
             const modalEl = document.getElementById('loginModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
             if (modal) modal.hide();
@@ -551,7 +549,6 @@
             alert("ចូលប្រព័ន្ធជោគជ័យ!");
         }
 
-        // --- GOOGLE SIGN-IN HANDLER ---
         function handleCredentialResponse(response) {
             try {
                 const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
@@ -566,7 +563,7 @@
             }
         }
 
-        // --- SMM UI STUBS ---
+        // --- SMM FORM STUBS ---
         function filterCategory(cat, btn) {
             document.querySelectorAll('.btn-platform').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
@@ -582,11 +579,40 @@
         function resetAmountButtons() {
             document.querySelectorAll('.btn-amount').forEach(b => b.classList.remove('active'));
         }
+
+        // --- KHQR GENERATOR & MODAL HANDLING ---
+        let qrCodeInstance = null;
+
         function generateKHQR() {
-            const amount = document.getElementById('deposit-amount').value;
-            document.getElementById('display-card-amount').innerText = parseFloat(amount).toFixed(2);
-            const qrModal = new bootstrap.Modal(document.getElementById('qrModal'));
-            qrModal.show();
+            const amount = parseFloat(document.getElementById('deposit-amount').value || "0.50").toFixed(2);
+            document.getElementById('display-card-amount').innerText = amount;
+
+            // 1. បិទ Add Funds Modal
+            const addFundsModalEl = document.getElementById('addFundsModal');
+            const addFundsModal = bootstrap.Modal.getInstance(addFundsModalEl);
+            if (addFundsModal) {
+                addFundsModal.hide();
+            }
+
+            // 2. លុប QR Code ចាស់ (បើមាន)
+            const qrContainer = document.getElementById('qrcode-container');
+            qrContainer.innerHTML = '';
+
+            // 3. បង្កើត QR Code ថ្មី
+            qrCodeInstance = new QRCode(qrContainer, {
+                text: `https://khmersmm.com/pay?amount=${amount}`, // តំណភ្ជាប់ ឬ KHQR String របស់អ្នក
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            // 4. បង្ហាញ QR Modal
+            setTimeout(() => {
+                const qrModal = new bootstrap.Modal(document.getElementById('qrModal'));
+                qrModal.show();
+            }, 300);
         }
     </script>
 </body>
