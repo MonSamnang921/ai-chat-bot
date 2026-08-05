@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khmer SMM Panel</title>
+    <!-- Font Awesome Icons & Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
@@ -105,6 +107,7 @@
 </head>
 <body>
 
+    <!-- Header Navbar -->
     <nav class="navbar navbar-custom text-white d-flex justify-content-between align-items-center">
         <h5 class="m-0 font-weight-bold"><i class="fa-solid fa-bars me-2"></i> KHMER SMM</h5>
         <div id="auth-section">
@@ -116,17 +119,20 @@
         </div>
     </nav>
 
+    <!-- Banner -->
     <div class="welcome-banner">
-        សូមស្វាគមន៍មកកាន់ Khmer SMM  🎉
+        សូមស្វាគមន៍មកកាន់ Khmer SMM 🎉
     </div>
 
     <div class="container mt-3" style="max-width: 600px;">
         
+        <!-- User Stats -->
         <div class="stats-box">
             <div>You are currently on: <span>New order</span></div>
             <div>Welcome <span id="user-name">Guest</span> Your Balance is : <span id="user-balance">$0.00</span></div>
         </div>
 
+        <!-- Quick Platform Filter Grid -->
         <div class="platform-grid">
             <button class="btn btn-platform active" onclick="filterCategory('all')">
                 <i class="fa-solid fa-list-check"></i> Everythings
@@ -145,12 +151,14 @@
             </button>
         </div>
 
+        <!-- NEW ORDER CARD -->
         <div class="card-custom">
             <div class="d-flex gap-2 mb-3">
                 <button class="btn btn-primary w-50 tab-btn"><i class="fa-solid fa-cart-shopping"></i> New Order</button>
                 <button class="btn btn-outline-primary w-50 tab-btn"><i class="fa-solid fa-star"></i> Mass order</button>
             </div>
 
+            <!-- Category Select -->
             <div class="mb-3">
                 <label class="form-label fw-bold"><i class="fa-solid fa-shapes text-warning"></i> Category</label>
                 <select id="category-select" class="form-select" onchange="onCategoryChange()">
@@ -158,6 +166,7 @@
                 </select>
             </div>
 
+            <!-- Service Select -->
             <div class="mb-3">
                 <label class="form-label fw-bold"><i class="fa-solid fa-box text-primary"></i> Service</label>
                 <select id="service-select" class="form-select" onchange="updatePrice()">
@@ -165,16 +174,19 @@
                 </select>
             </div>
 
+            <!-- Link -->
             <div class="mb-3">
                 <label class="form-label fw-bold">តំណភ្ជាប់ (Link)</label>
                 <input type="text" id="order-link" class="form-control" placeholder="https://...">
             </div>
 
+            <!-- Quantity -->
             <div class="mb-3">
                 <label class="form-label fw-bold">ចំនួន (Quantity)</label>
                 <input type="number" id="order-quantity" class="form-control" value="1000" oninput="updatePrice()">
             </div>
 
+            <!-- Total Price -->
             <div class="mb-3">
                 <label class="form-label fw-bold">តម្លៃសរុប (Total Charge):</label>
                 <h4 class="text-success fw-bold" id="total-price">$0.0000</h4>
@@ -183,6 +195,7 @@
             <button class="btn btn-primary w-100 py-2 fw-bold" onclick="submitOrder()">បញ្ជូនការកុម្ម៉ង់</button>
         </div>
 
+        <!-- ADD FUNDS (KHQR) CARD -->
         <div class="card-custom">
             <h5 class="fw-bold mb-3"><i class="fa-solid fa-wallet text-primary me-2"></i>បញ្ចូលប្រាក់ (Add Funds)</h5>
             
@@ -222,6 +235,7 @@
 
     </div>
 
+    <!-- KHQR POPUP MODAL -->
     <div class="modal fade" id="qrModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-center p-4">
@@ -231,7 +245,7 @@
                 <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">បិទ</button>
             </div>
         </div>
-    </div>
+    </div
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
