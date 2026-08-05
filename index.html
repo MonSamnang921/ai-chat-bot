@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KhmerSMM - Dashboard</title>
+  <title>KhmerSMM - Web Service</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Sign-In SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
@@ -23,7 +24,7 @@
     .sidebar-brand { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 20px; color: #38bdf8; }
     .user-profile-card { background: #0f172a; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
     .user-profile-card img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 8px; }
-    .nav-item { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 6px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+    .nav-item { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 6px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
     .nav-item:hover, .nav-item.active { background-color: var(--primary); color: #fff; }
 
     .main-content { flex: 1; padding: 20px; overflow-y: auto; }
@@ -38,7 +39,7 @@
     .filter-btn { background: var(--card-bg); border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 8px; }
     .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-    /* Order Section (Left Form + Right Details) */
+    /* Order & Content Cards */
     .order-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 900px) { .order-container { grid-template-columns: 1fr; } }
 
@@ -51,25 +52,42 @@
     .btn-submit { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; }
     .btn-submit:hover { background-color: #0369a1; }
 
-    /* Auth Box */
+    /* Auth Box Modal */
     .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 999; }
-    .auth-box { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; }
+    .auth-box { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 360px; text-align: center; }
+    .divider { margin: 15px 0; color: #888; font-size: 14px; }
   </style>
 </head>
 <body>
 
-  <!-- Google Login Modal (បង្ហាញពេលមិនទាន់ Login) -->
+  <!-- Auth Modal (Sign Up / Google Login) -->
   <div id="authModal" class="auth-overlay">
     <div class="auth-box">
       <h2>KhmerSMM Login</h2>
-      <p style="margin: 10px 0 20px 0; color: #666; font-size: 14px;">សូមចូលប្រើប្រាស់គណនី Google របស់អ្នក</p>
-      
-      <div id="g_id_onload"
-           data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
-           data-callback="handleCredentialResponse"
-           data-auto_prompt="false">
+      <div id="authForm" style="margin-top: 15px;">
+        <input type="text" id="signupUsername" class="form-control" placeholder="Username" style="margin-bottom: 8px;">
+        <input type="email" id="signupEmail" class="form-control" placeholder="Email" style="margin-bottom: 8px;">
+        <input type="password" id="signupPassword" class="form-control" placeholder="Password" style="margin-bottom: 8px;">
+        <button class="btn-submit" onclick="handleSignUp()">Sign Up</button>
+        
+        <div class="divider">or</div>
+
+        <!-- Google Sign-In -->
+        <div id="g_id_onload"
+             data-client_id="781995105719-0ne5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+
+        <div class="g_id_signin"
+             data-type="standard"
+             data-size="large"
+             data-theme="outline"
+             data-text="continue_with"
+             data-shape="rectangular"
+             data-logo_alignment="left">
+        </div>
       </div>
-      <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
     </div>
   </div>
 
@@ -83,71 +101,95 @@
       <div style="font-size: 12px; color: #38bdf8; margin-top: 4px;">Balance: $<span id="userBalance">0.00</span></div>
     </div>
 
-    <a href="#" class="nav-item active"><i class="fa-solid fa-cart-shopping"></i> New order</a>
-    <a href="#" class="nav-item"><i class="fa-solid fa-list-check"></i> My Orders</a>
-    <a href="#" class="nav-item"><i class="fa-solid fa-wallet"></i> Add funds</a>
-    <a href="#" class="nav-item"><i class="fa-solid fa-cubes"></i> Services</a>
+    <div class="nav-item active" onclick="showTab('order')"><i class="fa-solid fa-cart-shopping"></i> New order</div>
+    <div class="nav-item" onclick="showTab('addFunds')"><i class="fa-solid fa-wallet"></i> Add funds</div>
+    <a href="/admin.html" target="_blank" class="nav-item"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
   </div>
 
   <!-- Main Content ខាងស្តាំ -->
   <div class="main-content">
     
-    <!-- Stats Bar ខាងលើ -->
+    <!-- Top Stats Bar -->
     <div class="stats-bar">
       <div class="stats-item">Welcome <span id="welcomeUser">User</span></div>
       <div class="stats-item">Your Balance: $<span id="topBalance">0.00</span></div>
     </div>
 
-    <!-- Quick Filter Category Buttons -->
-    <div class="filter-buttons">
-      <div class="filter-btn" onclick="filterByCategory('Telegram')"><i class="fa-brands fa-telegram" style="color: #0088cc;"></i> Telegram</div>
-      <div class="filter-btn" onclick="filterByCategory('Facebook')"><i class="fa-brands fa-facebook" style="color: #1877f2;"></i> Facebook</div>
-      <div class="filter-btn" onclick="filterByCategory('TikTok')"><i class="fa-brands fa-tiktok"></i> TikTok</div>
-      <div class="filter-btn" onclick="filterByCategory('YouTube')"><i class="fa-brands fa-youtube" style="color: red;"></i> YouTube</div>
+    <!-- TAB ទី ១: NEW ORDER -->
+    <div id="orderTab">
+      <!-- Quick Filter Category Buttons -->
+      <div class="filter-buttons">
+        <div class="filter-btn" onclick="filterByCategory('Telegram')"><i class="fa-brands fa-telegram" style="color: #0088cc;"></i> Telegram</div>
+        <div class="filter-btn" onclick="filterByCategory('Facebook')"><i class="fa-brands fa-facebook" style="color: #1877f2;"></i> Facebook</div>
+        <div class="filter-btn" onclick="filterByCategory('TikTok')"><i class="fa-brands fa-tiktok"></i> TikTok</div>
+        <div class="filter-btn" onclick="filterByCategory('YouTube')"><i class="fa-brands fa-youtube" style="color: red;"></i> YouTube</div>
+      </div>
+
+      <!-- Order Form & Service Details -->
+      <div class="order-container">
+        <div class="card">
+          <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-cart-plus"></i> New Order</h3>
+          
+          <div class="form-group">
+            <label><i class="fa-solid fa-layer-group"></i> Category</label>
+            <select id="categorySelect" class="form-control" onchange="onCategoryChange()">
+              <option value="">-- Select Category --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-gear"></i> Service</label>
+            <select id="serviceSelect" class="form-control" onchange="updateServiceInfo()">
+              <option value="">-- Select Service --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Link / URL</label>
+            <input type="text" id="orderLink" class="form-control" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="orderQuantity" class="form-control" placeholder="1000">
+          </div>
+
+          <button class="btn-submit" onclick="alert('✅ បញ្ជាទិញសេវាកម្មជោគជ័យ!')">Submit Order</button>
+        </div>
+
+        <div class="card" style="background: #f8fafc;">
+          <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-circle-info"></i> Service Details</h3>
+          <div id="serviceDetails">
+            <p style="color: #64748b; font-size: 14px;">សូមជ្រើសរើស Service ដើម្បីមើលព័ត៌មានលម្អិត...</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Order Form & Details -->
-    <div class="order-container">
-      
-      <!-- Form ជ្រើសរើស និងដាក់ Order -->
-      <div class="card">
-        <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-cart-plus"></i> New Order</h3>
-        
-        <div class="form-group">
-          <label><i class="fa-solid fa-layer-group"></i> Category</label>
-          <select id="categorySelect" class="form-control" onchange="onCategoryChange()">
-            <option value="">-- Select Category --</option>
-          </select>
+    <!-- TAB ទី ២: ADD FUNDS (ដាក់លុយ) -->
+    <div id="addFundsTab" style="display: none;">
+      <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <h3><i class="fa-solid fa-wallet"></i> បញ្ចូលប្រាក់ (Add Funds)</h3>
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">ស្កែន QR Code ឬវេរប្រាក់ រួចបញ្ចូល Transaction ID ដើម្បីស្នើសុំបន្ថែម Balance</p>
+
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+          <p><b>Bakong KHQR / ABA Bank</b></p>
+          <img src="https://via.placeholder.com/180?text=Scan+KHQR" alt="QR" style="border-radius: 8px; margin: 10px 0;">
+          <p style="font-size: 13px;">ឈ្មោះគណនី៖ <b>MON SAMNANG</b></p>
         </div>
 
         <div class="form-group">
-          <label><i class="fa-solid fa-gear"></i> Service</label>
-          <select id="serviceSelect" class="form-control" onchange="updateServiceInfo()">
-            <option value="">-- Select Service --</option>
-          </select>
+          <label>ចំនួនទឹកប្រាក់ដែលបានវេរ ($):</label>
+          <input type="number" id="depositAmount" class="form-control" placeholder="5.00" step="0.01">
         </div>
 
         <div class="form-group">
-          <label>Link / URL</label>
-          <input type="text" id="orderLink" class="form-control" placeholder="https://...">
+          <label>លេខប្រតិបត្តិការ / Transaction ID (TID):</label>
+          <input type="text" id="txnId" class="form-control" placeholder="បញ្ចូលលេខ TID ពី ABA/Bakong">
         </div>
 
-        <div class="form-group">
-          <label>Quantity</label>
-          <input type="number" id="orderQuantity" class="form-control" placeholder="1000">
-        </div>
-
-        <button class="btn-submit" onclick="alert('Order Placed Successfully!')">Submit Order</button>
+        <button class="btn-submit" onclick="submitDeposit()" style="background: #10b981;">បញ្ជូនសំណើដាក់លុយ (Submit Deposit)</button>
       </div>
-
-      <!-- Service Details Box -->
-      <div class="card" style="background: #f8fafc;">
-        <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-circle-info"></i> Service Details</h3>
-        <div id="serviceDetails">
-          <p style="color: #64748b; font-size: 14px;">សូមជ្រើសរើស Service ដើម្បីមើលព័ត៌មានលម្អិត...</p>
-        </div>
-      </div>
-
     </div>
 
   </div>
@@ -155,14 +197,53 @@
   <script>
     let servicesData = [];
 
+    // Sign Up Function
+    async function handleSignUp() {
+      const username = document.getElementById('signupUsername').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+
+      if (!username || !email || !password) {
+        alert('សូមបំពេញព័ត៌មានទាំងអស់!');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          alert('🎉 ' + data.message);
+          loginSuccess(data.user.username, data.user.email, '', data.user.balance);
+        } else {
+          alert('❌ ' + data.message);
+        }
+      } catch (err) {
+        alert('❌ មានបញ្ហាភ្ជាប់ទៅ Server!');
+      }
+    }
+
+    // Google Login Callback
     async function handleCredentialResponse(response) {
       const data = parseJwt(response.credential);
-      document.getElementById('authModal').style.display = 'none';
-      document.getElementById('userName').innerText = data.name;
-      document.getElementById('welcomeUser').innerText = data.name;
-      document.getElementById('userImg').src = data.picture;
-      
-      fetchServices();
+      try {
+        const res = await fetch('/api/google-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: data.email, name: data.name, googleId: data.sub })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert('🎉 Google Login ជោគជ័យ!');
+          loginSuccess(result.user.username, result.user.email, data.picture, result.user.balance);
+        }
+      } catch (err) {
+        alert('❌ Google Login បរាជ័យ!');
+      }
     }
 
     function parseJwt(token) {
@@ -171,6 +252,18 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
+    function loginSuccess(name, email, imgUrl, balance) {
+      document.getElementById('authModal').style.display = 'none';
+      document.getElementById('userName').innerText = name;
+      document.getElementById('welcomeUser').innerText = name;
+      document.getElementById('userBalance').innerText = balance.toFixed(2);
+      document.getElementById('topBalance').innerText = balance.toFixed(2);
+      if(imgUrl) document.getElementById('userImg').src = imgUrl;
+
+      fetchServices();
+    }
+
+    // Fetch Services Data
     async function fetchServices() {
       try {
         const res = await fetch('/api/services');
@@ -220,6 +313,47 @@
           <p><b>Category:</b> ${service.category}</p>
           <p style="margin-top: 10px; font-size: 13px; color: #475569;"><b>Start Time:</b> Instant<br><b>Speed:</b> Fast Speed</p>
         `;
+      }
+    }
+
+    // Tab Navigation Function
+    function showTab(tabName) {
+      if (tabName === 'addFunds') {
+        document.getElementById('orderTab').style.display = 'none';
+        document.getElementById('addFundsTab').style.display = 'block';
+      } else {
+        document.getElementById('orderTab').style.display = 'block';
+        document.getElementById('addFundsTab').style.display = 'none';
+      }
+    }
+
+    // Submit Deposit Request Function
+    async function submitDeposit() {
+      const amount = document.getElementById('depositAmount').value;
+      const txnId = document.getElementById('txnId').value;
+      const username = document.getElementById('userName').innerText;
+
+      if (!amount || !txnId) {
+        alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ និង លេខប្រតិបត្តិការ (TID)!');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/deposit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, amount, txnId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('🎉 ' + data.message);
+          document.getElementById('depositAmount').value = '';
+          document.getElementById('txnId').value = '';
+        } else {
+          alert('❌ ' + data.message);
+        }
+      } catch (err) {
+        alert('❌ មានបញ្ហាភ្ជាប់ទៅ Server!');
       }
     }
   </script>
