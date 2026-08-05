@@ -1,37 +1,529 @@
-<!-- TAB 3: ADD FUNDS (Bakong KHQR) -->
-      <div id="addFundsTab" class="tab-section" style="display: none;">
-        <div class="card" style="max-width: 500px; margin: 0 auto; text-align: center;">
-          <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-wallet"></i> បញ្ចូលប្រាក់ (Add Funds)</h3>
-          <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
-            សូមស្កែន **Bakong KHQR** ខាងក្រោមតាមរយៈ App ធនាគារណាក៏បាន (ABA, ACELEDA, Bakong...)
-          </p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhmerSMM - Web Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-blue: #0066ff;
+            --sidebar-dark: #121929;
+            --sidebar-card: #1e293b;
+            --bg-gray: #f4f6f9;
+        }
+        
+        * { box-sizing: border-box; }
+        body { background-color: var(--bg-gray); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; margin: 0; padding: 0; }
+        
+        /* Top Header Bar */
+        .top-navbar { 
+            background-color: var(--brand-blue); 
+            color: white; 
+            padding: 8px 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-toggle-menu { 
+            background: white; 
+            color: #333; 
+            border: none; 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 8px; 
+            font-size: 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer;
+        }
+        .top-nav-icons { display: flex; gap: 8px; align-items: center; }
+        .top-nav-icons .icon-btn { 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.25); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            text-decoration: none; 
+            font-size: 16px; 
+            border: 1px solid rgba(255,255,255,0.4);
+        }
 
-          <!-- Real KHQR Display Box -->
-          <div style="background: #ffffff; border: 2px solid #e2e8f0; padding: 20px; border-radius: 12px; display: inline-block; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-            <div style="background: #e11d48; color: #ffffff; font-weight: bold; padding: 6px 16px; border-radius: 6px; font-size: 14px; margin-bottom: 12px; display: inline-block;">
-              <i class="fa-solid fa-qrcode"></i> KHQR
-            </div>
+        /* Layout Structure */
+        .wrapper { display: flex; position: relative; }
+        
+        /* Sidebar Menu Drawer */
+        .sidebar { 
+            width: 260px; 
+            background: var(--sidebar-dark); 
+            color: #fff; 
+            padding: 15px; 
+            position: fixed; 
+            top: 58px; 
+            bottom: 0; 
+            left: -260px; 
+            z-index: 999; 
+            transition: left 0.3s ease; 
+            overflow-y: auto;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-overlay { 
+            position: fixed; 
+            top: 58px; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 998; 
+            display: none; 
+        }
+        .sidebar-overlay.active { display: block; }
 
-            <!-- រូបភាព KHQR ពិតប្រាកដដែលបង Upload ទៅ GitHub -->
-            <div>
-              <img src="/khqr.jpg" alt="Bakong KHQR" style="width: 230px; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; padding: 5px;">
-            </div>
+        @media (min-width: 992px) {
+            .sidebar { position: static; left: 0; flex-shrink: 0; min-height: calc(100vh - 58px); }
+            .sidebar-overlay { display: none !important; }
+            .btn-toggle-menu { display: none; }
+        }
 
-            <div style="margin-top: 12px; font-size: 15px; font-weight: bold; color: #0f172a;">
-              SAMNANG MÔN
-            </div>
-            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">
-              Bakong ID: <strong style="color: #0284c7;">mon_samnang@bkrt</strong>
-            </div>
-          </div>
+        .main-content { flex-grow: 1; padding: 15px; width: 100%; max-width: 100%; }
 
-          <div class="form-group" style="text-align: left;">
-            <label><i class="fa-solid fa-dollar-sign"></i> ចំនួនទឹកប្រាក់ដែលបានវេរ ($):</label>
-            <input type="number" id="depositAmount" class="form-control" placeholder="1.00" step="0.01">
-          </div>
+        /* User Card */
+        .user-profile-card { background: var(--sidebar-card); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .avatar-box { width: 60px; height: 60px; border-radius: 50%; background: #00d2ff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-menu .menu-item { color: #94a3b8; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .sidebar-menu .menu-item:hover, .sidebar-menu .menu-item.active { background: var(--brand-blue); color: white; }
 
-          <button class="btn-submit" onclick="submitDeposit()" style="background: #10b981;">
-            <i class="fa-solid fa-paper-plane"></i> បញ្ជូនសំណើដាក់លុយ (Submit Deposit)
-          </button>
+        /* Stats Section */
+        .stats-box { background: transparent; padding: 10px 0; text-align: center; margin-bottom: 10px; font-weight: 600; color: #333; line-height: 1.8; }
+        .stats-box .val-blue { color: var(--brand-blue); font-weight: 800; }
+        .stats-box .val-green { color: #10b981; font-weight: 800; }
+
+        /* Platform Grid Buttons */
+        .platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .platform-card { 
+            background: white; 
+            border: 1px solid #0066ff; 
+            border-radius: 8px; 
+            padding: 10px 8px; 
+            text-align: center; 
+            font-weight: 600; 
+            color: #0066ff; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+            font-size: 13px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .platform-card.active { background: #eaf2ff; border-width: 2px; }
+
+        /* Card Panels */
+        .panel-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        
+        .order-type-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .order-type-btn { padding: 10px; border-radius: 8px; border: 1px solid #0066ff; background: white; color: #0066ff; font-weight: 700; text-align: center; cursor: pointer; }
+        .order-type-btn.active { background: #0066ff; color: white; }
+
+        .custom-field { background-color: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px 12px !important; }
+
+        /* KHQR Display Card */
+        .khqr-box { max-width: 320px; margin: 0 auto; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .khqr-header { background: #e61b23; color: white; font-weight: 900; font-size: 18px; padding: 10px; }
+    </style>
+</head>
+<body>
+
+<!-- TOP NAVBAR -->
+<div class="top-navbar">
+    <button class="btn-toggle-menu" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="top-nav-icons">
+        <a href="#" class="icon-btn" style="background:#ff0000;" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="#" class="icon-btn" style="background:#f59e0b;" onclick="showTab('add-funds')" title="Deposit"><i class="fa-solid fa-dollar-sign"></i></a>
+        <a href="#" class="icon-btn" style="background:#3b82f6;" onclick="showTab('contact-admin')" title="Support"><i class="fa-solid fa-headset"></i></a>
+        <a href="#" class="icon-btn" style="background:#ef4444;" title="Profile"><i class="fa-solid fa-user"></i></a>
+    </div>
+</div>
+
+<!-- AUTH CONTAINER -->
+<div id="auth-section" class="container py-5" style="max-width: 420px;">
+    <div class="panel-card text-center">
+        <h4 class="fw-bold text-primary mb-4"><i class="fa-solid fa-cloud-bolt me-2"></i>KhmerSMM</h4>
+        <div class="nav nav-pills nav-justified mb-3">
+            <button class="nav-link active" onclick="switchForm('login')">Sign In</button>
+            <button class="nav-link" onclick="switchForm('register')">Sign Up</button>
         </div>
-      </div>
+        <div id="login-form">
+            <input type="text" id="login-key" class="form-control mb-3 custom-field" placeholder="Username / Email">
+            <input type="password" id="login-pass" class="form-control mb-3 custom-field" placeholder="Password">
+            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleLogin()">Sign In</button>
+        </div>
+        <div id="register-form" style="display: none;">
+            <input type="text" id="reg-user" class="form-control mb-3 custom-field" placeholder="Username">
+            <input type="email" id="reg-email" class="form-control mb-3 custom-field" placeholder="Email">
+            <input type="password" id="reg-pass" class="form-control mb-3 custom-field" placeholder="Password">
+            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleRegister()">Sign Up</button>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div id="dashboard-section" class="wrapper" style="display: none;">
+    <!-- SIDEBAR OVERLAY FOR MOBILE -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebarDrawer">
+        <div class="user-profile-card">
+            <div class="avatar-box">
+                <i class="fa-solid fa-user fs-2 text-white"></i>
+            </div>
+            <div class="small text-muted mb-1">Balance: <strong class="text-success" id="sidebarBalance">$0.000000</strong></div>
+            <div class="fw-bold text-white" id="sidebarUser">User</div>
+        </div>
+
+        <div class="sidebar-menu">
+            <a class="menu-item active" onclick="showTab('new-order', this)"><i class="fa-solid fa-cart-shopping"></i> New order</a>
+            <a class="menu-item" onclick="showTab('add-funds', this)"><i class="fa-solid fa-wallet"></i> Add funds</a>
+            <a class="menu-item" onclick="showTab('contact-admin', this)"><i class="fa-brands fa-telegram"></i> Telegram Chat</a>
+            <a class="menu-item text-danger mt-4" onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- TOP STATS BAR -->
+        <div class="stats-box">
+            <div>You are currently on: <span class="val-blue" id="currentPageName">New order</span></div>
+            <div>Panel Orders: <span class="val-blue">3731377</span></div>
+            <div>My Orders: <span class="val-blue" id="topOrders">0</span></div>
+            <div>Total Spend: <span class="val-blue" id="topSpend">$0.0</span></div>
+            <div>Welcome <span class="val-blue" id="topUser">user</span> Your Balance is : <span class="val-green" id="topBalance">$0.000000</span></div>
+        </div>
+
+        <!-- TAB: NEW ORDER -->
+        <div id="tab-new-order">
+            <!-- Platform Quick Filters -->
+            <div class="platform-grid">
+                <div class="platform-card active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-list-check"></i> Everythings</div>
+                <div class="platform-card" onclick="filterPlatform('TikTok', this)"><i class="fa-brands fa-tiktok text-dark"></i> TikTok</div>
+                <div class="platform-card" onclick="filterPlatform('Facebook', this)"><i class="fa-brands fa-facebook text-primary"></i> Facebook</div>
+                <div class="platform-card" onclick="filterPlatform('Facebook Live', this)"><i class="fa-brands fa-facebook text-danger"></i> Facebook Live</div>
+                <div class="platform-card" onclick="filterPlatform('YouTube', this)"><i class="fa-brands fa-youtube text-danger"></i> YouTube</div>
+                <div class="platform-card" onclick="filterPlatform('Telegram', this)"><i class="fa-brands fa-telegram text-info"></i> Telegram</div>
+            </div>
+
+            <div class="panel-card">
+                <div class="order-type-tabs">
+                    <div class="order-type-btn active" id="btnSingleOrder" onclick="toggleOrderType('single')"><i class="fa-solid fa-cart-shopping me-1"></i> New Order</div>
+                    <div class="order-type-btn" id="btnMassOrder" onclick="toggleOrderType('mass')"><i class="fa-solid fa-star me-1"></i> Mass order</div>
+                </div>
+
+                <!-- Single Order Form -->
+                <div id="singleOrderBox">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fa-solid fa-magnifying-glass text-muted me-1"></i> Search</label>
+                        <input type="text" id="searchInput" class="form-control custom-field" placeholder="Search service..." oninput="filterServicesBySearch()">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fa-solid fa-shapes text-info me-1"></i> Category</label>
+                        <select id="categorySelect" class="form-select custom-field" onchange="onCategoryChange()"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fa-solid fa-tag text-primary me-1"></i> Service</label>
+                        <select id="serviceSelect" class="form-select custom-field" onchange="onServiceChange()"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Link</label>
+                        <input type="text" id="orderLink" class="form-control custom-field" placeholder="https://...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Quantity</label>
+                        <input type="number" id="orderQuantity" class="form-control custom-field" placeholder="1000" oninput="calculateCharge()">
+                        <small class="text-muted" id="minMaxText">Min: 50 - Max: 1,000,000</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Charge ($)</label>
+                        <input type="text" id="orderCharge" class="form-control custom-field fw-bold text-primary" readonly value="$0.0000">
+                    </div>
+
+                    <button class="btn btn-primary w-100 fw-bold py-2 mt-2" style="border-radius:10px;" onclick="submitOrder()">Submit Order</button>
+                </div>
+
+                <!-- Mass Order Form -->
+                <div id="massOrderBox" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">One order per line in format:</label>
+                        <textarea id="massOrderInput" class="form-control custom-field" rows="6" placeholder="service_id|quantity|link"></textarea>
+                    </div>
+                    <button class="btn btn-primary w-100 fw-bold py-2" onclick="alert('Mass order submitted!')">Submit Mass Orders</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: ADD FUNDS (Bakong Static KHQR) -->
+        <div id="tab-add-funds" style="display: none;">
+            <div class="panel-card text-center py-4">
+                <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-qrcode me-2"></i> Bakong KHQR Deposit</h5>
+                <p class="text-muted small">សូមស្កែន QR ខាងក្រោមតាមរយៈ App ធនាគារ រួចបញ្ចូលចំនួនទឹកប្រាក់ដែលបានវេរ និងចុច បញ្ជូនសំណើ</p>
+                
+                <div class="khqr-box p-3 mb-4">
+                    <div class="khqr-header mb-3">KHQR</div>
+                    <div class="fw-bold text-dark fs-5">SAMNANG MON</div>
+                    <div class="text-muted small mb-2">Bakong ID: <strong class="text-primary">mon_samnang@bkrt</strong></div>
+                    
+                    <!-- បង្ហាញរូបភាព STATIC khqr.jpg ពិតប្រាកដដែលស្កេនបាន ១០០% -->
+                    <img src="/khqr.jpg" alt="Bakong KHQR" class="img-fluid my-2" style="max-width: 220px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px;">
+                    <div class="text-muted small mt-2">Scan with Bakong or Any Mobile Banking App</div>
+                </div>
+
+                <div class="input-group mb-3 mx-auto" style="max-width: 350px;">
+                    <span class="input-group-text">$</span>
+                    <input type="number" id="depositAmount" class="form-control" placeholder="1.00" step="0.01">
+                    <button class="btn btn-success fw-bold" onclick="submitDeposit()"><i class="fa-solid fa-paper-plane me-1"></i> Submit Deposit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: TELEGRAM CONTACT -->
+        <div id="tab-contact-admin" style="display: none;">
+            <div class="panel-card text-center py-5">
+                <i class="fa-brands fa-telegram text-primary mb-3" style="font-size: 70px;"></i>
+                <h4 class="fw-bold">Contact Support</h4>
+                <p class="text-muted">Need help with your orders or balance? Chat with us directly.</p>
+                <a href="https://t.me/mon_samnang" target="_blank" class="btn btn-primary fw-bold px-4 py-2 rounded-pill"><i class="fa-brands fa-telegram me-2"></i> Open Telegram Chat</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let rawServicesList = [];
+    let groupedCategories = {};
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebarDrawer');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    function switchForm(type) {
+        document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
+        document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
+    }
+
+    function showTab(tabName, elem) {
+        document.getElementById('tab-new-order').style.display = tabName === 'new-order' ? 'block' : 'none';
+        document.getElementById('tab-add-funds').style.display = tabName === 'add-funds' ? 'block' : 'none';
+        document.getElementById('tab-contact-admin').style.display = tabName === 'contact-admin' ? 'block' : 'none';
+        
+        document.getElementById('currentPageName').innerText = tabName === 'new-order' ? 'New order' : (tabName === 'add-funds' ? 'Add funds' : 'Support');
+
+        if (elem) {
+            document.querySelectorAll('.sidebar-menu .menu-item').forEach(m => m.classList.remove('active'));
+            elem.classList.add('active');
+        }
+
+        if (window.innerWidth < 992) {
+            const sidebar = document.getElementById('sidebarDrawer');
+            const overlay = document.querySelector('.sidebar-overlay');
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+    }
+
+    function toggleOrderType(type) {
+        document.getElementById('btnSingleOrder').classList.toggle('active', type === 'single');
+        document.getElementById('btnMassOrder').classList.toggle('active', type === 'mass');
+        document.getElementById('singleOrderBox').style.display = type === 'single' ? 'block' : 'none';
+        document.getElementById('massOrderBox').style.display = type === 'mass' ? 'block' : 'none';
+    }
+
+    async function handleRegister() {
+        const username = document.getElementById('reg-user').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-pass').value;
+        const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) switchForm('login');
+    }
+
+    async function handleLogin() {
+        const loginKey = document.getElementById('login-key').value;
+        const password = document.getElementById('login-pass').value;
+        const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ loginKey, password }) });
+        const data = await res.json();
+        if (data.success) {
+            currentUser = data.user;
+            document.getElementById('sidebarUser').innerText = currentUser.username;
+            document.getElementById('topUser').innerText = currentUser.username;
+            document.getElementById('sidebarBalance').innerText = `$${(currentUser.balance || 0).toFixed(6)}`;
+            document.getElementById('topBalance').innerText = `$${(currentUser.balance || 0).toFixed(6)}`;
+            document.getElementById('topOrders').innerText = currentUser.myOrders || 0;
+            document.getElementById('topSpend').innerText = `$${(currentUser.totalSpend || 0).toFixed(1)}`;
+            
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            fetchApiServices();
+        } else { alert(data.message); }
+    }
+
+    async function fetchApiServices() {
+        try {
+            const res = await fetch('/api/services');
+            const data = await res.json();
+            if (data.success) {
+                rawServicesList = data.services;
+                filterPlatform('All');
+            }
+        } catch (e) {
+            console.log("Error loading services");
+        }
+    }
+
+    function filterPlatform(platform, btnElem) {
+        if (btnElem) {
+            document.querySelectorAll('.platform-card').forEach(b => b.classList.remove('active'));
+            btnElem.classList.add('active');
+        }
+
+        groupedCategories = {};
+        rawServicesList.forEach(item => {
+            const cat = item.category || 'Other';
+            if (platform === 'All' || cat.toLowerCase().includes(platform.toLowerCase())) {
+                if (!groupedCategories[cat]) groupedCategories[cat] = [];
+                groupedCategories[cat].push(item);
+            }
+        });
+
+        const catSelect = document.getElementById('categorySelect');
+        catSelect.innerHTML = '';
+        Object.keys(groupedCategories).forEach(cat => {
+            let opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat;
+            catSelect.appendChild(opt);
+        });
+        onCategoryChange();
+    }
+
+    function filterServicesBySearch() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        if (!query) return filterPlatform('All');
+
+        const serviceSelect = document.getElementById('serviceSelect');
+        serviceSelect.innerHTML = '';
+        rawServicesList.forEach(s => {
+            if (s.name.toLowerCase().includes(query) || s.service.toString().includes(query)) {
+                let opt = document.createElement('option');
+                opt.value = s.service;
+                opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
+                opt.setAttribute('data-rate', s.rate);
+                opt.setAttribute('data-min', s.min || 10);
+                opt.setAttribute('data-max', s.max || 1000000);
+                serviceSelect.appendChild(opt);
+            }
+        });
+        onServiceChange();
+    }
+
+    function onCategoryChange() {
+        const catValue = document.getElementById('categorySelect').value;
+        const serviceSelect = document.getElementById('serviceSelect');
+        serviceSelect.innerHTML = '';
+        (groupedCategories[catValue] || []).forEach(s => {
+            let opt = document.createElement('option');
+            opt.value = s.service;
+            opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
+            opt.setAttribute('data-rate', s.rate);
+            opt.setAttribute('data-min', s.min || 10);
+            opt.setAttribute('data-max', s.max || 1000000);
+            serviceSelect.appendChild(opt);
+        });
+        onServiceChange();
+    }
+
+    function onServiceChange() {
+        const opt = document.getElementById('serviceSelect').selectedOptions[0];
+        if (!opt) return;
+        document.getElementById('minMaxText').innerText = `Min: ${opt.getAttribute('data-min')} - Max: ${parseInt(opt.getAttribute('data-max')).toLocaleString()}`;
+        calculateCharge();
+    }
+
+    function calculateCharge() {
+        const opt = document.getElementById('serviceSelect').selectedOptions[0];
+        if (!opt) return;
+        const rate = parseFloat(opt.getAttribute('data-rate')) || 0;
+        const qty = parseInt(document.getElementById('orderQuantity').value) || 0;
+        document.getElementById('orderCharge').value = `$${(rate * (qty / 1000)).toFixed(4)}`;
+    }
+
+    async function submitOrder() {
+        const serviceId = document.getElementById('serviceSelect').value;
+        const link = document.getElementById('orderLink').value;
+        const quantity = document.getElementById('orderQuantity').value;
+        const chargeStr = document.getElementById('orderCharge').value.replace('$', '');
+
+        if (!link || !quantity) return alert('សូមបញ្ចូល Link និង Quantity!');
+
+        const res = await fetch('/api/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                userEmail: currentUser ? currentUser.email || currentUser.username : 'Guest',
+                serviceName: serviceId, 
+                link: link, 
+                quantity: quantity, 
+                totalPrice: chargeStr 
+            })
+        });
+        const data = await res.json();
+        alert(data.message);
+    }
+
+    // Function ផ្ញើប្រាក់កក់/ទូទាត់ប្រាក់ ទៅកាន់ Telegram Bot
+    async function submitDeposit() {
+        const amount = document.getElementById('depositAmount').value;
+        if (!amount || amount <= 0) {
+            return alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ដែលបានវេរ!');
+        }
+
+        const res = await fetch('/api/deposit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userEmail: currentUser ? currentUser.username : 'Guest User',
+                amount: amount
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ បញ្ជូនសំណើជោគជ័យ! Admin នឹងពិនិត្យ និងបញ្ចូលតុល្យភាពជូនក្នុងពេលឆាប់ៗ។');
+            document.getElementById('depositAmount').value = '';
+        } else {
+            alert('❌ មានបញ្ហា៖ ' + data.message);
+        }
+    }
+</script>
+</body>
+</html>
