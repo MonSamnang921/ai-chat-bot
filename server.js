@@ -12,28 +12,29 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files ចេញពី folder public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Sample Data (ឬប្រើ database របស់អ្នក)
-let users = [
-    { username: 'nang', balance: 0.00 }
+// បញ្ជី Users ដំបូង (Sample Data - អាចកែសម្រួល ឬភ្ជាប់ Database តាមក្រោយបាន)
+let usersData = [
+    { id: '1', name: 'Mon Samnang', email: 'samnang@gmail.com', balance: 50.00 },
+    { id: '2', name: 'Nang User', email: 'nang@gmail.com', balance: 12.50 },
+    { id: '3', name: 'Test Account', email: 'test@gmail.com', balance: 0.00 }
 ];
 
-// Admin Secret Passcode (កែតាមចិត្ត)
-const ADMIN_PASSCODE = "123456";
-
-// API Endpoint សម្រាប់ Update Balance
-app.post('/api/admin/update-balance', (req, res) => {
-    const { adminPass, username, amount, action } = req.body;
-
-    // ពិនិត្យ Passcode សុវត្ថិភាព
-    if (adminPass !== ADMIN_PASSCODE) {
-        return res.status(401).json({ success: false, message: 'Passcode មិនត្រឹមត្រូវទេ!' });
+// 1. API: Get all users
+app.get('/api/admin/users', (req, res) => {
+    try {
+        res.json({ success: true, users: usersData });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
     }
+});
 
-    let user = users.find(u => u.username === username);
+// 2. API: Update user balance
+app.post('/api/admin/update-balance', (req, res) => {
+    const { email, amount, action } = req.body;
+
+    let user = usersData.find(u => u.email === email || u.name === email);
     if (!user) {
-        // បើមិនទាន់មាន user នោះទេ អាចបង្កើតថ្មី
-        user = { username, balance: 0 };
-        users.push(user);
+        return res.status(404).json({ success: false, message: 'រកមិនឃើញ User នេះទេ!' });
     }
 
     const val = parseFloat(amount) || 0;
@@ -42,17 +43,17 @@ app.post('/api/admin/update-balance', (req, res) => {
     } else if (action === 'subtract' || action === '-') {
         user.balance = Math.max(0, user.balance - val);
     } else {
-        user.balance = val; // Set ផ្ទាល់
+        user.balance = val;
     }
 
     return res.json({ 
         success: true, 
-        message: `ធ្វើបច្ចុប្បន្នភាពជោគជ័យ! ${username} មាន Balance ថ្មីគឺ $${user.balance.toFixed(2)}`,
+        message: `កែប្រែ Balance ឱ្យ ${user.name} ជោគជ័យ!`,
         newBalance: user.balance 
     });
 });
 
-// Fallback Route
+// Serve Admin Dashboard HTML File
 app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
