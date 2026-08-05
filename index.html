@@ -9,12 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <style>
         body { font-family: 'Kantumruy Pro', sans-serif; background-color: #f4f6f9; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<!-- 1. ទំព័រ LOGIN -->
 <div id="loginSection" class="d-flex justify-content-center align-items-center vh-100">
     <div class="card p-4 text-center shadow-sm" style="width: 380px;">
         <h3 class="fw-bold mb-3">KHMER SMM</h3>
@@ -27,7 +26,6 @@
     </div>
 </div>
 
-<!-- 2. ទំព័រ DASHBOARD SMM -->
 <div id="dashboardSection" class="hidden">
     <nav class="navbar navbar-dark bg-primary px-4">
         <span class="navbar-brand fw-bold">KHMER SMM</span>
@@ -39,7 +37,6 @@
 
     <div class="container my-5">
         <div class="row">
-            <!-- Order Form -->
             <div class="col-md-7 mb-4">
                 <div class="card p-4 shadow-sm">
                     <h5 class="fw-bold mb-3">បង្កើតការកុម្ម៉ង់ (New Order)</h5>
@@ -61,7 +58,6 @@
                 </div>
             </div>
 
-            <!-- Deposit KHQR Form -->
             <div class="col-md-5">
                 <div class="card p-4 shadow-sm text-center">
                     <h5 class="fw-bold mb-3">បញ្ចូលប្រាក់ (Add Funds KHQR)</h5>
@@ -79,7 +75,6 @@
 </div>
 
 <script>
-    // 1. Google Login Handler
     function handleCredentialResponse(response) {
         fetch('/api/auth/google', {
             method: 'POST',
@@ -97,7 +92,6 @@
         });
     }
 
-    // 2. Load Services from KhmerSmm API
     function loadServices() {
         fetch('/api/services')
         .then(res => res.json())
@@ -112,7 +106,6 @@
         });
     }
 
-    // 3. Submit Order
     document.getElementById('orderForm').addEventListener('submit', function(e) {
         e.preventDefault();
         fetch('/api/order', {
@@ -128,7 +121,6 @@
         .then(data => alert('កុម្ម៉ង់ជោគជ័យ! Order ID: ' + (data.data.order || 'N/A')));
     });
 
-    // 4. Generate Bakong KHQR Code
     function generateQR() {
         const amount = document.getElementById('depositAmount').value;
         fetch('/api/generate-khqr', {
