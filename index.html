@@ -26,7 +26,6 @@
             padding: 10px 20px;
         }
         
-        /* Style សម្រាប់ប៊ូតុងសញ្ញាដុល្លារនៅលើ Header Bar */
         .btn-dollar-nav {
             background-color: #ffc107;
             color: #000;
@@ -132,7 +131,6 @@
             margin-bottom: 20px;
         }
 
-        /* --- CONTACT TELEGRAM FLOATING BUTTON --- */
         .float-contact-btn {
             position: fixed;
             bottom: 20px;
@@ -156,7 +154,6 @@
             box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
         }
 
-        /* --- BAKONG KHQR OFFICIAL CARD STYLES --- */
         .khqr-card-container {
             width: 320px;
             margin: 0 auto;
@@ -251,12 +248,10 @@
         <h5 class="m-0 font-weight-bold"><i class="fa-solid fa-bars me-2"></i> KHMER SMM</h5>
         
         <div class="d-flex align-items-center gap-3">
-            <!-- ប៊ូតុងសញ្ញាដុល្លារ ($) សម្រាប់ចុចទៅកាន់ Add Funds -->
-            <a href="#add-funds-section" class="btn-dollar-nav" title="បញ្ចូលប្រាក់ (Add Funds)">
+            <button class="btn-dollar-nav" data-bs-toggle="modal" data-bs-target="#addFundsModal" title="បញ្ចូលប្រាក់ (Add Funds)">
                 <i class="fa-solid fa-dollar-sign"></i>
-            </a>
+            </button>
 
-            <!-- Google Login Section -->
             <div id="auth-section">
                 <div id="g_id_onload"
                     data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
@@ -277,7 +272,7 @@
         <!-- User Stats -->
         <div class="stats-box">
             <div>You are currently on: <span>New order</span></div>
-            <div>Welcome <span id="user-name">Guest</span> Your Balance is : <span id="user-balance">$0.00</span></div>
+            <div>Welcome <span id="user-name">Guest</span> Your Balance is : <span id="user-balance" class="text-success fw-bold">$0.0000</span></div>
         </div>
 
         <!-- Quick Platform Filter Grid -->
@@ -343,52 +338,59 @@
             <button class="btn btn-primary w-100 py-2 fw-bold" onclick="submitOrder()">បញ្ជូនការកុម្ម៉ង់</button>
         </div>
 
-        <!-- ADD FUNDS (KHQR) CARD -->
-        <div class="card-custom" id="add-funds-section">
-            <h5 class="fw-bold mb-3"><i class="fa-solid fa-wallet text-primary me-2"></i>បញ្ចូលប្រាក់ (Add Funds)</h5>
-            
-            <div class="mb-3">
-                <label class="form-label fw-bold">Method</label>
-                <select class="form-select fw-bold text-primary">
-                    <option selected>Bakong KHQR Auto 24/7</option>
-                </select>
-            </div>
-
-            <div class="instruction-box">
-                <p class="mb-1"><strong>Instruction:</strong></p>
-                <p class="mb-1">• ស្កែនបង់ប្រាក់តាមរយៈ Bakong KHQR (ABA, ACLEDA, Sathapana, etc.)</p>
-                <p class="mb-1">• ទឹកប្រាក់នឹងចូលក្នុង Account របស់អ្នកដោយស្វ័យប្រវត្តិ 24/7</p>
-                <p class="mb-0 text-danger">• ចំនួនទឹកប្រាក់អប្បបរមា (Minimum): $0.50 | អតិបរមា (Maximum): $100,000.00</p>
-            </div>
-
-            <label class="form-label fw-bold">ជ្រើសរើសចំនួនទឹកប្រាក់ (Select Amount)</label>
-            <div class="amount-grid">
-                <button type="button" class="btn btn-amount active" onclick="selectQuickAmount(0.5, this)">$0.50</button>
-                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(1, this)">$1.00</button>
-                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(5, this)">$5.00</button>
-                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(10, this)">$10.00</button>
-                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(50, this)">$50.00</button>
-                <button type="button" class="btn btn-amount" onclick="selectQuickAmount(100, this)">$100.00</button>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-bold">Amount ($)</label>
-                <input type="number" id="deposit-amount" class="form-control form-control-lg fw-bold" value="0.50" min="0.5" max="100000" step="0.01" oninput="resetAmountButtons()">
-            </div>
-
-            <button class="btn btn-primary w-100 py-3 fw-bold fs-5" onclick="generateKHQR()">
-                <i class="fa-solid fa-qrcode me-2"></i> Pay / បង្កើត KHQR
-            </button>
-        </div>
-
     </div>
 
     <!-- FLOATING TELEGRAM BUTTON -->
-    <!-- ផ្លាស់ប្តូរ t.me/your_admin_username ទៅជា Username Telegram របស់អ្នក -->
     <a href="https://t.me/your_admin_username" target="_blank" class="float-contact-btn">
         <i class="fa-brands fa-telegram fa-xl"></i>
         <span>Telegram Admin</span>
     </a>
+
+    <!-- ADD FUNDS MODAL -->
+    <div class="modal fade" id="addFundsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 p-2" style="border-radius: 16px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold m-0"><i class="fa-solid fa-wallet text-primary me-2"></i>បញ្ចូលប្រាក់ (Add Funds)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Method</label>
+                        <select class="form-select fw-bold text-primary">
+                            <option selected>Bakong KHQR Auto 24/7</option>
+                        </select>
+                    </div>
+
+                    <div class="instruction-box">
+                        <p class="mb-1"><strong>Instruction:</strong></p>
+                        <p class="mb-1">• ស្កែនបង់ប្រាក់តាមរយៈ Bakong KHQR (ABA, ACLEDA, Sathapana, etc.)</p>
+                        <p class="mb-1">• ទឹកប្រាក់នឹងចូលក្នុង Account របស់អ្នកដោយស្វ័យប្រវត្តិ 24/7</p>
+                        <p class="mb-0 text-danger">• ចំនួនទឹកប្រាក់អប្បបរមា (Minimum): $0.50 | អតិបរមា (Maximum): $100,000.00</p>
+                    </div>
+
+                    <label class="form-label fw-bold">ជ្រើសរើសចំនួនទឹកប្រាក់ (Select Amount)</label>
+                    <div class="amount-grid">
+                        <button type="button" class="btn btn-amount active" onclick="selectQuickAmount(0.5, this)">$0.50</button>
+                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(1, this)">$1.00</button>
+                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(5, this)">$5.00</button>
+                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(10, this)">$10.00</button>
+                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(50, this)">$50.00</button>
+                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(100, this)">$100.00</button>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Amount ($)</label>
+                        <input type="number" id="deposit-amount" class="form-control form-control-lg fw-bold" value="0.50" min="0.5" max="100000" step="0.01" oninput="resetAmountButtons()">
+                    </div>
+
+                    <button class="btn btn-primary w-100 py-3 fw-bold fs-5" onclick="generateKHQR()">
+                        <i class="fa-solid fa-qrcode me-2"></i> Pay / បង្កើត KHQR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- BAKONG KHQR POPUP MODAL -->
     <div class="modal fade" id="qrModal" tabindex="-1" data-bs-backdrop="static">
@@ -414,7 +416,6 @@
                             <div id="qrcode-container"></div>
                             <div class="khqr-center-icon" id="qr-center-dollar">$</div>
                             
-                            <!-- Expiration Overlay -->
                             <div id="expired-overlay" class="qr-expired-overlay d-none">
                                 <i class="fa-solid fa-clock-rotate-left fa-3x text-danger mb-2"></i>
                                 <span class="fw-bold text-dark">QR Code ផុតកំណត់!</span>
@@ -437,6 +438,13 @@
         let allServices = [];
         let categoryServicesMap = {};
         let countdownInterval = null;
+        
+        // Variable សម្រាប់រក្សាទុក Balance របស់ភ្ញៀវ
+        let userBalance = 0.0000;
+
+        function updateBalanceDisplay() {
+            document.getElementById('user-balance').textContent = `$${userBalance.toFixed(4)}`;
+        }
 
         async function fetchServices() {
             try {
@@ -497,40 +505,65 @@
             updatePrice();
         }
 
-        function updatePrice() {
+        function calculateTotalPrice() {
             const serviceSelect = document.getElementById('service-select');
             const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
             const qty = parseFloat(document.getElementById('order-quantity').value) || 0;
             
             if(selectedOption) {
                 const rate = parseFloat(selectedOption.dataset.rate);
-                const total = (rate / 1000) * qty;
-                document.getElementById('total-price').textContent = `$${total.toFixed(4)}`;
-            } else {
-                document.getElementById('total-price').textContent = `$0.0000`;
+                return (rate / 1000) * qty;
             }
+            return 0;
         }
 
+        function updatePrice() {
+            const total = calculateTotalPrice();
+            document.getElementById('total-price').textContent = `$${total.toFixed(4)}`;
+        }
+
+        /* មុខងារត្រួតពិនិត្យការទិញ (SUBMIT ORDER WITH BALANCE CHECK) */
         async function submitOrder() {
             const serviceId = document.getElementById('service-select').value;
             const link = document.getElementById('order-link').value;
             const quantity = document.getElementById('order-quantity').value;
+            const totalCharge = calculateTotalPrice();
 
             if(!link || !quantity) {
                 alert("សូមបញ្ចូល Link និង ចំនួន Quantity ឱ្យបានត្រឹមត្រូវ!");
                 return;
             }
 
-            const res = await fetch('/api/order', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ serviceId, link, quantity })
-            });
-            const data = await res.json();
-            if(data.success) {
-                alert("ការកុម្ម៉ង់ជោគជ័យ! Order ID: " + (data.data.order || 'N/A'));
-            } else {
-                alert("ការកុម្ម៉ង់បរាជ័យ!");
+            // ១. ពិនិត្យមើលថាតើប្រាក់គ្រប់គ្រាន់ឬទេ?
+            if (userBalance < totalCharge || userBalance === 0) {
+                alert("សមតុល្យប្រាក់របស់អ្នកមិនគ្រប់គ្រាន់ទេ! ($" + userBalance.toFixed(4) + ")\nសូមចុចបញ្ចូលប្រាក់ជាមុនសិន។");
+                
+                // បើក Add Funds Pop-up ជូនភ្ញៀវដោយស្វ័យប្រវត្តិ
+                const addFundsModal = new bootstrap.Modal(document.getElementById('addFundsModal'));
+                addFundsModal.show();
+                return;
+            }
+
+            // ២. បើប្រាក់គ្រប់គ្រាន់ ផ្ញើការកុម្ម៉ង់ទៅ Backend
+            try {
+                const res = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ serviceId, link, quantity })
+                });
+                const data = await res.json();
+                
+                if(data.success) {
+                    // កាត់ប្រាក់ចេញពី Balance
+                    userBalance -= totalCharge;
+                    updateBalanceDisplay();
+
+                    alert("ទិញបានជោគជ័យ! 🎉\nOrder ID: " + (data.data.order || 'N/A'));
+                } else {
+                    alert("ការកុម្ម៉ង់បរាជ័យ! " + (data.message || ''));
+                }
+            } catch(e) {
+                alert("មានបញ្ហាក្នុងការតភ្ជាប់ទៅ Server");
             }
         }
 
@@ -581,6 +614,10 @@
                 return;
             }
 
+            const addFundsModalEl = document.getElementById('addFundsModal');
+            const addFundsModal = bootstrap.Modal.getInstance(addFundsModalEl);
+            if(addFundsModal) addFundsModal.hide();
+
             try {
                 const res = await fetch('/api/generate-khqr', {
                     method: 'POST',
@@ -625,7 +662,10 @@
             });
         }
 
-        window.onload = fetchServices;
+        window.onload = function() {
+            fetchServices();
+            updateBalanceDisplay();
+        };
     </script>
 </body>
 </html>
