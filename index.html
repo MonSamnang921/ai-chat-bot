@@ -23,8 +23,33 @@
         }
         .navbar-custom {
             background-color: var(--primary-blue);
-            padding: 12px 20px;
+            padding: 10px 20px;
         }
+        
+        /* Style សម្រាប់ប៊ូតុងសញ្ញាដុល្លារនៅលើ Header Bar */
+        .btn-dollar-nav {
+            background-color: #ffc107;
+            color: #000;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-decoration: none;
+        }
+        .btn-dollar-nav:hover {
+            transform: scale(1.1);
+            background-color: #ffca2c;
+            color: #000;
+        }
+
         .welcome-banner {
             background-color: #eef3fe;
             color: #2b3a4a;
@@ -224,12 +249,21 @@
     <!-- Header Navbar -->
     <nav class="navbar navbar-custom text-white d-flex justify-content-between align-items-center">
         <h5 class="m-0 font-weight-bold"><i class="fa-solid fa-bars me-2"></i> KHMER SMM</h5>
-        <div id="auth-section">
-            <div id="g_id_onload"
-                data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
-                data-callback="handleCredentialResponse">
+        
+        <div class="d-flex align-items-center gap-3">
+            <!-- ប៊ូតុងសញ្ញាដុល្លារ ($) សម្រាប់ចុចទៅកាន់ Add Funds -->
+            <a href="#add-funds-section" class="btn-dollar-nav" title="បញ្ចូលប្រាក់ (Add Funds)">
+                <i class="fa-solid fa-dollar-sign"></i>
+            </a>
+
+            <!-- Google Login Section -->
+            <div id="auth-section">
+                <div id="g_id_onload"
+                    data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
+                    data-callback="handleCredentialResponse">
+                </div>
+                <div class="g_id_signin" data-type="standard"></div>
             </div>
-            <div class="g_id_signin" data-type="standard"></div>
         </div>
     </nav>
 
@@ -310,7 +344,7 @@
         </div>
 
         <!-- ADD FUNDS (KHQR) CARD -->
-        <div class="card-custom">
+        <div class="card-custom" id="add-funds-section">
             <h5 class="fw-bold mb-3"><i class="fa-solid fa-wallet text-primary me-2"></i>បញ្ចូលប្រាក់ (Add Funds)</h5>
             
             <div class="mb-3">
@@ -349,7 +383,7 @@
 
     </div>
 
-    <!-- FLOATING TELEGRAM BUTTON (អណ្តែតនៅជ្រុងខាងស្តាំក្រោម) -->
+    <!-- FLOATING TELEGRAM BUTTON -->
     <!-- ផ្លាស់ប្តូរ t.me/your_admin_username ទៅជា Username Telegram របស់អ្នក -->
     <a href="https://t.me/your_admin_username" target="_blank" class="float-contact-btn">
         <i class="fa-brands fa-telegram fa-xl"></i>
