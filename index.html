@@ -96,7 +96,7 @@
       
       <div style="margin-bottom: 15px; color: #888; font-size: 13px;">— OR —</div>
 
-      <!-- Google Sign-In Button (Client ID ត្រឹមត្រូវ ១០០%) -->
+      <!-- Google Sign-In Button -->
       <div id="g_id_onload"
            data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
            data-callback="handleCredentialResponse"
@@ -161,7 +161,7 @@
       <div id="addFundsTab" style="display: none;">
         <div class="card" style="max-width: 600px; margin: 0 auto;">
           <h3><i class="fa-solid fa-wallet"></i> បញ្ចូលប្រាក់ (Add Funds)</h3>
-          <p style="font-size: 13px; color: #666; margin-bottom: 15px;">ស្កែន QR Code ឬវេរប្រាក់ រួចបញ្ចូល Transaction ID ដើម្បីស្នើសុំបន្ថែម Balance</p>
+          <p style="font-size: 13px; color: #666; margin-bottom: 15px;">ស្កែន QR Code ដើម្បីវេរប្រាក់ រួចបញ្ចូលចំនួនទឹកប្រាក់ដើម្បីស្នើសុំបន្ថែម Balance</p>
 
           <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
             <p><b>Bakong KHQR / ABA Bank</b></p>
@@ -171,12 +171,7 @@
 
           <div class="form-group">
             <label>ចំនួនទឹកប្រាក់ដែលបានវេរ ($):</label>
-            <input type="number" id="depositAmount" class="form-control" placeholder="5.00" step="0.01">
-          </div>
-
-          <div class="form-group">
-            <label>លេខប្រតិបត្តិការ / Transaction ID (TID):</label>
-            <input type="text" id="txnId" class="form-control" placeholder="បញ្ចូលលេខ TID ពី ABA/Bakong">
+            <input type="number" id="depositAmount" class="form-control" placeholder="1.00" step="0.01">
           </div>
 
           <button class="btn-submit" onclick="submitDeposit()" style="background: #10b981;">បញ្ជូនសំណើដាក់លុយ (Submit Deposit)</button>
@@ -321,11 +316,10 @@
 
     async function submitDeposit() {
       const amount = document.getElementById('depositAmount').value;
-      const txnId = document.getElementById('txnId').value;
       const username = document.getElementById('userName').innerText;
 
-      if (!amount || !txnId) {
-        alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ និង លេខប្រតិបត្តិការ (TID)!');
+      if (!amount || amount <= 0) {
+        alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ឲ្យបានត្រឹមត្រូវ!');
         return;
       }
 
@@ -333,13 +327,12 @@
         const res = await fetch('/api/deposit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, amount, txnId })
+          body: JSON.stringify({ username, amount })
         });
         const data = await res.json();
         if (data.success) {
           alert('🎉 ' + data.message);
           document.getElementById('depositAmount').value = '';
-          document.getElementById('txnId').value = '';
         } else {
           alert('❌ ' + data.message);
         }
