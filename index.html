@@ -1,588 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KhmerSMM - Web Service</title>
+    <title>KHMER SMM Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <style>
-        :root {
-            --brand-blue: #0066ff;
-            --sidebar-dark: #121929;
-            --sidebar-card: #1e293b;
-            --bg-gray: #f4f6f9;
-            --btn-dark-blue: #004b7a;
-        }
-        
-        * { box-sizing: border-box; }
-        body { background-color: var(--bg-gray); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; margin: 0; padding: 0; }
-        
-        .top-navbar { 
-            background-color: var(--brand-blue); 
-            color: white; 
-            padding: 8px 12px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .btn-toggle-menu { 
-            background: white; 
-            color: #333; 
-            border: none; 
-            width: 42px; 
-            height: 42px; 
-            border-radius: 8px; 
-            font-size: 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer;
-        }
-        .top-nav-icons { display: flex; gap: 8px; align-items: center; }
-        .top-nav-icons .icon-btn { 
-            width: 38px; 
-            height: 38px; 
-            border-radius: 50%; 
-            background: rgba(255,255,255,0.25); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            text-decoration: none; 
-            font-size: 16px; 
-            border: 1px solid rgba(255,255,255,0.4);
-        }
-
-        .wrapper { display: flex; position: relative; width: 100%; min-height: calc(100vh - 58px); }
-        
-        .sidebar { 
-            width: 260px; 
-            background: var(--sidebar-dark); 
-            color: #fff; 
-            padding: 15px; 
-            position: fixed; 
-            top: 58px; 
-            bottom: 0; 
-            left: -260px; 
-            z-index: 999; 
-            transition: left 0.3s ease; 
-            overflow-y: auto;
-        }
-        .sidebar.active { left: 0; }
-        .sidebar-overlay { 
-            position: fixed; 
-            top: 58px; 
-            left: 0; 
-            right: 0; 
-            bottom: 0; 
-            background: rgba(0,0,0,0.5); 
-            z-index: 998; 
-            display: none; 
-        }
-        .sidebar-overlay.active { display: block; }
-
-        @media (min-width: 992px) {
-            .sidebar { position: static; left: 0; flex-shrink: 0; }
-            .sidebar-overlay { display: none !important; }
-            .btn-toggle-menu { display: none; }
-        }
-
-        .main-content { flex-grow: 1; padding: 15px; width: 100%; max-width: 100%; }
-
-        .user-profile-card { background: var(--sidebar-card); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .avatar-box { width: 60px; height: 60px; border-radius: 50%; background: #00d2ff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
-        .sidebar-menu { display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-menu .menu-item { color: #94a3b8; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .sidebar-menu .menu-item:hover, .sidebar-menu .menu-item.active { background: var(--brand-blue); color: white; }
-
-        .stats-box { background: transparent; padding: 10px 0; text-align: center; margin-bottom: 10px; font-weight: 600; color: #333; line-height: 1.8; }
-        .stats-box .val-blue { color: var(--brand-blue); font-weight: 800; }
-        .stats-box .val-green { color: #10b981; font-weight: 800; }
-
-        .platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .platform-card { 
-            background: white; 
-            border: 1px solid #0066ff; 
-            border-radius: 8px; 
-            padding: 10px 8px; 
-            text-align: center; 
-            font-weight: 600; 
-            color: #0066ff; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 6px; 
-            font-size: 13px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-        }
-        .platform-card.active { background: #eaf2ff; border-width: 2px; }
-
-        .panel-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-        
-        .order-type-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .order-type-btn { padding: 10px; border-radius: 8px; border: 1px solid #0066ff; background: white; color: #0066ff; font-weight: 700; text-align: center; cursor: pointer; }
-        .order-type-btn.active { background: #0066ff; color: white; }
-
-        .custom-field { background-color: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px 12px !important; }
-
-        .khqr-box { max-width: 320px; margin: 0 auto; background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .khqr-header { background: #e61b23; color: white; font-weight: 900; font-size: 18px; padding: 10px; }
-
-        /* Style សម្រាប់ Quick Deposit Grid */
-        .amount-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .btn-amount {
-            background-color: var(--btn-dark-blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 5px;
-            font-weight: 700;
-            font-size: 16px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-amount:hover, .btn-amount.active {
-            background-color: var(--brand-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 102, 255, 0.3);
-        }
-
-        .badge-btn::after {
-            content: attr(data-bonus);
-            position: absolute;
-            top: 3px;
-            right: 5px;
-            font-size: 10px;
-            color: #00ff88;
-            font-weight: 800;
-        }
+        body { font-family: 'Kantumruy Pro', sans-serif; background-color: #f4f6f9; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="top-navbar">
-    <button class="btn-toggle-menu" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-    <div class="top-nav-icons">
-        <a href="#" class="icon-btn" style="background:#ff0000;" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-        <a href="#" class="icon-btn" style="background:#f59e0b;" onclick="showTab('add-funds')" title="Deposit"><i class="fa-solid fa-dollar-sign"></i></a>
-        <a href="#" class="icon-btn" style="background:#3b82f6;" onclick="showTab('contact-admin')" title="Support"><i class="fa-solid fa-headset"></i></a>
-        <a href="#" class="icon-btn" style="background:#ef4444;" title="Profile"><i class="fa-solid fa-user"></i></a>
+<!-- 1. ទំព័រ LOGIN -->
+<div id="loginSection" class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 text-center shadow-sm" style="width: 380px;">
+        <h3 class="fw-bold mb-3">KHMER SMM</h3>
+        <p class="text-muted mb-4">ចុចខាងក្រោមដើម្បីចូលប្រើប្រាស់</p>
+        <div id="g_id_onload"
+             data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse">
+        </div>
+        <div class="g_id_signin d-flex justify-content-center" data-type="standard" data-size="large"></div>
     </div>
 </div>
 
-<div id="auth-section" class="container py-5" style="max-width: 420px;">
-    <div class="panel-card text-center">
-        <h4 class="fw-bold text-primary mb-4"><i class="fa-solid fa-cloud-bolt me-2"></i>KhmerSMM</h4>
-        <div class="nav nav-pills nav-justified mb-3">
-            <button class="nav-link active" onclick="switchForm('login')">Sign In</button>
-            <button class="nav-link" onclick="switchForm('register')">Sign Up</button>
+<!-- 2. ទំព័រ DASHBOARD SMM -->
+<div id="dashboardSection" class="hidden">
+    <nav class="navbar navbar-dark bg-primary px-4">
+        <span class="navbar-brand fw-bold">KHMER SMM</span>
+        <div class="d-flex align-items-center gap-3">
+            <span id="userInfo" class="text-white"></span>
+            <button class="btn btn-sm btn-light" onclick="location.reload()">ចាកចេញ</button>
         </div>
-        <div id="login-form">
-            <input type="text" id="login-key" class="form-control mb-3 custom-field" placeholder="Username / Email">
-            <input type="password" id="login-pass" class="form-control mb-3 custom-field" placeholder="Password">
-            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleLogin()">Sign In</button>
-        </div>
-        <div id="register-form" style="display: none;">
-            <input type="text" id="reg-user" class="form-control mb-3 custom-field" placeholder="Username">
-            <input type="email" id="reg-email" class="form-control mb-3 custom-field" placeholder="Email">
-            <input type="password" id="reg-pass" class="form-control mb-3 custom-field" placeholder="Password">
-            <button class="btn btn-primary w-100 fw-bold py-2" onclick="handleRegister()">Sign Up</button>
-        </div>
-    </div>
-</div>
+    </nav>
 
-<div id="dashboard-section" class="wrapper" style="display: none;">
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-    <div class="sidebar" id="sidebarDrawer">
-        <div class="user-profile-card">
-            <div class="avatar-box">
-                <i class="fa-solid fa-user fs-2 text-white"></i>
-            </div>
-            <div class="small text-muted mb-1">Balance: <strong class="text-success" id="sidebarBalance">$0.000000</strong></div>
-            <div class="fw-bold text-white" id="sidebarUser">User</div>
-        </div>
-
-        <div class="sidebar-menu">
-            <a class="menu-item active" onclick="showTab('new-order', this)"><i class="fa-solid fa-cart-shopping"></i> New order</a>
-            <a class="menu-item" onclick="showTab('add-funds', this)"><i class="fa-solid fa-wallet"></i> Add funds</a>
-            <a class="menu-item" onclick="showTab('contact-admin', this)"><i class="fa-brands fa-telegram"></i> Telegram Chat</a>
-            <a class="menu-item text-danger mt-4" onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <div class="stats-box">
-            <div>You are currently on: <span class="val-blue" id="currentPageName">New order</span></div>
-            <div>Panel Orders: <span class="val-blue">3731377</span></div>
-            <div>My Orders: <span class="val-blue" id="topOrders">0</span></div>
-            <div>Total Spend: <span class="val-blue" id="topSpend">$0.0</span></div>
-            <div>Welcome <span class="val-blue" id="topUser">user</span> Your Balance is : <span class="val-green" id="topBalance">$0.000000</span></div>
-        </div>
-
-        <!-- TAB: NEW ORDER -->
-        <div id="tab-new-order">
-            <div class="platform-grid">
-                <div class="platform-card active" onclick="filterPlatform('All', this)"><i class="fa-solid fa-list-check"></i> Everythings</div>
-                <div class="platform-card" onclick="filterPlatform('TikTok', this)"><i class="fa-brands fa-tiktok text-dark"></i> TikTok</div>
-                <div class="platform-card" onclick="filterPlatform('Facebook', this)"><i class="fa-brands fa-facebook text-primary"></i> Facebook</div>
-                <div class="platform-card" onclick="filterPlatform('Facebook Live', this)"><i class="fa-brands fa-facebook text-danger"></i> Facebook Live</div>
-                <div class="platform-card" onclick="filterPlatform('YouTube', this)"><i class="fa-brands fa-youtube text-danger"></i> YouTube</div>
-                <div class="platform-card" onclick="filterPlatform('Telegram', this)"><i class="fa-brands fa-telegram text-info"></i> Telegram</div>
-            </div>
-
-            <div class="panel-card">
-                <div class="order-type-tabs">
-                    <div class="order-type-btn active" id="btnSingleOrder" onclick="toggleOrderType('single')"><i class="fa-solid fa-cart-shopping me-1"></i> New Order</div>
-                    <div class="order-type-btn" id="btnMassOrder" onclick="toggleOrderType('mass')"><i class="fa-solid fa-star me-1"></i> Mass order</div>
-                </div>
-
-                <div id="singleOrderBox">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold"><i class="fa-solid fa-magnifying-glass text-muted me-1"></i> Search</label>
-                        <input type="text" id="searchInput" class="form-control custom-field" placeholder="Search service..." oninput="filterServicesBySearch()">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold"><i class="fa-solid fa-shapes text-info me-1"></i> Category</label>
-                        <select id="categorySelect" class="form-select custom-field" onchange="onCategoryChange()"></select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold"><i class="fa-solid fa-tag text-primary me-1"></i> Service</label>
-                        <select id="serviceSelect" class="form-select custom-field" onchange="onServiceChange()"></select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Link</label>
-                        <input type="text" id="orderLink" class="form-control custom-field" placeholder="https://...">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Quantity</label>
-                        <input type="number" id="orderQuantity" class="form-control custom-field" placeholder="1000" oninput="calculateCharge()">
-                        <small class="text-muted" id="minMaxText">Min: 50 - Max: 1,000,000</small>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Charge ($)</label>
-                        <input type="text" id="orderCharge" class="form-control custom-field fw-bold text-primary" readonly value="$0.0000">
-                    </div>
-
-                    <button class="btn btn-primary w-100 fw-bold py-2 mt-2" style="border-radius:10px;" onclick="submitOrder()">Submit Order</button>
-                </div>
-
-                <div id="massOrderBox" style="display: none;">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">One order per line in format:</label>
-                        <textarea id="massOrderInput" class="form-control custom-field" rows="6" placeholder="service_id|quantity|link"></textarea>
-                    </div>
-                    <button class="btn btn-primary w-100 fw-bold py-2" onclick="alert('Mass order submitted!')">Submit Mass Orders</button>
+    <div class="container my-5">
+        <div class="row">
+            <!-- Order Form -->
+            <div class="col-md-7 mb-4">
+                <div class="card p-4 shadow-sm">
+                    <h5 class="fw-bold mb-3">បង្កើតការកុម្ម៉ង់ (New Order)</h5>
+                    <form id="orderForm">
+                        <div class="mb-3">
+                            <label class="form-label">ជ្រើសរើសសេវាកម្ម</label>
+                            <select class="form-select" id="serviceSelect" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">តំណភ្ជាប់ (Link)</label>
+                            <input type="url" class="form-control" id="orderLink" placeholder="https://..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ចំនួន (Quantity)</label>
+                            <input type="number" class="form-control" id="orderQty" value="1000" min="100" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">បញ្ជូនការកុម្ម៉ង់</button>
+                    </form>
                 </div>
             </div>
-        </div>
 
-        <!-- TAB: ADD FUNDS -->
-        <div id="tab-add-funds" style="display: none;">
-            <div class="panel-card text-center py-4">
-                <h5 class="fw-bold text-danger mb-3"><i class="fa-solid fa-qrcode me-2"></i> Bakong KHQR Deposit</h5>
-                <p class="text-muted small">សូមជ្រើសរើសចំនួនទឹកប្រាក់ ឬបញ្ចូលចំនួន រួចចុច Submit ដើម្បីស្កែន KHQR</p>
-                
-                <div class="khqr-box p-3 mb-4">
-                    <div class="khqr-header mb-3">KHQR</div>
-                    <div class="fw-bold text-dark fs-5">SAMNANG MON</div>
-                    <div class="text-muted small mb-2">Bakong ID: <strong class="text-primary">mon_samnang@bkrt</strong></div>
-                    <img src="/khqr.jpg" alt="Bakong KHQR" class="img-fluid my-2" style="max-width: 200px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px;">
-                    <div class="text-muted small mt-1">Scan with Bakong or Any Mobile Banking App</div>
-                </div>
-
-                <div class="mb-3 mx-auto" style="max-width: 450px;">
-                    <input type="number" id="depositAmount" class="form-control text-center fs-5 custom-field mb-2" value="3" placeholder="Enter amount ($)">
-                    <button class="btn btn-primary w-100 fw-bold py-2 fs-6 mb-4" style="border-radius: 10px; background-color: var(--btn-dark-blue);" onclick="submitDeposit()">Submit</button>
-                </div>
-
-                <div class="amount-grid mx-auto" style="max-width: 500px;">
-                    <button type="button" class="btn-amount" onclick="selectAmount(3, this)">$3</button>
-                    <button type="button" class="btn-amount" onclick="selectAmount(5, this)">$5</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(15, this)">$15</button>
+            <!-- Deposit KHQR Form -->
+            <div class="col-md-5">
+                <div class="card p-4 shadow-sm text-center">
+                    <h5 class="fw-bold mb-3">បញ្ចូលប្រាក់ (Add Funds KHQR)</h5>
+                    <input type="number" class="form-control mb-3" id="depositAmount" placeholder="ចំនួនទឹកប្រាក់ ($)" value="5">
+                    <button class="btn btn-success w-100 mb-3" onclick="generateQR()">បង្កើត KHQR</button>
                     
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(30, this)">$30</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(50, this)">$50</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(100, this)">$100</button>
-                    
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+5%" onclick="selectAmount(200, this)">$200</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+5%" onclick="selectAmount(500, this)">$500</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+10%" onclick="selectAmount(1000, this)">$1000</button>
-
-                    <button type="button" class="btn-amount" onclick="selectAmount(5.5, this)">5.5$</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(10, this)">10$</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(15, this)">15$</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(25, this)">25$</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(50, this)">50$</button>
-                    <button type="button" class="btn-amount badge-btn" data-bonus="+3%" onclick="selectAmount(99, this)">99$</button>
+                    <div id="qrArea" class="hidden">
+                        <canvas id="qrCanvas" class="mb-2"></canvas>
+                        <p class="text-muted small">ស្កែនតាមរយៈ App ធនាគារណាក៏បាន (Bakong ID: mon_samnang@bkrt)</p>
+                    </div>
                 </div>
-
-                <div class="mt-4 text-muted small">
-                    Powered by <a href="#" class="text-primary text-decoration-none fw-bold">khmer-system.com</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB: CONTACT ADMIN -->
-        <div id="tab-contact-admin" style="display: none;">
-            <div class="panel-card text-center py-5">
-                <i class="fa-brands fa-telegram text-primary mb-3" style="font-size: 70px;"></i>
-                <h4 class="fw-bold">Contact Support</h4>
-                <p class="text-muted">Need help with your orders or balance? Chat with us directly.</p>
-                <a href="https://t.me/mon_samnang" target="_blank" class="btn btn-primary fw-bold px-4 py-2 rounded-pill"><i class="fa-brands fa-telegram me-2"></i> Open Telegram Chat</a>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    let currentUser = null;
-    let rawServicesList = [];
-    let groupedCategories = {};
-
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebarDrawer');
-        const overlay = document.querySelector('.sidebar-overlay');
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-    }
-
-    function switchForm(type) {
-        document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
-        document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
-    }
-
-    function showTab(tabName, elem) {
-        document.getElementById('tab-new-order').style.display = tabName === 'new-order' ? 'block' : 'none';
-        document.getElementById('tab-add-funds').style.display = tabName === 'add-funds' ? 'block' : 'none';
-        document.getElementById('tab-contact-admin').style.display = tabName === 'contact-admin' ? 'block' : 'none';
-        
-        document.getElementById('currentPageName').innerText = tabName === 'new-order' ? 'New order' : (tabName === 'add-funds' ? 'Add funds' : 'Support');
-
-        if (elem) {
-            document.querySelectorAll('.sidebar-menu .menu-item').forEach(m => m.classList.remove('active'));
-            elem.classList.add('active');
-        }
-
-        if (window.innerWidth < 992) {
-            const sidebar = document.getElementById('sidebarDrawer');
-            const overlay = document.querySelector('.sidebar-overlay');
-            if (sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            }
-        }
-    }
-
-    function toggleOrderType(type) {
-        document.getElementById('btnSingleOrder').classList.toggle('active', type === 'single');
-        document.getElementById('btnMassOrder').classList.toggle('active', type === 'mass');
-        document.getElementById('singleOrderBox').style.display = type === 'single' ? 'block' : 'none';
-        document.getElementById('massOrderBox').style.display = type === 'mass' ? 'block' : 'none';
-    }
-
-    function selectAmount(val, elem) {
-        document.getElementById('depositAmount').value = val;
-        document.querySelectorAll('.btn-amount').forEach(btn => btn.classList.remove('active'));
-        if (elem) elem.classList.add('active');
-    }
-
-    async function handleRegister() {
-        const username = document.getElementById('reg-user').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-pass').value;
-        const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
-        const data = await res.json();
-        alert(data.message);
-        if (data.success) switchForm('login');
-    }
-
-    async function handleLogin() {
-        const loginKey = document.getElementById('login-key').value;
-        const password = document.getElementById('login-pass').value;
-        
-        try {
-            const res = await fetch('/api/login', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ loginKey, password }) 
-            });
-            const data = await res.json();
-            
-            if (data.success) {
-                currentUser = data.user;
-                document.getElementById('sidebarUser').innerText = currentUser.username;
-                document.getElementById('topUser').innerText = currentUser.username;
-                document.getElementById('sidebarBalance').innerText = `$${(currentUser.balance || 0).toFixed(6)}`;
-                document.getElementById('topBalance').innerText = `$${(currentUser.balance || 0).toFixed(6)}`;
-                document.getElementById('topOrders').innerText = currentUser.myOrders || 0;
-                document.getElementById('topSpend').innerText = `$${(currentUser.totalSpend || 0).toFixed(1)}`;
-                
-                document.getElementById('auth-section').style.display = 'none';
-                document.getElementById('dashboard-section').style.display = 'flex';
-                
-                showTab('new-order');
-                fetchApiServices();
-            } else { 
-                alert(data.message); 
-            }
-        } catch (err) {
-            alert("Login error: " + err.message);
-        }
-    }
-
-    async function fetchApiServices() {
-        try {
-            const res = await fetch('/api/services');
-            const data = await res.json();
-            if (data.success && data.services) {
-                rawServicesList = data.services;
-                filterPlatform('All');
-            }
-        } catch (e) {
-            console.log("Error loading services:", e);
-        }
-    }
-
-    function filterPlatform(platform, btnElem) {
-        if (btnElem) {
-            document.querySelectorAll('.platform-card').forEach(b => b.classList.remove('active'));
-            btnElem.classList.add('active');
-        }
-
-        groupedCategories = {};
-        rawServicesList.forEach(item => {
-            const cat = item.category || 'Other';
-            if (platform === 'All' || cat.toLowerCase().includes(platform.toLowerCase())) {
-                if (!groupedCategories[cat]) groupedCategories[cat] = [];
-                groupedCategories[cat].push(item);
-            }
-        });
-
-        const catSelect = document.getElementById('categorySelect');
-        catSelect.innerHTML = '';
-        Object.keys(groupedCategories).forEach(cat => {
-            let opt = document.createElement('option');
-            opt.value = cat;
-            opt.innerText = cat;
-            catSelect.appendChild(opt);
-        });
-        onCategoryChange();
-    }
-
-    function filterServicesBySearch() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        if (!query) return filterPlatform('All');
-
-        const serviceSelect = document.getElementById('serviceSelect');
-        serviceSelect.innerHTML = '';
-        rawServicesList.forEach(s => {
-            if (s.name.toLowerCase().includes(query) || s.service.toString().includes(query)) {
-                let opt = document.createElement('option');
-                opt.value = s.service;
-                opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
-                opt.setAttribute('data-rate', s.rate);
-                opt.setAttribute('data-min', s.min || 10);
-                opt.setAttribute('data-max', s.max || 1000000);
-                serviceSelect.appendChild(opt);
-            }
-        });
-        onServiceChange();
-    }
-
-    function onCategoryChange() {
-        const catValue = document.getElementById('categorySelect').value;
-        const serviceSelect = document.getElementById('serviceSelect');
-        serviceSelect.innerHTML = '';
-        (groupedCategories[catValue] || []).forEach(s => {
-            let opt = document.createElement('option');
-            opt.value = s.service;
-            opt.innerText = `${s.service} - ${s.name} | $${s.rate}`;
-            opt.setAttribute('data-rate', s.rate);
-            opt.setAttribute('data-min', s.min || 10);
-            opt.setAttribute('data-max', s.max || 1000000);
-            serviceSelect.appendChild(opt);
-        });
-        onServiceChange();
-    }
-
-    function onServiceChange() {
-        const opt = document.getElementById('serviceSelect').selectedOptions[0];
-        if (!opt) return;
-        document.getElementById('minMaxText').innerText = `Min: ${opt.getAttribute('data-min')} - Max: ${parseInt(opt.getAttribute('data-max')).toLocaleString()}`;
-        calculateCharge();
-    }
-
-    function calculateCharge() {
-        const opt = document.getElementById('serviceSelect').selectedOptions[0];
-        if (!opt) return;
-        const rate = parseFloat(opt.getAttribute('data-rate')) || 0;
-        const qty = parseInt(document.getElementById('orderQuantity').value) || 0;
-        document.getElementById('orderCharge').value = `$${(rate * (qty / 1000)).toFixed(4)}`;
-    }
-
-    async function submitOrder() {
-        const serviceId = document.getElementById('serviceSelect').value;
-        const link = document.getElementById('orderLink').value;
-        const quantity = document.getElementById('orderQuantity').value;
-        const chargeStr = document.getElementById('orderCharge').value.replace('$', '');
-
-        if (!link || !quantity) return alert('សូមបញ្ចូល Link និង Quantity!');
-
-        const res = await fetch('/api/order', {
+    // 1. Google Login Handler
+    function handleCredentialResponse(response) {
+        fetch('/api/auth/google', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                userEmail: currentUser ? currentUser.username : 'Guest',
-                serviceName: serviceId, 
-                link: link, 
-                quantity: quantity, 
-                totalPrice: chargeStr 
-            })
+            body: JSON.stringify({ token: response.credential })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('dashboardSection').classList.remove('hidden');
+                document.getElementById('userInfo').innerText = 'ស្វាគមន៍, ' + data.user.name;
+                loadServices();
+            }
         });
-        const data = await res.json();
-        alert(data.message);
     }
 
-    async function submitDeposit() {
-        const amount = document.getElementById('depositAmount').value;
-        if (!amount || amount <= 0) {
-            return alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ដែលបានវេរ!');
-        }
+    // 2. Load Services from KhmerSmm API
+    function loadServices() {
+        fetch('/api/services')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('serviceSelect');
+                select.innerHTML = '';
+                data.services.forEach(s => {
+                    select.innerHTML += `<option value="${s.service}">${s.name} - $${s.rate}/1000</option>`;
+                });
+            }
+        });
+    }
 
-        const res = await fetch('/api/deposit', {
+    // 3. Submit Order
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('/api/order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                userEmail: currentUser ? currentUser.username : 'Guest User',
-                amount: amount
+                serviceId: document.getElementById('serviceSelect').value,
+                link: document.getElementById('orderLink').value,
+                quantity: document.getElementById('orderQty').value
             })
+        })
+        .then(res => res.json())
+        .then(data => alert('កុម្ម៉ង់ជោគជ័យ! Order ID: ' + (data.data.order || 'N/A')));
+    });
+
+    // 4. Generate Bakong KHQR Code
+    function generateQR() {
+        const amount = document.getElementById('depositAmount').value;
+        fetch('/api/generate-khqr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: amount, orderId: Date.now() })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('qrArea').classList.remove('hidden');
+                QRCode.toCanvas(document.getElementById('qrCanvas'), data.qrString, { width: 220 });
+            }
         });
-        const data = await res.json();
-        if (data.success) {
-            alert('✅ បញ្ជូនសំណើជោគជ័យ! Admin នឹងពិនិត្យ និងបញ្ចូលតុល្យភាពជូនក្នុងពេលឆាប់ៗ។');
-        } else {
-            alert('❌ មានបញ្ហា៖ ' + data.message);
-        }
     }
 </script>
+
 </body>
 </html>
