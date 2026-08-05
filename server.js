@@ -9,23 +9,24 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files ចេញពី folder public ( CSS, JS, Images, HTML )
-app.use(express.static(path.join(__dirname, 'public')));
+// Point ទៅកាន់ folder public
+const publicPath = path.join(__dirname, 'public');
+app.use(express.static(publicPath));
 
-// Sample Users Data
+// Sample Data
 let usersData = [
     { id: '1', name: 'Mon Samnang', email: 'samnang@gmail.com', balance: 50.00 },
     { id: '2', name: 'Nang User', email: 'nang@gmail.com', balance: 12.50 }
 ];
 
-// 1. Root Route -> Render ទំព័រដើម index.html
+// 1. Root Endpoint -> Direct ទៅកាន់ index.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(publicPath, 'index.html'));
 });
 
-// 2. Admin Route -> Render ទំព័រ admin.html
+// 2. Admin Endpoint -> Direct ទៅកាន់ admin.html
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+    res.sendFile(path.join(publicPath, 'admin.html'));
 });
 
 // 3. API Endpoints
@@ -57,6 +58,13 @@ app.post('/api/admin/update-balance', (req, res) => {
     });
 });
 
-// Port Server
+// Catch-all Route សម្រាប់ការពារ "Not Found" ពេលបាញ់ទៅ Path ផ្សេងៗ
+app.get('*', (req, res) => {
+    res.sendFile(path.join(publicPath, 'index.html'));
+});
+
+// Port Handling សម្រាប់ Render
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
