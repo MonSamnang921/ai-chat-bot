@@ -8,7 +8,9 @@ const PORT = process.env.PORT || 10000;
 app.use(express.json());
 app.use(express.static(__dirname));
 
+// In-Memory Database (ប្រព័ន្ធរក្សាទុកទិន្នន័យបណ្តោះអាសន្ន)
 let users = [];
+let orders = [];
 
 // ================= TELEGRAM BOT ================= //
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8749297297:AAEvWT7qku12vRkcsbkX9oE117cCWWpPrCY';
@@ -21,7 +23,19 @@ bot.on('message', (msg) => {
     }
 });
 
-// ================= SIGN UP API ================= //
+// Danh sách Service
+const servicesList = [
+    { service: 101, name: 'Telegram Post Views [Fast]', category: 'Telegram Services', rate: 0.05 },
+    { service: 102, name: 'Telegram Channel Members [Non-Drop]', category: 'Telegram Services', rate: 1.20 },
+    { service: 103, name: 'Telegram Reaction (Thumbs Up)', category: 'Telegram Services', rate: 0.10 },
+    { service: 201, name: 'Facebook Page Likes & Followers', category: 'Facebook Services', rate: 1.80 },
+    { service: 202, name: 'Facebook Video Views', category: 'Facebook Services', rate: 0.30 },
+    { service: 301, name: 'TikTok Video Views', category: 'TikTok Services', rate: 0.02 },
+    { service: 302, name: 'TikTok Followers [Real]', category: 'TikTok Services', rate: 1.10 },
+    { service: 401, name: 'YouTube Subscribers', category: 'YouTube Services', rate: 8.00 }
+];
+
+// ================= SIGN UP / LOGIN API ================= //
 app.post('/api/signup', (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) return res.status(400).json({ success: false, message: 'សូមបញ្ចូលព័ត៌មានឲ្យគ្រប់!' });
@@ -35,7 +49,6 @@ app.post('/api/signup', (req, res) => {
     return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ!', user: newUser });
 });
 
-// ================= GOOGLE LOGIN API ================= //
 app.post('/api/google-login', (req, res) => {
     const { email, name, googleId } = req.body;
     if (!email) return res.status(400).json({ success: false, message: 'Google Authentication បរាជ័យ' });
@@ -54,27 +67,73 @@ app.post('/api/google-login', (req, res) => {
     return res.json({ success: true, message: 'Google Login ជោគជ័យ!', user: user });
 });
 
-// ================= SERVICES LISTING API ================= //
+// ================= GET SERVICES ================= //
 app.get('/api/services', (req, res) => {
-    const services = [
-        { service: 101, name: 'Telegram Post Views [Fast]', category: 'Telegram Services', rate: '0.05' },
-        { service: 102, name: 'Telegram Channel Members [Non-Drop]', category: 'Telegram Services', rate: '1.20' },
-        { service: 103, name: 'Telegram Reaction (Thumbs Up)', category: 'Telegram Services', rate: '0.10' },
-        { service: 201, name: 'Facebook Page Likes & Followers', category: 'Facebook Services', rate: '1.80' },
-        { service: 202, name: 'Facebook Video Views', category: 'Facebook Services', rate: '0.30' },
-        { service: 301, name: 'TikTok Video Views', category: 'TikTok Services', rate: '0.02' },
-        { service: 302, name: 'TikTok Followers [Real]', category: 'TikTok Services', rate: '1.10' },
-        { service: 401, name: 'YouTube Subscribers', category: 'YouTube Services', rate: '8.00' }
-    ];
-    res.json(services);
+    res.json(servicesList);
 });
 
-// ================= DEPOSIT REQUEST API (SEND TO TELEGRAM) ================= //
-app.post('/api/deposit', async (req, res) => {
-    const { username, amount, txnId } = req.body;
+// ================= CREATE ORDER API (មុខងារទិញសេវាកម្ម + កាត់ Balance) ================= //
+app.post('/api/orders/create', (req, res) => {
+    const { username, serviceId, link, quantity } = req.body;
 
-    if (!username || !amount || !txnId) {
-        return res.status(400).json({ success: false, message: 'សូមបញ្ចូលទិន្នន័យឲ្យបានត្រឹមត្រូវ!' });
+    const user = users.find(u => u.username === username);
+    if (!user) return res.status(404).json({ success: false, message: 'រកមិនឃើញ Member ឡើយ!' });
+
+    const service = servicesList.find(s => s.service == serviceId);
+    if (!service) return res.status(400).json({ success: false, message: 'សូមជ្រើសរើស Service ឱ្យបានត្រឹមត្រូវ!' });
+
+    if (!link || !quantity || quantity <= 0) {
+        return res.status(400).json({ success: false, message: 'សូមបញ្ចូល Link និង ចំនួន (Quantity) ឲ្យបានត្រឹមត្រូវ!' });
+    }
+
+    // គណនាប្រាក់ត្រូវកាត់
+    const charge = parseFloat(((service.rate / 1000) * quantity).toFixed(4));
+
+    // ពិនិត្យមើលថា Balance គ្រប់ឬអត់
+    if (user.balance < charge) {
+        return res.status(400).json({ 
+            success: false, 
+            message: `សមតុល្យទឹកប្រាក់មិនគ្រប់គ្រាន់ទេ! តម្លៃសរុបគឺ $${charge} ប៉ុន្តែអ្នកមានត្រឹមតែ $${user.balance.toFixed(2)}។` 
+        });
+    }
+
+    // កាត់ Balance របស់ User
+    user.balance -= charge;
+
+    // បង្កើត Order Record
+    const newOrder = {
+        orderId: Math.floor(100000 + Math.random() * 900000),
+        username: user.username,
+        serviceName: service.name,
+        link: link,
+        quantity: parseInt(quantity),
+        charge: charge,
+        status: 'Processing',
+        date: new Date().toLocaleString()
+    };
+    orders.push(newOrder);
+
+    return res.json({
+        success: true,
+        message: '🎉 បញ្ជាទិញសេវាកម្មជោគជ័យ!',
+        order: newOrder,
+        newBalance: user.balance
+    });
+});
+
+// ================= GET USER ORDERS (ទាញយកប្រវត្តិ Order របស់ User) ================= //
+app.get('/api/orders/:username', (req, res) => {
+    const username = req.params.username;
+    const userOrders = orders.filter(o => o.username === username);
+    res.json(userOrders);
+});
+
+// ================= DEPOSIT REQUEST API ================= //
+app.post('/api/deposit', async (req, res) => {
+    const { username, amount } = req.body;
+
+    if (!username || !amount || isNaN(amount) || amount <= 0) {
+        return res.status(400).json({ success: false, message: 'សូមបញ្ចូលចំនួនទឹកប្រាក់ឲ្យបានត្រឹមត្រូវ!' });
     }
 
     const telegramMessage = `
@@ -82,10 +141,9 @@ app.post('/api/deposit', async (req, res) => {
 ━━━━━━━━━━━━━━━━━━━
 👤 <b>User:</b> <code>${username}</code>
 💵 <b>ចំនួន:</b> $${parseFloat(amount).toFixed(2)}
-🧾 <b>TID:</b> <code>${txnId}</code>
 ⏰ <b>ម៉ោង:</b> ${new Date().toLocaleString()}
 ━━━━━━━━━━━━━━━━━━━
-👉 សូមពិនិត្យមើលក្នុង ABA/Bakong រួចបូក Balance ជូន Member!
+👉 សូមពិនិត្យមើលគណនីធនាគារ រួចបូក Balance ជូន Member!
     `;
 
     const chatId = '8363306657';
@@ -93,14 +151,14 @@ app.post('/api/deposit', async (req, res) => {
         await bot.sendMessage(chatId, telegramMessage, { parse_mode: 'HTML' });
         return res.json({
             success: true,
-            message: 'សំណើដាក់លុយត្រូវ បានបញ្ជូនទៅកាន់ Admin រួចរាល់! Admin នឹងពិនិត្យ និងបន្ថែម Balance ជូនក្នុងពេលឆាប់ៗ។'
+            message: 'សំណើដាក់លុយត្រូវបានបញ្ជូនទៅកាន់ Admin រួចរាល់!'
         });
     } catch (error) {
         return res.status(500).json({ success: false, message: 'បរាជ័យក្នុងការផ្ញើសារជូនដំណឹងទៅ Admin' });
     }
 });
 
-// ================= ADMIN ADD/DEDUCT BALANCE API ================= //
+// ================= ADMIN ADD BALANCE API ================= //
 app.post('/api/admin/update-balance', (req, res) => {
     const { username, amount, type, adminKey } = req.body;
 
@@ -114,11 +172,8 @@ app.post('/api/admin/update-balance', (req, res) => {
     }
 
     const value = parseFloat(amount);
-    if (type === 'add') {
-        user.balance += value;
-    } else if (type === 'deduct') {
-        user.balance = Math.max(0, user.balance - value);
-    }
+    if (type === 'add') user.balance += value;
+    else if (type === 'deduct') user.balance = Math.max(0, user.balance - value);
 
     return res.json({
         success: true,
