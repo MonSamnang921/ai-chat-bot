@@ -96,9 +96,9 @@
       
       <div style="margin-bottom: 15px; color: #888; font-size: 13px;">— OR —</div>
 
-      <!-- Google Sign-In Button ( Client ID ពិតប្រាកដ) -->
+      <!-- Google Sign-In Button (Client ID ត្រឹមត្រូវ ១០០%) -->
       <div id="g_id_onload"
-           data-client_id="781995105719-0ne5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
+           data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
            data-callback="handleCredentialResponse"
            data-auto_prompt="false">
       </div>
@@ -110,7 +110,6 @@
       
       <!-- TAB ទី ១: NEW ORDER -->
       <div id="orderTab">
-        <!-- Quick Filter Category Buttons -->
         <div class="filter-buttons">
           <div class="filter-btn" onclick="filterByCategory('Telegram')"><i class="fa-brands fa-telegram" style="color: #0088cc;"></i> Telegram</div>
           <div class="filter-btn" onclick="filterByCategory('Facebook')"><i class="fa-brands fa-facebook" style="color: #1877f2;"></i> Facebook</div>
@@ -118,7 +117,6 @@
           <div class="filter-btn" onclick="filterByCategory('YouTube')"><i class="fa-brands fa-youtube" style="color: red;"></i> YouTube</div>
         </div>
 
-        <!-- Order Form & Service Details -->
         <div class="order-container">
           <div class="card">
             <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-cart-plus"></i> New Order</h3>
@@ -192,7 +190,6 @@
   <script>
     let servicesData = [];
 
-    // Sign Up Function
     async function handleSignUp() {
       const username = document.getElementById('signupUsername').value;
       const email = document.getElementById('signupEmail').value;
@@ -222,7 +219,6 @@
       }
     }
 
-    // Google Login Callback
     async function handleCredentialResponse(response) {
       const data = parseJwt(response.credential);
       try {
@@ -261,7 +257,6 @@
       fetchServices();
     }
 
-    // Fetch Services Data
     async function fetchServices() {
       try {
         const res = await fetch('/api/services');
@@ -314,7 +309,6 @@
       }
     }
 
-    // Tab Navigation Function
     function showTab(tabName) {
       if (tabName === 'addFunds') {
         document.getElementById('orderTab').style.display = 'none';
@@ -325,7 +319,6 @@
       }
     }
 
-    // Submit Deposit Request Function
     async function submitDeposit() {
       const amount = document.getElementById('depositAmount').value;
       const txnId = document.getElementById('txnId').value;
