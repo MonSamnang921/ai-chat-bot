@@ -1,60 +1,13 @@
-<script>
-// ទាញយកបញ្ជី Users ពេល Load ទំព័រ
-document.addEventListener("DOMContentLoaded", loadUsers);
-
-async function loadUsers() {
-    const tbody = document.querySelector("table tbody");
-    if (!tbody) return;
-
-    try {
-        const response = await fetch('/api/admin/users');
-        const data = await response.json();
-
-        if (data.success && data.users.length > 0) {
-            tbody.innerHTML = ''; // លុបពាក្យ "កំពុងទាញយកទិន្នន័យ..."
-            data.users.forEach(user => {
-                const row = `
-                    <tr>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td class="fw-bold text-success">$${parseFloat(user.balance).toFixed(2)}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="editBalance('${user.email}', '${user.name}')">
-                                <i class="fa-solid fa-pen-to-square"></i> កែ Balance
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        } else {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">គ្មានទិន្នន័យ User ឡើយ</td></tr>';
-        }
-    } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">មានបញ្ហាភ្ជាប់ទៅកាន់ Server!</td></tr>';
-    }
-}
-
-async function editBalance(email, name) {
-    const newAmount = prompt(`បញ្ចូលចំនួនទឹកប្រាក់ថ្មីសម្រាប់ ${name} (${email}):`);
-    if (newAmount !== null && newAmount !== '') {
-        try {
-            const res = await fetch('/api/admin/update-balance', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, amount: newAmount, action: 'set' })
-            });
-            const result = await res.json();
-            if (result.success) {
-                alert(result.message);
-                loadUsers(); // Refresh តុទិន្នន័យឡើងវិញ
-            } else {
-                alert(result.message);
-            }
-        } catch (e) {
-            alert('មានបញ្ហាក្នុងការ Update Balance!');
-        }
-    }
-}
-</script>
+// ឧទាហរណ៍៖ កូដហៅប្រើពេល User ចុច Register ឬ Google Sign-In ជោគជ័យ
+fetch('/api/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        name: userName,   // ឈ្មោះ User
+        email: userEmail  // អ៊ីម៉ែល User
+    })
+})
+.then(res => res.json())
+.then(data => {
+    console.log("Register response:", data);
+});
