@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KhmerSMM - Web Service</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Sign-In SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
@@ -19,7 +18,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: var(--body-bg); color: var(--text); display: flex; min-height: 100vh; }
 
-    /* Layout Sidebar & Main Content */
     .sidebar { width: 240px; background-color: var(--sidebar-bg); color: #fff; padding: 20px 10px; display: flex; flex-direction: column; gap: 10px; }
     .sidebar-brand { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 20px; color: #38bdf8; }
     .user-profile-card { background: #0f172a; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
@@ -28,18 +26,14 @@
     .nav-item:hover, .nav-item.active { background-color: var(--primary); color: #fff; }
 
     .main-content { flex: 1; padding: 20px; overflow-y: auto; }
-    
-    /* Top Stats Bar */
     .stats-bar { background: var(--card-bg); padding: 15px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .stats-item { font-size: 14px; font-weight: 600; }
     .stats-item span { color: var(--primary); }
 
-    /* Category Filter Buttons */
     .filter-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
     .filter-btn { background: var(--card-bg); border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 8px; }
     .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-    /* Cards & Forms */
     .order-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 900px) { .order-container { grid-template-columns: 1fr; } }
 
@@ -52,13 +46,17 @@
     .btn-submit { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; }
     .btn-submit:hover { background-color: #0369a1; }
 
-    /* Login Box Container */
     .login-box-container { max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; }
+
+    /* Orders Table Style */
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+    th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: left; }
+    th { background: #f8fafc; }
+    .status-badge { background: #3b82f6; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar ខាងឆ្វេង -->
   <div class="sidebar">
     <div class="sidebar-brand"><i class="fa-solid fa-rocket"></i> KHMER SMM</div>
     
@@ -68,22 +66,21 @@
       <div style="font-size: 12px; color: #38bdf8; margin-top: 4px;">Balance: $<span id="userBalance">0.00</span></div>
     </div>
 
-    <div class="nav-item active" onclick="showTab('order')"><i class="fa-solid fa-cart-shopping"></i> New order</div>
-    <div class="nav-item" onclick="showTab('addFunds')"><i class="fa-solid fa-wallet"></i> Add funds</div>
+    <div class="nav-item active" id="navOrder" onclick="showTab('order')"><i class="fa-solid fa-cart-shopping"></i> New order</div>
+    <div class="nav-item" id="navHistory" onclick="showTab('history')"><i class="fa-solid fa-list-check"></i> Orders History</div>
+    <div class="nav-item" id="navFunds" onclick="showTab('addFunds')"><i class="fa-solid fa-wallet"></i> Add funds</div>
     <a href="/admin.html" target="_blank" class="nav-item"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
     <div class="nav-item" id="logoutBtn" onclick="location.reload()" style="display:none; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
   </div>
 
-  <!-- Main Content ខាងស្តាំ -->
   <div class="main-content">
     
-    <!-- Top Stats Bar -->
     <div class="stats-bar">
       <div class="stats-item">Welcome <span id="welcomeUser">Guest</span></div>
       <div class="stats-item">Your Balance: $<span id="topBalance">0.00</span></div>
     </div>
 
-    <!-- ផ្នែកមិនទាន់ LOGIN (បង្ហាញ Login Form) -->
+    <!-- LOGIN FORM -->
     <div id="loginSection" class="login-box-container">
       <h2>KhmerSMM Login</h2>
       <p style="font-size: 13px; color: #666; margin: 10px 0 20px;">សូមចូលប្រើប្រាស់ដើម្បីកុម្ម៉ង់សេវាកម្ម</p>
@@ -96,7 +93,6 @@
       
       <div style="margin-bottom: 15px; color: #888; font-size: 13px;">— OR —</div>
 
-      <!-- Google Sign-In Button -->
       <div id="g_id_onload"
            data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
            data-callback="handleCredentialResponse"
@@ -105,10 +101,10 @@
       <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-shape="rectangular"></div>
     </div>
 
-    <!-- ផ្នែក DASHBOARD (បង្ហាញពេល LOGIN រួច) -->
+    <!-- DASHBOARD SECTION -->
     <div id="dashboardSection" style="display: none;">
       
-      <!-- TAB ទី ១: NEW ORDER -->
+      <!-- TAB 1: NEW ORDER -->
       <div id="orderTab">
         <div class="filter-buttons">
           <div class="filter-btn" onclick="filterByCategory('Telegram')"><i class="fa-brands fa-telegram" style="color: #0088cc;"></i> Telegram</div>
@@ -142,10 +138,14 @@
 
             <div class="form-group">
               <label>Quantity</label>
-              <input type="number" id="orderQuantity" class="form-control" placeholder="1000">
+              <input type="number" id="orderQuantity" class="form-control" placeholder="1000" oninput="calculatePrice()">
             </div>
 
-            <button class="btn-submit" onclick="alert('✅ បញ្ជាទិញសេវាកម្មជោគជ័យ!')">Submit Order</button>
+            <div style="margin-bottom: 15px; font-weight: bold; color: var(--primary);">
+              Total Charge: $<span id="calculatedCharge">0.000</span>
+            </div>
+
+            <button class="btn-submit" onclick="submitOrder()">Submit Order</button>
           </div>
 
           <div class="card" style="background: #f8fafc;">
@@ -157,7 +157,30 @@
         </div>
       </div>
 
-      <!-- TAB ទី ២: ADD FUNDS -->
+      <!-- TAB 2: ORDERS HISTORY -->
+      <div id="historyTab" style="display: none;">
+        <div class="card">
+          <h3><i class="fa-solid fa-list-check"></i> ប្រវត្តិបញ្ជាទិញ (Orders History)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Service</th>
+                <th>Link</th>
+                <th>Quantity</th>
+                <th>Charge ($)</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr><td colspan="7" style="text-align:center;">មិនទាន់មានទិន្នន័យបញ្ជាទិញឡើយ</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: ADD FUNDS -->
       <div id="addFundsTab" style="display: none;">
         <div class="card" style="max-width: 600px; margin: 0 auto;">
           <h3><i class="fa-solid fa-wallet"></i> បញ្ចូលប្រាក់ (Add Funds)</h3>
@@ -165,7 +188,7 @@
 
           <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
             <p><b>Bakong KHQR / ABA Bank</b></p>
-            <img src="https://via.placeholder.com/180?text=Scan+KHQR" alt="QR" style="border-radius: 8px; margin: 10px 0;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=ABA_BANK_MON_SAMNANG" alt="KHQR" style="border-radius: 8px; margin: 10px 0;">
             <p style="font-size: 13px;">ឈ្មោះគណនី៖ <b>MON SAMNANG</b></p>
           </div>
 
@@ -184,16 +207,14 @@
 
   <script>
     let servicesData = [];
+    let currentRate = 0;
 
     async function handleSignUp() {
       const username = document.getElementById('signupUsername').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
 
-      if (!username || !email || !password) {
-        alert('សូមបំពេញព័ត៌មានឲ្យគ្រប់!');
-        return;
-      }
+      if (!username || !email || !password) return alert('សូមបំពេញព័ត៌មានឲ្យគ្រប់!');
 
       try {
         const res = await fetch('/api/signup', {
@@ -202,16 +223,13 @@
           body: JSON.stringify({ username, email, password })
         });
         const data = await res.json();
-
         if (data.success) {
           alert('🎉 ' + data.message);
           loginSuccess(data.user.username, data.user.email, '', data.user.balance);
         } else {
           alert('❌ ' + data.message);
         }
-      } catch (err) {
-        alert('❌ មានបញ្ហាភ្ជាប់ទៅ Server!');
-      }
+      } catch (err) { alert('❌ មានបញ្ហាភ្ជាប់ទៅ Server!'); }
     }
 
     async function handleCredentialResponse(response) {
@@ -227,9 +245,7 @@
           alert('🎉 Google Login ជោគជ័យ!');
           loginSuccess(result.user.username, result.user.email, data.picture, result.user.balance);
         }
-      } catch (err) {
-        alert('❌ Google Login បរាជ័យ!');
-      }
+      } catch (err) { alert('❌ Google Login បរាជ័យ!'); }
     }
 
     function parseJwt(token) {
@@ -245,11 +261,16 @@
 
       document.getElementById('userName').innerText = name;
       document.getElementById('welcomeUser').innerText = name;
-      document.getElementById('userBalance').innerText = Number(balance).toFixed(2);
-      document.getElementById('topBalance').innerText = Number(balance).toFixed(2);
+      updateBalanceUI(balance);
+
       if(imgUrl) document.getElementById('userImg').src = imgUrl;
 
       fetchServices();
+    }
+
+    function updateBalanceUI(balance) {
+      document.getElementById('userBalance').innerText = Number(balance).toFixed(2);
+      document.getElementById('topBalance').innerText = Number(balance).toFixed(2);
     }
 
     async function fetchServices() {
@@ -260,13 +281,8 @@
         const categories = [...new Set(servicesData.map(s => s.category))];
         const categorySelect = document.getElementById('categorySelect');
         categorySelect.innerHTML = '<option value="">-- Select Category --</option>';
-        
-        categories.forEach(cat => {
-          categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
-        });
-      } catch (err) {
-        console.error(err);
-      }
+        categories.forEach(cat => categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`);
+      } catch (err) { console.error(err); }
     }
 
     function filterByCategory(platform) {
@@ -295,33 +311,91 @@
       const detailsDiv = document.getElementById('serviceDetails');
 
       if(service) {
+        currentRate = service.rate;
         detailsDiv.innerHTML = `
           <p><b>Service Name:</b> ${service.name}</p>
           <p><b>Price per 1000:</b> <span style="color: green; font-weight: bold;">$${service.rate}</span></p>
           <p><b>Category:</b> ${service.category}</p>
-          <p style="margin-top: 10px; font-size: 13px; color: #475569;"><b>Start Time:</b> Instant<br><b>Speed:</b> Fast Speed</p>
         `;
+        calculatePrice();
       }
     }
 
+    function calculatePrice() {
+      const qty = document.getElementById('orderQuantity').value || 0;
+      const totalCost = (currentRate / 1000) * qty;
+      document.getElementById('calculatedCharge').innerText = totalCost.toFixed(4);
+    }
+
+    async function submitOrder() {
+      const username = document.getElementById('userName').innerText;
+      const serviceId = document.getElementById('serviceSelect').value;
+      const link = document.getElementById('orderLink').value;
+      const quantity = document.getElementById('orderQuantity').value;
+
+      try {
+        const res = await fetch('/api/orders/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, serviceId, link, quantity })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          alert('🎉 ' + data.message);
+          updateBalanceUI(data.newBalance);
+          document.getElementById('orderLink').value = '';
+          document.getElementById('orderQuantity').value = '';
+          document.getElementById('calculatedCharge').innerText = '0.000';
+        } else {
+          alert('❌ ' + data.message);
+        }
+      } catch (err) { alert('❌ មានបញ្ហាភ្ជាប់ទៅ Server!'); }
+    }
+
+    async function fetchOrdersHistory() {
+      const username = document.getElementById('userName').innerText;
+      try {
+        const res = await fetch(`/api/orders/${username}`);
+        const orders = await res.json();
+        const tbody = document.getElementById('ordersTableBody');
+        
+        if (orders.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">មិនទាន់មានទិន្នន័យបញ្ជាទិញឡើយ</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = orders.map(o => `
+          <tr>
+            <td>${o.orderId}</td>
+            <td>${o.serviceName}</td>
+            <td><a href="${o.link}" target="_blank" style="color:#0284c7;">Link</a></td>
+            <td>${o.quantity}</td>
+            <td>$${o.charge}</td>
+            <td><span class="status-badge">${o.status}</span></td>
+            <td>${o.date}</td>
+          </tr>
+        `).join('');
+      } catch (err) { console.error(err); }
+    }
+
     function showTab(tabName) {
-      if (tabName === 'addFunds') {
-        document.getElementById('orderTab').style.display = 'none';
-        document.getElementById('addFundsTab').style.display = 'block';
-      } else {
-        document.getElementById('orderTab').style.display = 'block';
-        document.getElementById('addFundsTab').style.display = 'none';
-      }
+      document.getElementById('orderTab').style.display = tabName === 'order' ? 'block' : 'none';
+      document.getElementById('historyTab').style.display = tabName === 'history' ? 'block' : 'none';
+      document.getElementById('addFundsTab').style.display = tabName === 'addFunds' ? 'block' : 'none';
+
+      document.getElementById('navOrder').classList.toggle('active', tabName === 'order');
+      document.getElementById('navHistory').classList.toggle('active', tabName === 'history');
+      document.getElementById('navFunds').classList.toggle('active', tabName === 'addFunds');
+
+      if (tabName === 'history') fetchOrdersHistory();
     }
 
     async function submitDeposit() {
       const amount = document.getElementById('depositAmount').value;
       const username = document.getElementById('userName').innerText;
 
-      if (!amount || amount <= 0) {
-        alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ឲ្យបានត្រឹមត្រូវ!');
-        return;
-      }
+      if (!amount || amount <= 0) return alert('សូមបញ្ចូលចំនួនទឹកប្រាក់ឲ្យបានត្រឹមត្រូវ!');
 
       try {
         const res = await fetch('/api/deposit', {
@@ -333,12 +407,8 @@
         if (data.success) {
           alert('🎉 ' + data.message);
           document.getElementById('depositAmount').value = '';
-        } else {
-          alert('❌ ' + data.message);
-        }
-      } catch (err) {
-        alert('❌ មានបញ្ហាភ្ជាប់ទៅ Server!');
-      }
+        } else { alert('❌ ' + data.message); }
+      } catch (err) { alert('❌ មានបញ្ហាភ្ជាប់ទៅ Server!'); }
     }
   </script>
 </body>
