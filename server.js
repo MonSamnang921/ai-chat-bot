@@ -1,176 +1,129 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
-const axios = require('axios');
-const http = require('http');
-const { BakongKHQR, khqrData, IndividualInfo } = require('bakong-khqr');
+const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
-const server = http.createServer(app);
 const PORT = process.env.PORT || 10000;
 
-app.use(cors());
+// Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(__dirname));
 
-const SMM_API_URL = 'https://khmer-smm.com/api/v2';
-const SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78';
-let globalPriceMarginPercent = 10;
+// Database จำลอง (Array สำหรับเก็บ Users)
+let users = [];
 
-const users = [];
+// ================= TELEGRAM BOT ================= //
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8749297297:AAEvWT7qku12vRkcsbkX9oE117cCWWpPrCY';
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
-app.post('/api/register', (req, res) => {
+bot.on('message', (msg) => {
+    const chatId = msg.chat.id;
+    const text = msg.text || '';
+
+    if (text === '/start') {
+        bot.sendMessage(chatId, `🤖 **KhmerSMM Deposit Bot ដំណើរការជោគជ័យ!**\n\n🆔 Chat ID របស់បង៖ \`${chatId}\``, { parse_mode: 'Markdown' });
+    }
+});
+
+// ================= SIGN UP API ================= //
+app.post('/api/signup', (req, res) => {
     const { username, email, password } = req.body;
+
     if (!username || !email || !password) {
-        return res.status(400).json({ success: false, message: 'សូមបំពេញព័ត៌មានឱ្យបានគ្រប់!' });
+        return res.status(400).json({ success: false, message: 'សូមបញ្ចូលព័ត៌មានឲ្យគ្រប់!' });
     }
 
-    const existingUser = users.find(u => 
-        u.username.toLowerCase() === username.trim().toLowerCase() || 
-        u.email.toLowerCase() === email.trim().toLowerCase()
-    );
-
+    const existingUser = users.find(u => u.username === username || u.email === email);
     if (existingUser) {
-        return res.status(400).json({ success: false, message: 'Username ឬ Email នេះមានគេប្រើរួចហើយ!' });
+        return res.status(400).json({ success: false, message: 'Username ឬ Email នេះមានគេប្រើហើយ!' });
     }
 
-    const newUser = { 
-        id: Date.now(), 
-        username: username.trim(), 
-        email: email.trim().toLowerCase(), 
-        password, 
-        balance: 0.00, 
-        myOrders: 0, 
-        totalSpend: 0.00 
+    const newUser = {
+        id: Date.now(),
+        username,
+        email,
+        password,
+        balance: 0.00
     };
+
     users.push(newUser);
-    return res.json({ success: true, message: 'ចុះឈ្មោះជោគជ័យ! សូម Sign In ដើម្បីចូលប្រើប្រាស់' });
+
+    return res.json({
+        success: true,
+        message: 'ចុះឈ្មោះជោគជ័យ!',
+        user: newUser
+    });
 });
 
-app.post('/api/login', (req, res) => {
-    const { loginKey, password } = req.body;
-    const inputKey = (loginKey || '').trim().toLowerCase();
-    
-    const user = users.find(u => (u.email.toLowerCase() === inputKey || u.username.toLowerCase() === inputKey) && u.password === password);
+// ================= GOOGLE LOGIN API ================= //
+app.post('/api/google-login', (req, res) => {
+    const { email, name, googleId } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ success: false, message: 'Google Authentication បរាជ័យ' });
+    }
+
+    let user = users.find(u => u.email === email);
+
     if (!user) {
-        return res.status(401).json({ success: false, message: 'ឈ្មោះ/អ៊ីមែល ឬ ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!' });
-    }
-
-    return res.json({ success: true, message: 'ចូលប្រើប្រាស់ជោគជ័យ!', user });
-});
-
-app.get('/api/services', async (req, res) => {
-    try {
-        const response = await axios.post(SMM_API_URL, new URLSearchParams({
-            key: SMM_API_KEY,
-            action: 'services'
-        }));
-
-        if (Array.isArray(response.data)) {
-            const servicesWithMargin = response.data.map(item => {
-                const originalRate = parseFloat(item.rate) || 0;
-                const finalRate = originalRate + (originalRate * (globalPriceMarginPercent / 100));
-                return {
-                    ...item,
-                    rate: finalRate.toFixed(4)
-                };
-            });
-            return res.json({ success: true, services: servicesWithMargin });
-        } else {
-            return res.status(400).json({ success: false, message: 'មិនអាចទាញយកសេវាកម្មបានទេ!' });
-        }
-    } catch (error) {
-        return res.status(500).json({ success: false, message: 'Server Error ក្នុងការទាញយក Services' });
-    }
-});
-
-app.post('/api/order', async (req, res) => {
-    try {
-        const { username, service, link, quantity, charge } = req.body;
-        
-        const user = users.find(u => u.username === username || u.email === username);
-        if (!user) {
-            return res.status(403).json({ success: false, message: 'សូមចូលប្រើប្រាស់ប្រព័ន្ធជាមុនសិន!' });
-        }
-
-        const parsedCharge = parseFloat(charge) || 0;
-        if (user.balance < parsedCharge) {
-            return res.status(400).json({ success: false, message: 'ទឹកប្រាក់ក្នុងគណនីមិនគ្រប់គ្រាន់ទេ! សូមបញ្ចូលប្រាក់បន្ថែម។' });
-        }
-
-        const apiRes = await axios.post(SMM_API_URL, new URLSearchParams({
-            key: SMM_API_KEY,
-            action: 'add',
-            service: service,
-            link: link,
-            quantity: quantity
-        }));
-
-        if (apiRes.data && apiRes.data.order) {
-            user.balance -= parsedCharge;
-            user.totalSpend += parsedCharge;
-            user.myOrders += 1;
-
-            return res.json({
-                success: true,
-                message: `បញ្ជាទិញជោគជ័យ! Order ID: ${apiRes.data.order}`,
-                newBalance: user.balance,
-                myOrders: user.myOrders,
-                totalSpend: user.totalSpend
-            });
-        } else {
-            return res.status(400).json({ 
-                success: false, 
-                message: apiRes.data.error || 'មានបញ្ហាក្នុងការបង្កើត Order!' 
-            });
-        }
-    } catch (error) {
-        return res.status(500).json({ success: false, message: 'Server Error ក្នុងការបញ្ជូន Order' });
-    }
-});
-
-// -------------------------------------------------------------
-// BAKONG KHQR GENERATOR (ប្ដូរឈ្មោះទៅ KHMERSMM)
-// -------------------------------------------------------------
-app.post('/generate-qr', (req, res) => {
-    try {
-        const { amount } = req.body;
-        const parsedAmount = parseFloat(amount);
-        if (isNaN(parsedAmount) || parsedAmount < 0.50) {
-            return res.status(400).json({ success: false, message: 'ចំនួនទឹកប្រាក់យ៉ាងតិច $0.50' });
-        }
-
-        const expirationTime = Date.now() + (10 * 60 * 1000); // 10 នាទី
-
-        const optionalData = {
-            currency: khqrData.currency.usd,
-            amount: parsedAmount,
-            mobileNumber: '85590217653',
-            storeLabel: 'KhmerSMM',
-            terminalLabel: 'Deposit',
-            billNumber: 'INV-' + Date.now().toString().slice(-6),
-            expirationTimestamp: expirationTime
+        user = {
+            id: Date.now(),
+            username: name.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 1000),
+            email: email,
+            password: 'google_auth_' + googleId,
+            balance: 0.00
         };
-
-        // កែសម្រួលឈ្មោះ Merchant Name ទៅជា KHMERSMM នៅត្រង់នេះ
-        const individualInfo = new IndividualInfo('mon_samnang@bkrt', 'KHMERSMM', 'Phnom Penh', optionalData);
-        const khqr = new BakongKHQR();
-        const response = khqr.generateIndividual(individualInfo);
-
-        if (response && response.data && response.data.qr) {
-            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(response.data.qr)}`;
-            return res.json({ 
-                success: true, 
-                qrImage: qrImageUrl, 
-                amount: parsedAmount.toFixed(2), 
-                merchantName: 'KHMERSMM' 
-            });
-        }
-        return res.status(400).json({ success: false, message: 'មិនអាចបង្កើត KHQR បានទេ' });
-    } catch (error) {
-        return res.status(500).json({ success: false, message: 'Server Error!' });
+        users.push(user);
     }
+
+    return res.json({
+        success: true,
+        message: 'Google Login ជោគជ័យ!',
+        user: user
+    });
 });
 
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ================= ADMIN ADD/DEDUCT BALANCE API ================= //
+app.post('/api/admin/update-balance', (req, res) => {
+    const { username, amount, type, adminKey } = req.body;
+
+    if (adminKey !== '123456') {
+        return res.status(403).json({ success: false, message: 'Admin Key មិនត្រឹមត្រូវ!' });
+    }
+
+    if (!username || !amount || isNaN(amount)) {
+        return res.status(400).json({ success: false, message: 'សូមបញ្ចូលទិន្នន័យឲ្យបានត្រឹមត្រូវ' });
+    }
+
+    const user = users.find(u => u.username === username || u.email === username);
+
+    if (!user) {
+        return res.status(404).json({ success: false, message: 'រកមិនឃើញ User នេះទេ!' });
+    }
+
+    const value = parseFloat(amount);
+    
+    if (type === 'add') {
+        user.balance += value;
+    } else if (type === 'deduct') {
+        user.balance = Math.max(0, user.balance - value);
+    } else {
+        return res.status(400).json({ success: false, message: 'Type ត្រូវតែជា add ឬ deduct' });
+    }
+
+    return res.json({
+        success: true,
+        message: 'បច្ចុប្បន្នភាពជោគជ័យ!',
+        username: user.username,
+        newBalance: user.balance
+    });
+});
+
+// Route for admin.html
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
