@@ -1,77 +1,60 @@
-<!DOCTYPE html>
-<html lang="km">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KhmerSMM - Admin Balance Control</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background-color: #0f172a; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .admin-card { background: #1e293b; border-radius: 16px; padding: 30px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
-        .form-control, .form-select { background-color: #e2e8f0; border: none; height: 48px; font-weight: bold; }
-        .btn-update { background-color: #0284c7; border: none; height: 48px; font-weight: bold; border-radius: 8px; }
-        .btn-update:hover { background-color: #0369a1; }
-    </style>
-</head>
-<body>
-
-<div class="admin-card text-center">
-    <h3 class="fw-bold mb-4 text-info">Admin Balance Control</h3>
-
-    <form id="adminForm" onsubmit="handleUpdate(event)">
-        <div class="mb-3">
-            <input type="password" id="adminPass" class="form-control text-center" placeholder="••••••" required>
-        </div>
-        <div class="mb-3">
-            <input type="text" id="username" class="form-control text-center" placeholder="ឈ្មោះអ្នកប្រើ (e.g. nang)" required>
-        </div>
-        <div class="mb-3">
-            <input type="number" id="amount" class="form-control text-center" placeholder="ចំនួនទឹកប្រាក់ ($)" step="0.01" required>
-        </div>
-        <div class="mb-3">
-            <select id="action" class="form-select text-center fw-bold">
-                <option value="add">+ បន្ថែម Balance (+)</option>
-                <option value="subtract">- ដក Balance (-)</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100 btn-update mb-3">បញ្ជាក់ (Update)</button>
-    </form>
-
-    <div id="statusMsg" class="fw-bold fs-6"></div>
-</div>
-
 <script>
-async function handleUpdate(e) {
-    e.preventDefault();
-    const statusDiv = document.getElementById('statusMsg');
-    statusDiv.innerHTML = '<span class="text-warning">កំពុងដំណើរការ...</span>';
+// ទាញយកបញ្ជី Users ពេល Load ទំព័រ
+document.addEventListener("DOMContentLoaded", loadUsers);
 
-    const adminPass = document.getElementById('adminPass').value;
-    const username = document.getElementById('username').value;
-    const amount = document.getElementById('amount').value;
-    const action = document.getElementById('action').value;
+async function loadUsers() {
+    const tbody = document.querySelector("table tbody");
+    if (!tbody) return;
 
     try {
-        const res = await fetch('/api/admin/update-balance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ adminPass, username, amount, action })
-        });
+        const response = await fetch('/api/admin/users');
+        const data = await response.json();
 
-        const data = await res.json();
-
-        if (res.ok && data.success) {
-            statusDiv.innerHTML = `<span class="text-success"><i class="fa-solid fa-circle-check me-1"></i> ${data.message}</span>`;
+        if (data.success && data.users.length > 0) {
+            tbody.innerHTML = ''; // លុបពាក្យ "កំពុងទាញយកទិន្នន័យ..."
+            data.users.forEach(user => {
+                const row = `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td class="fw-bold text-success">$${parseFloat(user.balance).toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editBalance('${user.email}', '${user.name}')">
+                                <i class="fa-solid fa-pen-to-square"></i> កែ Balance
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
         } else {
-            statusDiv.innerHTML = `<span class="text-danger"><i class="fa-solid fa-circle-xmark me-1"></i> ${data.message || 'បរាជ័យ!'}</span>`;
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">គ្មានទិន្នន័យ User ឡើយ</td></tr>';
         }
     } catch (err) {
-        statusDiv.innerHTML = `<span class="text-danger"><i class="fa-solid fa-triangle-exclamation me-1"></i> មានបញ្ហាភ្ជាប់ទៅ Server!</span>`;
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">មានបញ្ហាភ្ជាប់ទៅកាន់ Server!</td></tr>';
+    }
+}
+
+async function editBalance(email, name) {
+    const newAmount = prompt(`បញ្ចូលចំនួនទឹកប្រាក់ថ្មីសម្រាប់ ${name} (${email}):`);
+    if (newAmount !== null && newAmount !== '') {
+        try {
+            const res = await fetch('/api/admin/update-balance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, amount: newAmount, action: 'set' })
+            });
+            const result = await res.json();
+            if (result.success) {
+                alert(result.message);
+                loadUsers(); // Refresh តុទិន្នន័យឡើងវិញ
+            } else {
+                alert(result.message);
+            }
+        } catch (e) {
+            alert('មានបញ្ហាក្នុងការ Update Balance!');
+        }
     }
 }
 </script>
-
-</body>
-</html>
