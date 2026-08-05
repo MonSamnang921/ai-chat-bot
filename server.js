@@ -1,94 +1,133 @@
 const express = require('express');
-const path = require('path');
-const TelegramBot = require('node-telegram-bot-api');
+const axios = require('axios');
+const { OAuth2Client } = require('google-auth-library');
+const { BakongKHQR, khqrData, MerchantInfo } = require("bakong-khqr");
+const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Telegram Bot Settings
-const BOT_TOKEN = '8884737754:AAHa6uxDX_ufkr6UVEo4e0HX1dOAGLySTQk';
-const CHAT_ID = '6013620862';
-
-const bot = new TelegramBot(BOT_TOKEN, { polling: false });
-
-// Middleware & CORS Header Fix
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname));
+app.use(cors());
+app.use(express.static('public')); // សម្រាប់ Serve ឯកសារ Frontend
 
-// Serve Index HTML
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// --- Config ព័ត៌មានរបស់អ្នក ---
+const KHMER_SMM_API_URL = 'https://khmer-smm.com/api/v2';
+const KHMER_SMM_API_KEY = 'e298922490c0ac5dce809a3239c0ad78';
+const GOOGLE_CLIENT_ID = '781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com';
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-// Mock Services
-const mockServices = [
-    { service: 101, name: "TikTok Followers | Real & Fast", category: "TikTok", rate: 1.20, min: 100, max: 100000 },
-    { service: 102, name: "TikTok Likes | High Quality", category: "TikTok", rate: 0.50, min: 100, max: 50000 },
-    { service: 201, name: "Facebook Page Likes + Followers", category: "Facebook", rate: 2.10, min: 500, max: 200000 },
-    { service: 202, name: "Facebook Video Views", category: "Facebook", rate: 0.30, min: 1000, max: 1000000 },
-    { service: 301, name: "YouTube Subscribers | Refill Guaranteed", category: "YouTube", rate: 5.00, min: 100, max: 10000 },
-    { service: 401, name: "Telegram Channel Members", category: "Telegram", rate: 1.50, min: 500, max: 50000 }
-];
+const BAKONG_ID = 'mon_samnang@bkrt';
+const MERCHANT_NAME = 'SAMNANG MON';
 
-// Login Endpoint
-app.post('/api/login', (req, res) => {
-    const { loginKey, password } = req.body;
-    if (!loginKey || !password) {
-        return res.json({ success: false, message: "សូមបញ្ចូល Username និង Password!" });
+// ==========================================
+// 1. GOOGLE AUTHENTICATION API
+// ==========================================
+app.post('/api/auth/google', async (req, res) => {
+    const { token } = req.body;
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: GOOGLE_CLIENT_ID
+        });
+        const payload = ticket.getPayload();
+        
+        const user = {
+            googleId: payload['sub'],
+            email: payload['email'],
+            name: payload['name'],
+            picture: payload['picture']
+        };
+
+        res.json({ success: true, user: user });
+    } catch (error) {
+        console.error("Auth Error:", error.message);
+        res.status(401).json({ success: false, message: 'Google Authentication Failed' });
     }
-    res.json({
-        success: true,
-        user: {
-            username: loginKey,
-            email: `${loginKey}@gmail.com`,
-            balance: 0.00,
-            myOrders: 0,
-            totalSpend: 0.0
-        }
-    });
 });
 
-// Register Endpoint
-app.post('/api/register', (req, res) => {
-    res.json({ success: true, message: "ការចុះឈ្មោះជោគជ័យ! សូមចូលប្រើប្រាស់។" });
+// ==========================================
+// 2. KHMER SMM SERVICES API (FETCH & ADD MARGIN)
+// ==========================================
+app.get('/api/services', async (req, res) => {
+    try {
+        const response = await axios.post(KHMER_SMM_API_URL, {
+            key: KHMER_SMM_API_KEY,
+            action: 'services'
+        });
+
+        // បូកភាគរយចំណេញ 20% លើតម្លៃដើម
+        const profitMargin = 0.20; 
+        const adjustedServices = response.data.map(service => {
+            const originalRate = parseFloat(service.rate);
+            const myRate = originalRate + (originalRate * profitMargin);
+            return {
+                ...service,
+                rate: myRate.toFixed(4)
+            };
+        });
+
+        res.json({ success: true, services: adjustedServices });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "មិនអាចទាញទិន្នន័យសេវាកម្មបានទេ" });
+    }
 });
 
-// Services Endpoint
-app.get('/api/services', (req, res) => {
-    res.json({ success: true, services: mockServices });
-});
-
-// Submit Order Endpoint
+// ==========================================
+// 3. SUBMIT ORDER TO KHMER SMM
+// ==========================================
 app.post('/api/order', async (req, res) => {
-    const { userEmail, serviceName, link, quantity, totalPrice } = req.body;
-    const message = `🛒 **រៀបចំ Order ថ្មី!**\n\n👤 អ្នកប្រើប្រាស់: ${userEmail}\n🆔 Service ID: ${serviceName}\n🔗 Link: ${link}\n🔢 ចំនួន: ${quantity}\n💵 ទឹកប្រាក់សរុប: $${totalPrice}`;
-    
+    const { serviceId, link, quantity } = req.body;
     try {
-        if (CHAT_ID) await bot.sendMessage(CHAT_ID, message, { parse_mode: 'Markdown' });
-    } catch (err) {
-        console.error("Telegram Notification Error:", err.message);
+        const response = await axios.post(KHMER_SMM_API_URL, {
+            key: KHMER_SMM_API_KEY,
+            action: 'add',
+            service: serviceId,
+            link: link,
+            quantity: quantity
+        });
+
+        res.json({ success: true, data: response.data });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "ការកុម្ម៉ង់មានបញ្ហា" });
     }
-    res.json({ success: true, message: "✅ បញ្ជូន Order ជោគជ័យ!" });
 });
 
-// Deposit Endpoint
-app.post('/api/deposit', async (req, res) => {
-    const { userEmail, amount } = req.body;
-    const message = `💰 **មានសំណើបាញ់លុយចូល (Add Funds)!**\n\n👤 អ្នកប្រើប្រាស់: ${userEmail}\n💵 ចំនួនទឹកប្រាក់: $${amount}\n\nសូមពិនិត្យមើល App ធនាគារ រួចបញ្ចូល Balance ជូនគាត់។`;
-    
-    try {
-        if (CHAT_ID) await bot.sendMessage(CHAT_ID, message, { parse_mode: 'Markdown' });
-    } catch (err) {
-        console.error("Telegram Notification Error:", err.message);
+// ==========================================
+// 4. BAKONG Dynamic KHQR GENERATOR
+// ==========================================
+app.post('/api/generate-khqr', (req, res) => {
+    const { amount, orderId } = req.body;
+
+    const optionalData = {
+        currency: khqrData.currency.usd,
+        amount: parseFloat(amount),
+        billNumber: `SMM-${orderId}`,
+        storeLabel: "KHMER SMM",
+        terminalLabel: "Online POS",
+        expirationTimestamp: Date.now() + (5 * 60 * 1000),
+        merchantCategoryCode: "5999"
+    };
+
+    const merchantInfo = new MerchantInfo(
+        BAKONG_ID,
+        MERCHANT_NAME,
+        "Phnom Penh",
+        orderId.toString(),
+        "BAKONG",
+        optionalData
+    );
+
+    const khqr = new BakongKHQR();
+    const response = khqr.generateMerchant(merchantInfo);
+
+    if (response.status.code === 0) {
+        res.json({
+            success: true,
+            qrString: response.data.qr,
+            md5: response.data.md5
+        });
+    } else {
+        res.status(400).json({ success: false, message: "មិនអាចបង្កើត QR បានទេ" });
     }
-    res.json({ success: true, message: "✅ បញ្ជូនសំណើដាក់លុយជោគជ័យ!" });
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
