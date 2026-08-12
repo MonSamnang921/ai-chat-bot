@@ -1,41 +1,37 @@
-const express = require('express');
-const { BakongKHQR, khqrData, IndividualInfo } = require('bakong-khqr');
-const path = require('path');
-const app = express();
+async function generatePayment() {
+    const playerId = document.getElementById('playerId').value;
 
-app.use(express.json());
-app.use(express.static(__dirname));
-
-// API សម្រាប់បង្កើត KHQR String ត្រឹមត្រូវតាមស្តង់ដារ Bakong
-app.post('/api/generate-khqr', (req, res) => {
-    const { amount } = req.body;
-
-    const optionalData = {
-        currency: khqrData.currency.usd, // ប្រើ usd ឬ khr
-        amount: parseFloat(amount),
-        mobileNumber: "855973777105",
-        storeLabel: "FF Topup",
-        terminalLabel: "Web"
-    };
-
-    const individualInfo = new IndividualInfo(
-        "samnang_mon@bkrt",
-        "SAMNANG MON",
-        "Phnom Penh",
-        optionalData
-    );
-
-    const khqr = new BakongKHQR();
-    const response = khqr.generateIndividual(individualInfo);
-
-    if (response.status.code === 0) {
-        res.json({ success: true, qrString: response.data.qr });
-    } else {
-        res.status(500).json({ success: false, error: response.status.message });
+    if (!playerId) {
+        alert('សូមបញ្ចូល Player ID!');
+        return;
     }
-});
+    if (selectedDiamond === 0) {
+        alert('សូមជ្រើសរើសកញ្ចប់ពេជ្រ!');
+        return;
+    }
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
-});
+    document.getElementById('orderSummary').innerText = `ID: ${playerId} | 💎 ${selectedDiamond} ពេជ្រ | $${selectedPrice}`;
+
+    try {
+        // ហៅទៅ Backend ដើម្បីយក KHQR String ពិតប្រាកដ
+        const res = await fetch('/api/generate-khqr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: selectedPrice })
+        });
+        
+        const data = await res.json();
+
+        if (data.success) {
+            // យក KHQR String ស្តង់ដារទៅបង្កើតជា QR Code
+            QRCode.toCanvas(document.getElementById('qrcodeCanvas'), data.qrString, { width: 220 });
+            
+            document.getElementById('qrModal').style.display = 'flex';
+        } else {
+            alert('មិនអាចបង្កើត KHQR បានទេ!');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('មានបញ្ហាក្នុងការទាក់ទងទៅ Server!');
+    }
+}
