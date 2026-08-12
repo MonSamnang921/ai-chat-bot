@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ហាងបញ្ចូលហ្គេម និងសេវាកម្ម - KHQR Payment</title>
+    <title>YUTH STORE - ហាងបញ្ចូលហ្គេម និងសេវាកម្ម</title>
     <!-- Library សម្រាប់បង្កើត QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-    <!-- FontAwesome Icon -->
+    <!-- FontAwesome Icon សម្រាប់ Logo ហ្គេម -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Identity Services (Sign in with Google) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -205,7 +205,7 @@
             z-index: 1000;
         }
 
-        /* KHQR Card Template Styling ដូចរូបភាព */
+        /* KHQR Card Template Styling ដូចរូបភាព Bakong ផ្លូវការ */
         .khqr-card {
             background: #ffffff;
             color: #000000;
@@ -288,9 +288,9 @@
 <body>
 
 <div class="container">
-    <h2>បញ្ចូល ហ្គេម & សេវាកម្ម</h2>
+    <h2>YUTH STORE - បញ្ចូលហ្គេម</h2>
 
-    <!-- ជំហានទី ០៖ ផ្ទាំង Login ជាមួយ Google -->
+    <!-- ជំហានទី ០៖ ផ្ទាំង Login ជាមួយ Google (បង្ហាញមុនគេ) -->
     <div id="loginSection" class="login-box">
         <i class="fa-solid fa-user-lock"></i>
         <h3 style="margin-top:0;">សូមចូលប្រើប្រាស់មុននឹងទិញ</h3>
@@ -305,7 +305,7 @@
         </div>
     </div>
 
-    <!-- ផ្ទាំងទិញពេជ្រ -->
+    <!-- ផ្ទាំងទិញពេជ្រ (លាក់ទុក រង់ចាំ Login រួច) -->
     <div id="shopSection" style="display: none;">
         
         <div class="user-profile">
@@ -358,7 +358,7 @@
     </div>
 </div>
 
-<!-- Modal បង្ហាញ KHQR Form ដូចរូបភាព -->
+<!-- Modal បង្ហាញ KHQR Form -->
 <div class="qr-modal" id="qrModal">
     <div class="khqr-card">
         <!-- Header KHQR ក្រហម -->
@@ -368,7 +368,7 @@
 
         <!-- Body បង្ហាញព័ត៌មាន KHQR -->
         <div class="khqr-body">
-            <div class="khqr-merchant">SAMNANG MON</div>
+            <div class="khqr-merchant">YUTH STORE</div>
             <div class="khqr-amount" id="displayAmount">0.00 <span>USD</span></div>
 
             <div class="khqr-divider"></div>
@@ -389,7 +389,7 @@
 
 <script>
     const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
-    const ACCOUNT_NAME = "SAMNANG MON";
+    const ACCOUNT_NAME = "YUTH STORE";
 
     let currentUser = null;
     let currentGame = 'ff';
@@ -610,7 +610,6 @@
             return;
         }
 
-        // បង្ហាញតម្លៃទូទាត់លើ KHQR Card Form
         document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
 
         const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
