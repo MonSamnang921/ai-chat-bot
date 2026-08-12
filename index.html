@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>បញ្ចូលពេជ្រ Free Fire - KHQR Payment</title>
+    <title>ហាងបញ្ចូលហ្គេម និងសេវាកម្ម - KHQR Payment</title>
     <!-- Library សម្រាប់បង្កើត QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <style>
@@ -20,7 +20,7 @@
         }
         .container {
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             background: #1e293b;
             padding: 24px;
             border-radius: 12px;
@@ -47,6 +47,29 @@
             background: #0f172a;
             color: #fff;
             font-size: 16px;
+        }
+        /* Game Selector Grid */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .game-card {
+            background: #334155;
+            padding: 10px 5px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .game-card.active {
+            border-color: #f59e0b;
+            background: #0f172a;
+            color: #f59e0b;
         }
         .tabs {
             display: flex;
@@ -139,37 +162,32 @@
 <body>
 
 <div class="container">
-    <h2>បញ្ចូលពេជ្រ FREE FIRE</h2>
+    <h2>បញ្ចូល ហ្គេម & សេវាកម្ម</h2>
 
-    <!-- ១. បញ្ចូល Player ID -->
+    <!-- ១. ជ្រើសរើសហ្គេម -->
     <div class="form-group">
-        <label for="playerId">១. បញ្ចូល ID អ្នកលេង (Player ID)</label>
-        <input type="text" id="playerId" placeholder="ឧទាហរណ៍: 123456789">
+        <label>១. ជ្រើសរើសហ្គេម</label>
+        <div class="game-grid">
+            <div class="game-card active" onclick="selectGame('ff', this)">🔥 Free Fire</div>
+            <div class="game-card" onclick="selectGame('mlbb', this)">⚔️ Mobile Legends</div>
+            <div class="game-card" onclick="selectGame('pubg', this)">🪖 PUBG Mobile</div>
+            <div class="game-card" onclick="selectGame('rov', this)">🛡️ ROV</div>
+        </div>
     </div>
 
-    <!-- ២. ជ្រើសរើសប្រភេទ និងកញ្ចប់ -->
+    <!-- ២. បញ្ចូល Player ID -->
     <div class="form-group">
-        <label>២. ជ្រើសរើសកញ្ចប់សេវាកម្ម</label>
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchCategory('diamonds')">💎 ពេជ្ររាយ</button>
-            <button class="tab-btn" onclick="switchCategory('membership')">👑 កាតសមាជិក</button>
-        </div>
+        <label for="playerId" id="idLabel">២. បញ្ចូល Player ID</label>
+        <input type="text" id="playerId" placeholder="ឧទាហរណ៍: 123456789">
+        <input type="text" id="zoneId" placeholder="Zone ID (ឧទាហរណ៍: 1234)" style="display:none; margin-top:8px;">
+    </div>
 
-        <!-- ជម្រើស ពេជ្ររាយ -->
-        <div class="grid" id="diamondOptions">
-            <div class="card" onclick="selectItem(this, '💎 100 ពេជ្រ', 0.99)">💎 100 ពេជ្រ<br><small>$0.99</small></div>
-            <div class="card" onclick="selectItem(this, '💎 310 ពេជ្រ', 2.99)">💎 310 ពេជ្រ<br><small>$2.99</small></div>
-            <div class="card" onclick="selectItem(this, '💎 520 ពេជ្រ', 4.99)">💎 520 ពេជ្រ<br><small>$4.99</small></div>
-            <div class="card" onclick="selectItem(this, '💎 1060 ពេជ្រ', 9.99)">💎 1060 ពេជ្រ<br><small>$9.99</small></div>
-        </div>
+    <!-- ៣. ជ្រើសរើសកញ្ចប់ -->
+    <div class="form-group">
+        <label>៣. ជ្រើសរើសកញ្ចប់សេវាកម្ម</label>
 
-        <!-- ជម្រើស កាតសមាជិក -->
-        <div class="grid" id="membershipOptions" style="display: none;">
-            <div class="card" onclick="selectItem(this, '📅 កាតប្រចាំសប្តាហ៍ (Weekly)', 3.50)">📅 កាតប្រចាំសប្តាហ៍<br><small>$3.50</small></div>
-            <div class="card" onclick="selectItem(this, '📆 កាតប្រចាំខែ (Monthly)', 15.00)">📆 កាតប្រចាំខែ<br><small>$15.00</small></div>
-            <div class="card" onclick="selectItem(this, '🔫 EVO Gun Pass', 4.50)">🔫 EVO Gun Pass<br><small>$4.50</small></div>
-            <div class="card" onclick="selectItem(this, '⬆️ Level Up Pass', 8.00)">⬆️ Level Up Pass<br><small>$8.00</small></div>
-        </div>
+        <!-- Dynamic Container សម្រាប់ប្រភេទ និងកញ្ចប់តាមហ្គេម -->
+        <div id="packageContainer"></div>
     </div>
 
     <button class="btn" onclick="generatePayment()">ទូទាត់ប្រាក់ឥឡូវនេះ</button>
@@ -186,7 +204,7 @@
         
         <div class="loader-box">
             ⏳ ប្រព័ន្ធកំពុងផ្ទៀងផ្ទាត់ការទូទាត់ប្រាក់...<br>
-            <span style="font-size:11px; font-weight:normal; color:#64748b;">(ពេជ្រនឹងចូល Account ដោយស្វ័យប្រវត្តិក្នងរយៈពេល 1-3 នាទី បន្ទាប់ពីស្កេនរួច)</span>
+            <span style="font-size:11px; font-weight:normal; color:#64748b;">(ទំនិញនឹងចូល Account ដោយស្វ័យប្រវត្តិក្នងរយៈពេល 1-3 នាទី បន្ទាប់ពីស្កេនរួច)</span>
         </div>
 
         <button onclick="closeModal()" style="margin-top:15px; border:none; background:#e2e8f0; padding:8px 20px; border-radius:6px; color:#334155; font-weight:bold; cursor:pointer;">បិទ</button>
@@ -197,28 +215,151 @@
     const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
     const ACCOUNT_NAME = "SAMNANG MON";
 
+    let currentGame = 'ff';
     let selectedPackage = null;
     let selectedPrice = 0;
 
-    function switchCategory(type) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.grid .card').forEach(card => card.classList.remove('active'));
+    // ទិន្នន័យកញ្ចប់ហ្គេមនីមួយៗ
+    const gameData = {
+        ff: {
+            tabs: [
+                { name: '💎 ពេជ្ររាយ', id: 'ff_diamonds' },
+                { name: '👑 កាតសមាជិក', id: 'ff_membership' }
+            ],
+            packages: {
+                ff_diamonds: [
+                    { name: '💎 100 ពេជ្រ', price: 0.99 },
+                    { name: '💎 310 ពេជ្រ', price: 2.99 },
+                    { name: '💎 520 ពេជ្រ', price: 4.99 },
+                    { name: '💎 1060 ពេជ្រ', price: 9.99 }
+                ],
+                ff_membership: [
+                    { name: '📅 កាតប្រចាំសប្តាហ៍', price: 3.50 },
+                    { name: '📆 កាតប្រចាំខែ', price: 15.00 },
+                    { name: '🔫 EVO Gun Pass', price: 4.50 },
+                    { name: '⬆️ Level Up Pass', price: 8.00 }
+                ]
+            }
+        },
+        mlbb: {
+            tabs: [
+                { name: '💎 Diamonds', id: 'ml_diamonds' },
+                { name: '🌟 Weekly Pass', id: 'ml_pass' }
+            ],
+            packages: {
+                ml_diamonds: [
+                    { name: '💎 86 Diamonds', price: 1.50 },
+                    { name: '💎 172 Diamonds', price: 3.00 },
+                    { name: '💎 257 Diamonds', price: 4.50 },
+                    { name: '💎 706 Diamonds', price: 11.50 }
+                ],
+                ml_pass: [
+                    { name: '🌟 Weekly Diamond Pass (1X)', price: 2.20 },
+                    { name: '🌟 Weekly Diamond Pass (2X)', price: 4.30 },
+                    { name: '🌟 Weekly Diamond Pass (3X)', price: 6.40 },
+                    { name: '🌟 Weekly Diamond Pass (5X)', price: 10.50 }
+                ]
+            }
+        },
+        pubg: {
+            tabs: [
+                { name: '💵 UC', id: 'pubg_uc' }
+            ],
+            packages: {
+                pubg_uc: [
+                    { name: '💵 60 UC', price: 0.99 },
+                    { name: '💵 325 UC', price: 4.99 },
+                    { name: '💵 660 UC', price: 9.99 },
+                    { name: '💵 1800 UC', price: 24.99 }
+                ]
+            }
+        },
+        rov: {
+            tabs: [
+                { name: '🎟️ Coupons', id: 'rov_coupons' }
+            ],
+            packages: {
+                rov_coupons: [
+                    { name: '🎟️ 35 Coupons', price: 1.00 },
+                    { name: '🎟️ 175 Coupons', price: 5.00 },
+                    { name: '🎟️ 350 Coupons', price: 10.00 },
+                    { name: '🎟️ 700 Coupons', price: 20.00 }
+                ]
+            }
+        }
+    };
+
+    function selectGame(gameKey, element) {
+        document.querySelectorAll('.game-card').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        currentGame = gameKey;
         selectedPackage = null;
         selectedPrice = 0;
 
-        if (type === 'diamonds') {
-            event.target.classList.add('active');
-            document.getElementById('diamondOptions').style.display = 'grid';
-            document.getElementById('membershipOptions').style.display = 'none';
+        // បើក/បិទ Zone ID សម្រាប់ MLBB
+        if (gameKey === 'mlbb') {
+            document.getElementById('zoneId').style.display = 'block';
         } else {
-            event.target.classList.add('active');
-            document.getElementById('diamondOptions').style.display = 'none';
-            document.getElementById('membershipOptions').style.display = 'grid';
+            document.getElementById('zoneId').style.display = 'none';
         }
+
+        renderPackages();
+    }
+
+    function renderPackages() {
+        const data = gameData[currentGame];
+        const container = document.getElementById('packageContainer');
+        container.innerHTML = '';
+
+        // បង្កើត Tabs
+        if (data.tabs.length > 1) {
+            const tabsDiv = document.createElement('div');
+            tabsDiv.className = 'tabs';
+            data.tabs.forEach((tab, index) => {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+                btn.innerText = tab.name;
+                btn.onclick = () => switchTab(tab.id, btn);
+                tabsDiv.appendChild(btn);
+            });
+            container.appendChild(tabsDiv);
+        }
+
+        // បង្កើត Grids
+        data.tabs.forEach((tab, index) => {
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'grid';
+            gridDiv.id = tab.id;
+            gridDiv.style.display = index === 0 ? 'grid' : 'none';
+
+            data.packages[tab.id].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `${item.name}<br><small>$${item.price.toFixed(2)}</small>`;
+                card.onclick = () => selectItem(card, item.name, item.price);
+                gridDiv.appendChild(card);
+            });
+
+            container.appendChild(gridDiv);
+        });
+    }
+
+    function switchTab(tabId, btnElement) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        document.querySelectorAll('#packageContainer .grid').forEach(grid => {
+            grid.style.display = 'none';
+        });
+        document.getElementById(tabId).style.display = 'grid';
+
+        document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+        selectedPackage = null;
+        selectedPrice = 0;
     }
 
     function selectItem(element, packageName, price) {
-        document.querySelectorAll('.grid .card').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.card').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
         selectedPackage = packageName;
         selectedPrice = price;
@@ -265,9 +406,14 @@
 
     function generatePayment() {
         const playerId = document.getElementById('playerId').value;
+        const zoneId = document.getElementById('zoneId').value;
 
         if (!playerId) {
             alert('សូមបញ្ចូល Player ID!');
+            return;
+        }
+        if (currentGame === 'mlbb' && !zoneId) {
+            alert('សូមបញ្ចូល Zone ID សម្រាប់ Mobile Legends!');
             return;
         }
         if (!selectedPackage) {
@@ -275,7 +421,10 @@
             return;
         }
 
-        document.getElementById('orderSummary').innerText = `ID: ${playerId} | ${selectedPackage} | $${selectedPrice}`;
+        let idInfo = `ID: ${playerId}`;
+        if (currentGame === 'mlbb') idInfo += ` (${zoneId})`;
+
+        document.getElementById('orderSummary').innerText = `${idInfo} | ${selectedPackage} | $${selectedPrice.toFixed(2)}`;
 
         const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
 
@@ -289,6 +438,9 @@
     function closeModal() {
         document.getElementById('qrModal').style.display = 'none';
     }
+
+    // ដំណើរការដំបូង
+    renderPackages();
 </script>
 
 </body>
