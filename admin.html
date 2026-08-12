@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YUTH STORE - Admin Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif, Arial; }
         body { background-color: #0f172a; color: #ffffff; display: flex; justify-content: center; padding: 20px; }
@@ -25,7 +28,6 @@
 <div class="container">
     <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
 
-    <!-- ផ្ទាំងវាយ PIN សម្ងាត់ Admin -->
     <div id="pinGate" class="login-gate">
         <p>សូមបញ្ចូល PIN សម្ងាត់ដើម្បីចូលកាន់ប្រព័ន្ធ Admin</p>
         <div class="form-group">
@@ -34,7 +36,6 @@
         <button class="btn" onclick="checkPin()">ចូលប្រើប្រាស់</button>
     </div>
 
-    <!-- ផ្ទាំងគ្រប់គ្រងការបញ្ចូលលុយ (លាក់ទុកមុន) -->
     <div id="adminControls" style="display: none;">
         <div class="form-group">
             <label>១. អ៊ីមែលអតិថិជន (User Email):</label>
@@ -52,7 +53,18 @@
 </div>
 
 <script>
-    // 🔴 លេខ PIN សម្ងាត់ថ្មីសម្រាប់ Admin
+    // 🔴 កំណត់រចនាសម្ព័ន្ធ Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDummyKeyForStoreOnly",
+        authDomain: "yuth-store.firebaseapp.com",
+        projectId: "yuth-store",
+        storageBucket: "yuth-store.appspot.com",
+        messagingSenderId: "781995105719",
+        appId: "1:781995105719:web:abcdef123456"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const ADMIN_PIN = "232344";
 
     function checkPin() {
@@ -65,8 +77,8 @@
         }
     }
 
-    function processBalance(action) {
-        const email = document.getElementById('targetEmail').value;
+    async function processBalance(action) {
+        const email = document.getElementById('targetEmail').value.trim();
         const amount = parseFloat(document.getElementById('addAmount').value);
 
         if (!email || isNaN(amount) || amount <= 0) {
@@ -74,10 +86,27 @@
             return;
         }
 
+        const userRef = db.collection('users').doc(email);
+        const doc = await userRef.get();
+
+        let currentBal = 0.00;
+        if (doc.exists) {
+            currentBal = doc.data().balance || 0.00;
+        }
+
+        let newBal = currentBal;
         if (action === 'add') {
-            alert(`បានបន្ថែមទឹកប្រាក់ $${amount.toFixed(2)} ជូន ${email} រួចរាល់!`);
+            newBal += amount;
         } else {
-            alert(`បានកាត់ទឹកប្រាក់ $${amount.toFixed(2)} ពី ${email} រួចរាល់!`);
+            newBal = Math.max(0, newBal - amount);
+        }
+
+        await userRef.set({ balance: newBal }, { merge: true });
+
+        if (action === 'add') {
+            alert(`បានបន្ថែមទឹកប្រាក់ $${amount.toFixed(2)} ជូន ${email} រួចរាល់! សមតុល្យថ្មីគឺ: $${newBal.toFixed(2)}`);
+        } else {
+            alert(`បានកាត់ទឹកប្រាក់ $${amount.toFixed(2)} ពី ${email} រួចរាល់! សមតុល្យថ្មីគឺ: $${newBal.toFixed(2)}`);
         }
 
         document.getElementById('targetEmail').value = '';
