@@ -99,12 +99,6 @@
             max-width: 360px;
             width: 90%;
         }
-        .status-loader {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #0284c7;
-            font-weight: bold;
-        }
         canvas {
             margin: 15px 0;
             border: 1px solid #e2e8f0;
@@ -157,7 +151,9 @@
         
         <canvas id="qrcodeCanvas"></canvas>
         
-        <div class="status-loader" id="paymentStatus">⏳ កំពុងរង់ចាំការស្កេនទូទាត់...</div>
+        <p style="font-size:12px; color:#dc2626; font-weight:bold; margin-top:5px;">
+            *បន្ទាប់ពីស្កេនទូទាត់រួច សូមចុចប៊ូតុងខាងក្រោមដើម្បីផ្ញើវិក្កយបត្រ!
+        </p>
 
         <a href="#" id="telegramBtn" target="_blank" class="btn-telegram">ផ្ញើវិក្កយបត្រទៅ Telegram</a>
         <button onclick="closeModal()" style="margin-top:10px; border:none; background:none; color:#64748b; cursor:pointer;">បិទ</button>
@@ -165,14 +161,13 @@
 </div>
 
 <script>
-    // ព័ត៌មាន Bakong របស់អ្នក
+    // ព័ត៌មានគណនី Bakong របស់អ្នក
     const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
     const ACCOUNT_NAME = "SAMNANG MON";
-    const TELEGRAM_USERNAME = "YourTelegramUsername"; // 🔴 ដាក់ Username Telegram របស់អ្នក (គ្មាន @)
+    const TELEGRAM_USERNAME = "YourTelegramUsername"; // 🔴 កុំភ្លេចប្តូរ Telegram Username របស់អ្នកត្រង់នេះ
 
     let selectedDiamond = 0;
     let selectedPrice = 0;
-    let checkInterval = null;
 
     function selectItem(element, diamonds, price) {
         document.querySelectorAll('#diamondOptions .card').forEach(el => el.classList.remove('active'));
@@ -181,11 +176,57 @@
         selectedPrice = price;
     }
 
+    // Function គណនា CRC16 សម្រាប់ EMVCo Standard KHQR
+    function crc16(data) {
+        let crc = 0xFFFF;
+        for (let i = 0; i < data.length; i++) {
+            crc ^= data.charCodeAt(i) << 8;
+            for (let j = 0; j < 8; j++) {
+                if ((crc & 0x8000) !== 0) {
+                    crc = (crc << 1) ^ 0x1021;
+                } else {
+                    crc = crc << 1;
+                }
+            }
+        }
+        crc = crc & 0xFFFF;
+        return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
+
+    // Function បង្កើត EMVCo KHQR String ពិតប្រាកដ
+    function generateKHQRString(bakongId, merchantName, amount) {
+        const formattedAmount = parseFloat(amount).toFixed(2);
+        
+        // ផ្នែកព័ត៌មានគណនី (Tag 29)
+        const accountStr = `00${bakongId.length.toString().padStart(2, '0')}${bakongId}`;
+        const tag29 = `29${accountStr.length.toString().padStart(2, '0')}${accountStr}`;
+        
+        // ផ្នែកប្រាក់ USD (Tag 53 - 840) និង ចំនួនទឹកប្រាក់ (Tag 54)
+        const currencyTag = "5303840";
+        const amountTag = `54${formattedAmount.length.toString().padStart(2, '0')}${formattedAmount}`;
+        
+        // ផ្នែកព័ត៌មានផ្សេងៗ
+        const payload = 
+            "000201" +                          // Payload Format Indicator
+            "010212" +                          // Dynamic QR Code (12)
+            tag29 +                             // Merchant Information
+            "52045999" +                        // Merchant Category Code
+            currencyTag +                       // Currency USD
+            amountTag +                         // Amount
+            "5802KH" +                          // Country Code
+            `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` + // Merchant Name
+            "6010Phnom Penh" +                  // City
+            "6304";                             // CRC Tag Header
+
+        const crc = crc16(payload);
+        return payload + crc;
+    }
+
     function generatePayment() {
         const playerId = document.getElementById('playerId').value;
 
         if (!playerId) {
-            alert('សូមបញ្ចូល Player ID ជាមុនសិន!');
+            alert('សូមបញ្ចូល Player ID!');
             return;
         }
         if (selectedDiamond === 0) {
@@ -195,12 +236,15 @@
 
         document.getElementById('orderSummary').innerText = `ID: ${playerId} | 💎 ${selectedDiamond} ពេជ្រ | $${selectedPrice}`;
 
-        // DeepLink ទ្រង់ទ្រាយ Bakong សម្រាប់បង្កើត KHQR
-        const qrString = `bakong://pay?id=${BAKONG_ACCOUNT_ID}&name=${encodeURIComponent(ACCOUNT_NAME)}&amount=${selectedPrice}&currency=USD`;
+        // បង្កើត KHQR String ដែលត្រូវតាមស្តង់ដារ EMVCo 100%
+        const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
 
-        // គូរ QR Code
-        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), qrString, { width: 200 }, function (error) {
-            if (error) console.error(error);
+        // បង្កើត QR Code លើ Canvas
+        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 220 }, function (error) {
+            if (error) {
+                console.error(error);
+                alert('មានបញ្ហាក្នុងការបង្កើត QR Code!');
+            }
         });
 
         // លីងផ្ញើសារ Telegram ទៅកាន់ Admin
@@ -208,35 +252,9 @@
         document.getElementById('telegramBtn').href = `https://t.me/${TELEGRAM_USERNAME}?text=${message}`;
 
         document.getElementById('qrModal').style.display = 'flex';
-
-        // ចាប់ផ្តើមរត់ប្រព័ន្ធស្វែងរកការបង់ប្រាក់ (Polling/Auto-Check)
-        startCheckingPayment(playerId);
-    }
-
-    function startCheckingPayment(playerId) {
-        let attempts = 0;
-        document.getElementById('paymentStatus').innerText = "⏳ កំពុងរង់ចាំការស្កេនទូទាត់...";
-        document.getElementById('paymentStatus').style.color = "#0284c7";
-
-        // Check ស្ថានភាពរៀងរាល់ ៥ វិនាទីម្តង
-        checkInterval = setInterval(() => {
-            attempts++;
-            
-            /* 
-              នៅពេលអ្នកភ្ជាប់ជាមួយ Bakong Open API Backend 
-              អ្នកអាចហៅ API មកពិនិត្យទីនេះបាន។ 
-            */
-
-            if (attempts > 36) { // ឈប់ Check ក្រោយរង់ចាំ 3 នាទី
-                clearInterval(checkInterval);
-                document.getElementById('paymentStatus').innerText = "⚠️ រយៈពេលទូទាត់បានផុតកំណត់! សូមព្យាយាមម្តងទៀត។";
-                document.getElementById('paymentStatus').style.color = "#dc2626";
-            }
-        }, 5000);
     }
 
     function closeModal() {
-        clearInterval(checkInterval);
         document.getElementById('qrModal').style.display = 'none';
     }
 </script>
