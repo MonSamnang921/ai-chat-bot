@@ -48,7 +48,8 @@
             color: #fff;
             font-size: 16px;
         }
-        /* Game Selector Grid */
+        
+        /* Game Selector Grid ជាមួយរូបភាព */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -58,19 +59,31 @@
         .game-card {
             background: #334155;
             padding: 10px 5px;
-            border-radius: 8px;
+            border-radius: 10px;
             text-align: center;
             cursor: pointer;
             border: 2px solid transparent;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .game-card img {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            object-fit: cover;
         }
         .game-card.active {
             border-color: #f59e0b;
             background: #0f172a;
             color: #f59e0b;
         }
+        
         .tabs {
             display: flex;
             gap: 10px;
@@ -124,6 +137,7 @@
         .btn:hover {
             background: #d97706;
         }
+        
         /* Popup QR Code */
         .qr-modal {
             display: none;
@@ -164,22 +178,33 @@
 <div class="container">
     <h2>បញ្ចូល ហ្គេម & សេវាកម្ម</h2>
 
-    <!-- ១. ជ្រើសរើសហ្គេម -->
+    <!-- ១. ជ្រើសរើសហ្គេម (មានរូបភាព Logo) -->
     <div class="form-group">
         <label>១. ជ្រើសរើសហ្គេម</label>
         <div class="game-grid">
-            <div class="game-card active" onclick="selectGame('ff', this)">🔥 Free Fire</div>
-            <div class="game-card" onclick="selectGame('mlbb', this)">⚔️ Mobile Legends</div>
-            <div class="game-card" onclick="selectGame('pubg', this)">🪖 PUBG Mobile</div>
-            <div class="game-card" onclick="selectGame('rov', this)">🛡️ ROV</div>
+            <div class="game-card active" onclick="selectGame('ff', this)">
+                <img src="https://cdn-icons-png.flaticon.com/512/825/825590.png" alt="Free Fire">
+                Free Fire
+            </div>
+            <div class="game-card" onclick="selectGame('mlbb', this)">
+                <img src="https://m.mobilelegends.com/static/images/mlbb_logo.png" alt="Mobile Legends">
+                Mobile Legends
+            </div>
+            <div class="game-card" onclick="selectGame('pubg', this)">
+                <img src="https://www.pubgmobile.com/images/event/common/logo.png" alt="PUBG Mobile">
+                PUBG Mobile
+            </div>
+            <div class="game-card" onclick="selectGame('rov', this)">
+                <img src="https://images.seeklogo.com/logo-png/33/2/arena-of-valor-logo-png_seeklogo-335804.png" alt="ROV">
+                ROV
+            </div>
         </div>
     </div>
 
     <!-- ២. បញ្ចូល Player ID -->
     <div class="form-group">
-        <label for="playerId" id="idLabel">២. បញ្ចូល Player ID</label>
-        <input type="text" id="playerId" placeholder="ឧទាហរណ៍: 123456789">
-        <input type="text" id="zoneId" placeholder="Zone ID (ឧទាហរណ៍: 1234)" style="display:none; margin-top:8px;">
+        <label for="playerId">២. បញ្ចូល Player ID</label>
+        <input type="text" id="playerId" placeholder="បញ្ចូល ID អ្នកលេង (ឧទាហរណ៍: 123456789)">
     </div>
 
     <!-- ៣. ជ្រើសរើសកញ្ចប់ -->
@@ -219,7 +244,6 @@
     let selectedPackage = null;
     let selectedPrice = 0;
 
-    // ទិន្នន័យកញ្ចប់ហ្គេមនីមួយៗ
     const gameData = {
         ff: {
             tabs: [
@@ -296,13 +320,6 @@
         selectedPackage = null;
         selectedPrice = 0;
 
-        // បើក/បិទ Zone ID សម្រាប់ MLBB
-        if (gameKey === 'mlbb') {
-            document.getElementById('zoneId').style.display = 'block';
-        } else {
-            document.getElementById('zoneId').style.display = 'none';
-        }
-
         renderPackages();
     }
 
@@ -311,7 +328,6 @@
         const container = document.getElementById('packageContainer');
         container.innerHTML = '';
 
-        // បង្កើត Tabs
         if (data.tabs.length > 1) {
             const tabsDiv = document.createElement('div');
             tabsDiv.className = 'tabs';
@@ -325,7 +341,6 @@
             container.appendChild(tabsDiv);
         }
 
-        // បង្កើត Grids
         data.tabs.forEach((tab, index) => {
             const gridDiv = document.createElement('div');
             gridDiv.className = 'grid';
@@ -406,14 +421,9 @@
 
     function generatePayment() {
         const playerId = document.getElementById('playerId').value;
-        const zoneId = document.getElementById('zoneId').value;
 
         if (!playerId) {
             alert('សូមបញ្ចូល Player ID!');
-            return;
-        }
-        if (currentGame === 'mlbb' && !zoneId) {
-            alert('សូមបញ្ចូល Zone ID សម្រាប់ Mobile Legends!');
             return;
         }
         if (!selectedPackage) {
@@ -421,10 +431,7 @@
             return;
         }
 
-        let idInfo = `ID: ${playerId}`;
-        if (currentGame === 'mlbb') idInfo += ` (${zoneId})`;
-
-        document.getElementById('orderSummary').innerText = `${idInfo} | ${selectedPackage} | $${selectedPrice.toFixed(2)}`;
+        document.getElementById('orderSummary').innerText = `ID: ${playerId} | ${selectedPackage} | $${selectedPrice.toFixed(2)}`;
 
         const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
 
@@ -439,7 +446,6 @@
         document.getElementById('qrModal').style.display = 'none';
     }
 
-    // ដំណើរការដំបូង
     renderPackages();
 </script>
 
