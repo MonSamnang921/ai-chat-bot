@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YUTH STORE - ហាងបញ្ចូលហ្គេម និងសេវាកម្ម</title>
-    <!-- QR Code Library -->
+    <!-- Library សម្រាប់បង្កើត QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <!-- FontAwesome Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Sign-in -->
+    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <!-- Firebase SDK (សម្រាប់ Real-time Balance) -->
+    <!-- Firebase SDK (Real-time Database) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
@@ -161,14 +161,14 @@
 </div>
 
 <script>
-    // 🔴 កំណត់រចនាសម្ព័ន្ធ Firebase Real-time Balance
+    // 🔴 Firebase Config ពិតប្រាកដរបស់អ្នក
     const firebaseConfig = {
-        apiKey: "AIzaSyDummyKeyForStoreOnly",
-        authDomain: "yuth-store.firebaseapp.com",
-        projectId: "yuth-store",
-        storageBucket: "yuth-store.appspot.com",
-        messagingSenderId: "781995105719",
-        appId: "1:781995105719:web:abcdef123456"
+      apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
+      authDomain: "planning-with-ai-46ea2.firebaseapp.com",
+      projectId: "planning-with-ai-46ea2",
+      storageBucket: "planning-with-ai-46ea2.firebasestorage.app",
+      messagingSenderId: "631178903261",
+      appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -204,13 +204,12 @@
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('shopSection').style.display = 'block';
 
-        // 🔄 ភ្ជាប់ Real-time Listener ជាមួយ Firebase ពេល Admin ដាក់លុយ វានឹងឡើងភ្លាមៗ
-        const userDocRef = db.collection('users').doc(currentUser.email);
+        // 🔄 Real-time Balance Listener (លុយឡើងភ្លាមៗពេល Admin ដាក់)
+        const userDocRef = db.collection('users').doc(currentUser.email.toLowerCase());
         userDocRef.onSnapshot((doc) => {
             if (doc.exists) {
                 currentUserBalance = doc.data().balance || 0.00;
             } else {
-                // បើភ្ញៀវថ្មី មិនទាន់មានទិន្នន័យ
                 userDocRef.set({ name: currentUser.name, balance: 0.00 });
                 currentUserBalance = 0.00;
             }
@@ -421,7 +420,7 @@
 
         document.getElementById('qrModal').style.display = 'flex';
 
-        // 📩 ផ្ញើសារប្រាប់ Admin តាម Telegram
+        // 📩 Telegram Notification
         const userEmail = currentUser ? currentUser.email : "មិនបាន Login";
         const userName = currentUser ? currentUser.name : "N/A";
 
