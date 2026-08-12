@@ -3,617 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khmer SMM Panel</title>
-    <!-- Font Awesome Icons & Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <!-- QRCode Generator Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
+    <title>បញ្ចូលពេជ្រ Free Fire - KHQR Payment</title>
+    <!-- Library សម្រាប់បង្កើត QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <style>
-        :root {
-            --primary-blue: #0d6efd;
-            --bg-light: #f4f7f6;
-            --khqr-red: #e10b17;
-            --telegram-color: #0088cc;
+        * {
+            box-sizing: border-box;
+            font-family: 'Kantumruy Pro', sans-serif, Arial;
         }
         body {
-            background-color: var(--bg-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 80px;
-        }
-        .navbar-custom {
-            background-color: var(--primary-blue);
-            padding: 10px 20px;
-        }
-        
-        .btn-dollar-nav {
-            background-color: #ffc107;
-            color: #000;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            background-color: #0f172a;
+            color: #ffffff;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 20px;
-            border: 2px solid #ffffff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            text-decoration: none;
+            padding: 20px;
         }
-        .btn-dollar-nav:hover {
-            transform: scale(1.1);
-            background-color: #ffca2c;
-            color: #000;
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
-
-        .welcome-banner {
-            background-color: #eef3fe;
-            color: #2b3a4a;
+        h2 {
             text-align: center;
-            padding: 10px;
-            font-size: 14px;
-            font-weight: 500;
+            color: #f59e0b;
+            margin-bottom: 20px;
         }
-        .stats-box {
-            text-align: center;
-            margin: 15px 0;
-            font-size: 14px;
-            color: #333;
+        .form-group {
+            margin-bottom: 18px;
         }
-        .stats-box span {
+        label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: bold;
-            color: var(--primary-blue);
         }
-        .platform-grid {
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #fff;
+            font-size: 16px;
+        }
+        .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            margin-bottom: 20px;
         }
-        .btn-platform {
-            background: #fff;
-            border: 1px solid #1a73e8;
-            color: #1a73e8;
-            border-radius: 8px;
-            padding: 10px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-        .btn-platform:hover, .btn-platform.active {
-            background-color: #1a73e8;
-            color: #fff;
-        }
-        .card-custom {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        .tab-btn {
-            border-radius: 6px;
-            font-weight: 600;
-        }
-        .amount-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .btn-amount {
-            border: 1px solid #1a73e8;
-            color: #1a73e8;
-            background: #fff;
-            border-radius: 8px;
-            padding: 8px;
-            font-weight: 600;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .btn-amount:hover, .btn-amount.active {
-            background-color: #1a73e8;
-            color: #fff;
-        }
-        .instruction-box {
-            background-color: #eef3fe;
-            border-left: 4px solid var(--primary-blue);
+        .card {
+            background: #334155;
             padding: 15px;
-            border-radius: 6px;
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .float-contact-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--telegram-color);
-            color: white;
-            border-radius: 50px;
-            padding: 12px 20px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            z-index: 999;
-            transition: all 0.3s ease;
-        }
-        .float-contact-btn:hover {
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
-        }
-
-        /* KHQR Card UI */
-        .khqr-card-container {
-            width: 330px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            border: 1px solid #e2e8f0;
-        }
-        .khqr-header {
-            background-color: var(--khqr-red);
-            padding: 12px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%);
-        }
-        .khqr-logo-text {
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            font-family: Arial, sans-serif;
-            text-transform: uppercase;
-        }
-        .khqr-body {
-            padding: 20px;
-            text-align: left;
-        }
-        .khqr-merchant {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-        }
-        .khqr-amount {
-            font-size: 24px;
-            font-weight: 800;
-            color: #000;
-        }
-        .khqr-currency {
-            font-size: 14px;
-            font-weight: 600;
-            color: #555;
-        }
-        .khqr-divider {
-            border-top: 2px dashed #cbd5e1;
-            margin: 15px 0;
-        }
-        .khqr-qr-box {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            min-height: 220px;
-        }
-        .khqr-center-icon {
-            position: absolute;
-            width: 38px;
-            height: 38px;
-            background-color: #000000;
-            border: 3px solid #ffffff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 18px;
-            z-index: 10;
-        }
-        .qr-expired-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 20;
             border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .card:hover, .card.active {
+            border-color: #f59e0b;
+            background: #0f172a;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #f59e0b;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #d97706;
+        }
+        /* Popup QR Code */
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+        }
+        .qr-content {
+            background: #ffffff;
+            color: #0f172a;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+        }
+        .status-loader {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #0284c7;
+            font-weight: bold;
+        }
+        canvas {
+            margin: 15px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 5px;
+        }
+        .btn-telegram {
+            background: #0088cc;
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header Navbar -->
-    <nav class="navbar navbar-custom text-white d-flex justify-content-between align-items-center">
-        <h5 class="m-0 font-weight-bold"><i class="fa-solid fa-bars me-2"></i> KHMER SMM</h5>
+<div class="container">
+    <h2>បញ្ចូលពេជ្រ FREE FIRE</h2>
+
+    <!-- ១. បញ្ចូល Player ID -->
+    <div class="form-group">
+        <label for="playerId">១. បញ្ចូល ID អ្នកលេង (Player ID)</label>
+        <input type="text" id="playerId" placeholder="ឧទាហរណ៍: 123456789">
+    </div>
+
+    <!-- ២. ជ្រើសរើសចំនួនពេជ្រ -->
+    <div class="form-group">
+        <label>២. ជ្រើសរើសកញ្ចប់ពេជ្រ</label>
+        <div class="grid" id="diamondOptions">
+            <div class="card" onclick="selectItem(this, 100, 0.99)">💎 100 ពេជ្រ<br><small>$0.99</small></div>
+            <div class="card" onclick="selectItem(this, 310, 2.99)">💎 310 ពេជ្រ<br><small>$2.99</small></div>
+            <div class="card" onclick="selectItem(this, 520, 4.99)">💎 520 ពេជ្រ<br><small>$4.99</small></div>
+            <div class="card" onclick="selectItem(this, 1060, 9.99)">💎 1060 ពេជ្រ<br><small>$9.99</small></div>
+        </div>
+    </div>
+
+    <button class="btn" onclick="generatePayment()">ទូទាត់ប្រាក់ឥឡូវនេះ</button>
+</div>
+
+<!-- Modal បង្ហាញ QR Code -->
+<div class="qr-modal" id="qrModal">
+    <div class="qr-content">
+        <h3 style="margin:0; color:#0f172a;">Bakong KHQR Payment</h3>
+        <p style="margin: 5px 0; font-size: 14px; font-weight: bold; color: #475569;">SAMNANG MON</p>
+        <p id="orderSummary" style="font-size:13px; color:#64748b; margin: 5px 0;"></p>
         
-        <div class="d-flex align-items-center gap-2">
-            <!-- ប៊ូតុងសញ្ញាដុល្លារ ($) -->
-            <button class="btn-dollar-nav me-2" data-bs-toggle="modal" data-bs-target="#addFundsModal" title="បញ្ចូលប្រាក់ (Add Funds)">
-                <i class="fa-solid fa-dollar-sign"></i>
-            </button>
-
-            <!-- ផ្នែក Auth Buttons -->
-            <div id="auth-buttons" class="d-flex gap-2">
-                <button class="btn btn-sm btn-light fw-bold" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-                <button class="btn btn-sm btn-warning fw-bold text-white" data-bs-toggle="modal" data-bs-target="#registerModal">Sign Up</button>
-            </div>
-
-            <!-- Google Login Section -->
-            <div id="google-auth-section">
-                <div id="g_id_onload"
-                    data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
-                    data-callback="handleCredentialResponse">
-                </div>
-                <div class="g_id_signin" data-type="standard"></div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Banner -->
-    <div class="welcome-banner">
-        សូមស្វាគមន៍មកកាន់ Khmer SMM 🎉
-    </div>
-
-    <div class="container mt-3" style="max-width: 600px;">
+        <canvas id="qrcodeCanvas"></canvas>
         
-        <!-- User Stats -->
-        <div class="stats-box">
-            <div>You are currently on: <span>New order</span></div>
-            <div>Welcome <span id="user-name">Guest</span> Your Balance is : <span id="user-balance" class="text-success fw-bold">$0.0000</span></div>
-        </div>
+        <div class="status-loader" id="paymentStatus">⏳ កំពុងរង់ចាំការស្កេនទូទាត់...</div>
 
-        <!-- Quick Platform Filter Grid -->
-        <div class="platform-grid">
-            <button class="btn btn-platform active" onclick="filterCategory('all', this)">
-                <i class="fa-solid fa-list-check"></i> Everythings
-            </button>
-            <button class="btn btn-platform" onclick="filterCategory('TikTok', this)">
-                <i class="fa-brands fa-tiktok"></i> TikTok
-            </button>
-            <button class="btn btn-platform" onclick="filterCategory('Facebook', this)">
-                <i class="fa-brands fa-facebook"></i> Facebook
-            </button>
-            <button class="btn btn-platform" onclick="filterCategory('YouTube', this)">
-                <i class="fa-brands fa-youtube"></i> YouTube
-            </button>
-            <button class="btn btn-platform" onclick="filterCategory('Telegram', this)">
-                <i class="fa-brands fa-telegram"></i> Telegram
-            </button>
-        </div>
-
-        <!-- NEW ORDER CARD -->
-        <div class="card-custom">
-            <div class="d-flex gap-2 mb-3">
-                <button class="btn btn-primary w-50 tab-btn"><i class="fa-solid fa-cart-shopping"></i> New Order</button>
-                <button class="btn btn-outline-primary w-50 tab-btn"><i class="fa-solid fa-star"></i> Mass order</button>
-            </div>
-
-            <!-- Category Select -->
-            <div class="mb-3">
-                <label class="form-label fw-bold"><i class="fa-solid fa-shapes text-warning"></i> Category</label>
-                <select id="category-select" class="form-select" onchange="onCategoryChange()">
-                    <option value="">កំពុងទាញយក Category...</option>
-                </select>
-            </div>
-
-            <!-- Service Select -->
-            <div class="mb-3">
-                <label class="form-label fw-bold"><i class="fa-solid fa-box text-primary"></i> Service</label>
-                <select id="service-select" class="form-select" onchange="updatePrice()">
-                    <option value="">សូមជ្រើសរើស Service</option>
-                </select>
-            </div>
-
-            <!-- Link -->
-            <div class="mb-3">
-                <label class="form-label fw-bold">តំណភ្ជាប់ (Link)</label>
-                <input type="text" id="order-link" class="form-control" placeholder="https://...">
-            </div>
-
-            <!-- Quantity -->
-            <div class="mb-3">
-                <label class="form-label fw-bold">ចំនួន (Quantity)</label>
-                <input type="number" id="order-quantity" class="form-control" value="1000" oninput="updatePrice()">
-            </div>
-
-            <!-- Total Price -->
-            <div class="mb-3">
-                <label class="form-label fw-bold">តម្លៃសរុប (Total Charge):</label>
-                <h4 class="text-success fw-bold" id="total-price">$0.0000</h4>
-            </div>
-
-            <button class="btn btn-primary w-100 py-2 fw-bold" onclick="submitOrder()">បញ្ជូនការកុម្ម៉ង់</button>
-        </div>
-
+        <a href="#" id="telegramBtn" target="_blank" class="btn-telegram">ផ្ញើវិក្កយបត្រទៅ Telegram</a>
+        <button onclick="closeModal()" style="margin-top:10px; border:none; background:none; color:#64748b; cursor:pointer;">បិទ</button>
     </div>
+</div>
 
-    <!-- FLOATING TELEGRAM BUTTON -->
-    <a href="https://t.me/your_admin_username" target="_blank" class="float-contact-btn">
-        <i class="fa-brands fa-telegram fa-xl"></i>
-        <span>Telegram Admin</span>
-    </a>
+<script>
+    // ព័ត៌មាន Bakong របស់អ្នក
+    const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
+    const ACCOUNT_NAME = "SAMNANG MON";
+    const TELEGRAM_USERNAME = "YourTelegramUsername"; // 🔴 ដាក់ Username Telegram របស់អ្នក (គ្មាន @)
 
-    <!-- REGISTER (SIGN UP) MODAL -->
-    <div class="modal fade" id="registerModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 p-3" style="border-radius: 16px;">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="fw-bold"><i class="fa-solid fa-user-plus text-warning me-2"></i>ចុះឈ្មោះគណនីថ្មី (Sign Up)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">ឈ្មោះពេញ (Full Name)</label>
-                        <input type="text" id="reg-name" class="form-control" placeholder="បញ្ចូលឈ្មោះ">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">អ៉ីមែល (Email)</label>
-                        <input type="email" id="reg-email" class="form-control" placeholder="example@gmail.com">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">លេខសំងាត់ (Password)</label>
-                        <input type="password" id="reg-password" class="form-control" placeholder="យ៉ាងហោចណាស់ ៦ ខ្ទង់">
-                    </div>
-                    <button class="btn btn-warning w-100 py-2 fw-bold text-white fs-6" onclick="handleRegister()">ចុះឈ្មោះ (Sign Up)</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    let selectedDiamond = 0;
+    let selectedPrice = 0;
+    let checkInterval = null;
 
-    <!-- LOGIN MODAL -->
-    <div class="modal fade" id="loginModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 p-3" style="border-radius: 16px;">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="fw-bold"><i class="fa-solid fa-right-to-bracket text-primary me-2"></i>ចូលប្រព័ន្ធ (Login)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">អ៉ីមែល (Email)</label>
-                        <input type="email" id="login-email" class="form-control" placeholder="example@gmail.com">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">លេខសំងាត់ (Password)</label>
-                        <input type="password" id="login-password" class="form-control" placeholder="បញ្ចូលលេខសំងាត់">
-                    </div>
-                    <button class="btn btn-primary w-100 py-2 fw-bold fs-6" onclick="handleLogin()">ចូលប្រព័ន្ធ (Login)</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    function selectItem(element, diamonds, price) {
+        document.querySelectorAll('#diamondOptions .card').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        selectedDiamond = diamonds;
+        selectedPrice = price;
+    }
 
-    <!-- ADD FUNDS MODAL -->
-    <div class="modal fade" id="addFundsModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 p-2" style="border-radius: 16px;">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="fw-bold m-0"><i class="fa-solid fa-wallet text-primary me-2"></i>បញ្ចូលប្រាក់ (Add Funds)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Method</label>
-                        <select class="form-select fw-bold text-primary">
-                            <option selected>Bakong KHQR Auto 24/7</option>
-                        </select>
-                    </div>
+    function generatePayment() {
+        const playerId = document.getElementById('playerId').value;
 
-                    <div class="instruction-box">
-                        <p class="mb-1"><strong>Instruction:</strong></p>
-                        <p class="mb-1">• ស្កែនបង់ប្រាក់តាមរយៈ Bakong KHQR (ABA, ACLEDA, Sathapana, etc.)</p>
-                        <p class="mb-1">• ទឹកប្រាក់នឹងចូលក្នុង Account របស់អ្នកដោយស្វ័យប្រវត្តិ 24/7</p>
-                        <p class="mb-0 text-danger">• ចំនួនទឹកប្រាក់អប្បបរមា (Minimum): $0.50 | អតិបរមា (Maximum): $100,000.00</p>
-                    </div>
-
-                    <label class="form-label fw-bold">ជ្រើសរើសចំនួនទឹកប្រាក់ (Select Amount)</label>
-                    <div class="amount-grid">
-                        <button type="button" class="btn btn-amount active" onclick="selectQuickAmount(0.5, this)">$0.50</button>
-                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(1, this)">$1.00</button>
-                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(5, this)">$5.00</button>
-                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(10, this)">$10.00</button>
-                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(50, this)">$50.00</button>
-                        <button type="button" class="btn btn-amount" onclick="selectQuickAmount(100, this)">$100.00</button>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Amount ($)</label>
-                        <input type="number" id="deposit-amount" class="form-control form-control-lg fw-bold" value="0.50" min="0.5" max="100000" step="0.01" oninput="resetAmountButtons()">
-                    </div>
-
-                    <button class="btn btn-primary w-100 py-3 fw-bold fs-5" onclick="generateKHQR()">
-                        <i class="fa-solid fa-qrcode me-2"></i> Pay / បង្កើត KHQR
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BAKONG KHQR POPUP MODAL -->
-    <div class="modal fade" id="qrModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 bg-transparent">
-                <div class="khqr-card-container">
-                    <div class="khqr-header">
-                        <div class="khqr-logo-text">KH<span style="border: 2px solid #fff; padding: 0 4px; border-radius: 4px; margin-left: 2px;">QR</span></div>
-                    </div>
-                    <div class="khqr-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="khqr-merchant">KhmerSMM</div>
-                            <div class="badge bg-danger fs-6" id="timer-badge">05:00</div>
-                        </div>
-                        <div>
-                            <span class="khqr-amount" id="display-card-amount">0.50</span>
-                            <span class="khqr-currency">USD</span>
-                        </div>
-                        
-                        <div class="khqr-divider"></div>
-
-                        <div class="khqr-qr-box" id="qr-wrapper">
-                            <div id="qrcode-container"></div>
-                            <div class="khqr-center-icon" id="qr-center-dollar">$</div>
-                            
-                            <div id="expired-overlay" class="qr-expired-overlay d-none">
-                                <i class="fa-solid fa-clock-rotate-left fa-3x text-danger mb-2"></i>
-                                <span class="fw-bold text-dark">QR Code ផុតកំណត់!</span>
-                                <button class="btn btn-sm btn-primary mt-2 fw-bold" onclick="generateKHQR()">បង្កើត QR ថ្មី</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-2 text-center bg-light border-top">
-                        <button type="button" class="btn btn-sm btn-secondary w-100 fw-bold" data-bs-dismiss="modal">បិទ (Close)</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- FRONTEND & KHQR LOGIC -->
-    <script>
-        // --- SYNC TO ADMIN DASHBOARD ---
-        function syncUserToAdmin(name, email) {
-            if (!email) return;
-            fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, email: email })
-            })
-            .then(res => res.json())
-            .then(data => console.log("Admin Register Sync:", data))
-            .catch(err => console.error("Sync Error:", err));
+        if (!playerId) {
+            alert('សូមបញ្ចូល Player ID ជាមុនសិន!');
+            return;
+        }
+        if (selectedDiamond === 0) {
+            alert('សូមជ្រើសរើសកញ្ចប់ពេជ្រ!');
+            return;
         }
 
-        // --- AUTH HANDLERS ---
-        function handleRegister() {
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
+        document.getElementById('orderSummary').innerText = `ID: ${playerId} | 💎 ${selectedDiamond} ពេជ្រ | $${selectedPrice}`;
 
-            if (!email) {
-                alert("សូមបញ្ចូល Email!");
-                return;
-            }
+        // DeepLink ទ្រង់ទ្រាយ Bakong សម្រាប់បង្កើត KHQR
+        const qrString = `bakong://pay?id=${BAKONG_ACCOUNT_ID}&name=${encodeURIComponent(ACCOUNT_NAME)}&amount=${selectedPrice}&currency=USD`;
 
-            syncUserToAdmin(name, email);
-            document.getElementById('user-name').innerText = name || email.split('@')[0];
+        // គូរ QR Code
+        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), qrString, { width: 200 }, function (error) {
+            if (error) console.error(error);
+        });
+
+        // លីងផ្ញើសារ Telegram ទៅកាន់ Admin
+        const message = `ជំរាបសួរ! ខ្ញុំបានទូទាត់ប្រាក់រួចរាល់ហើយ៖%0A- Player ID: ${playerId}%0A- ចំនួនពេជ្រ: ${selectedDiamond}%0A- តម្លៃ: $${selectedPrice}`;
+        document.getElementById('telegramBtn').href = `https://t.me/${TELEGRAM_USERNAME}?text=${message}`;
+
+        document.getElementById('qrModal').style.display = 'flex';
+
+        // ចាប់ផ្តើមរត់ប្រព័ន្ធស្វែងរកការបង់ប្រាក់ (Polling/Auto-Check)
+        startCheckingPayment(playerId);
+    }
+
+    function startCheckingPayment(playerId) {
+        let attempts = 0;
+        document.getElementById('paymentStatus').innerText = "⏳ កំពុងរង់ចាំការស្កេនទូទាត់...";
+        document.getElementById('paymentStatus').style.color = "#0284c7";
+
+        // Check ស្ថានភាពរៀងរាល់ ៥ វិនាទីម្តង
+        checkInterval = setInterval(() => {
+            attempts++;
             
-            const modalEl = document.getElementById('registerModal');
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if (modal) modal.hide();
+            /* 
+              នៅពេលអ្នកភ្ជាប់ជាមួយ Bakong Open API Backend 
+              អ្នកអាចហៅ API មកពិនិត្យទីនេះបាន។ 
+            */
 
-            alert("ចុះឈ្មោះជោគជ័យ!");
-        }
-
-        function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            if (!email) {
-                alert("សូមបញ្ចូល Email!");
-                return;
+            if (attempts > 36) { // ឈប់ Check ក្រោយរង់ចាំ 3 នាទី
+                clearInterval(checkInterval);
+                document.getElementById('paymentStatus').innerText = "⚠️ រយៈពេលទូទាត់បានផុតកំណត់! សូមព្យាយាមម្តងទៀត។";
+                document.getElementById('paymentStatus').style.color = "#dc2626";
             }
+        }, 5000);
+    }
 
-            syncUserToAdmin('', email);
-            document.getElementById('user-name').innerText = email.split('@')[0];
+    function closeModal() {
+        clearInterval(checkInterval);
+        document.getElementById('qrModal').style.display = 'none';
+    }
+</script>
 
-            const modalEl = document.getElementById('loginModal');
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if (modal) modal.hide();
-
-            alert("ចូលប្រព័ន្ធជោគជ័យ!");
-        }
-
-        function handleCredentialResponse(response) {
-            try {
-                const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
-                const name = responsePayload.name;
-                const email = responsePayload.email;
-
-                syncUserToAdmin(name, email);
-                document.getElementById('user-name').innerText = name;
-                alert("Google Sign-In ជោគជ័យ!");
-            } catch (e) {
-                console.error("Google Token Parsing Error", e);
-            }
-        }
-
-        // --- SMM FORM STUBS ---
-        function filterCategory(cat, btn) {
-            document.querySelectorAll('.btn-platform').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-        }
-        function onCategoryChange() {}
-        function updatePrice() {}
-        function submitOrder() { alert("ការបញ្ជាទិញត្រូវបានផ្ញើ!"); }
-        function selectQuickAmount(amt, btn) {
-            document.querySelectorAll('.btn-amount').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            document.getElementById('deposit-amount').value = amt.toFixed(2);
-        }
-        function resetAmountButtons() {
-            document.querySelectorAll('.btn-amount').forEach(b => b.classList.remove('active'));
-        }
-
-        // --- KHQR GENERATOR & MODAL HANDLING ---
-        let qrCodeInstance = null;
-
-        function generateKHQR() {
-            const amount = parseFloat(document.getElementById('deposit-amount').value || "0.50").toFixed(2);
-            document.getElementById('display-card-amount').innerText = amount;
-
-            // 1. បិទ Add Funds Modal
-            const addFundsModalEl = document.getElementById('addFundsModal');
-            const addFundsModal = bootstrap.Modal.getInstance(addFundsModalEl);
-            if (addFundsModal) {
-                addFundsModal.hide();
-            }
-
-            // 2. លុប QR Code ចាស់ (បើមាន)
-            const qrContainer = document.getElementById('qrcode-container');
-            qrContainer.innerHTML = '';
-
-            // 3. បង្កើត QR Code ថ្មី
-            qrCodeInstance = new QRCode(qrContainer, {
-                text: `https://khmersmm.com/pay?amount=${amount}`, // តំណភ្ជាប់ ឬ KHQR String របស់អ្នក
-                width: 180,
-                height: 180,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-
-            // 4. បង្ហាញ QR Modal
-            setTimeout(() => {
-                const qrModal = new bootstrap.Modal(document.getElementById('qrModal'));
-                qrModal.show();
-            }, 300);
-        }
-    </script>
 </body>
 </html>
