@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YUTH STORE - ហាងបញ្ចូលហ្គេម និងសេវាកម្ម</title>
-    <!-- Library សម្រាប់បង្កើត QR Code -->
+    <!-- Library QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <!-- FontAwesome Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Identity Services -->
+    <!-- Google Sign-in -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <!-- Firebase SDK (Real-time Database) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
@@ -131,7 +131,7 @@
             <div id="packageContainer"></div>
         </div>
 
-        <button class="btn" onclick="generatePayment()">ទូទាត់ប្រាក់ឥឡូវនេះ</button>
+        <button class="btn" onclick="handlePurchase()">ទូទាត់ប្រាក់ឥឡូវនេះ</button>
     </div>
 </div>
 
@@ -161,7 +161,6 @@
 </div>
 
 <script>
-    // 🔴 Firebase Config ពិតប្រាកដរបស់អ្នក
     const firebaseConfig = {
       apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
       authDomain: "planning-with-ai-46ea2.firebaseapp.com",
@@ -204,7 +203,6 @@
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('shopSection').style.display = 'block';
 
-        // 🔄 Real-time Balance Listener (លុយឡើងភ្លាមៗពេល Admin ដាក់)
         const userDocRef = db.collection('users').doc(currentUser.email.toLowerCase());
         userDocRef.onSnapshot((doc) => {
             if (doc.exists) {
@@ -398,7 +396,8 @@
         return payload + crc;
     }
 
-    async function generatePayment() {
+    // 🟢 ប្រព័ន្ធត្រួតពិនិត្យ និងកាត់លុយកាបូបស្វ័យប្រវត្តិ
+    async function handlePurchase() {
         const playerId = document.getElementById('playerId').value;
 
         if (!playerId) {
@@ -410,17 +409,42 @@
             return;
         }
 
-        document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
+        // ១. បើភ្ញៀវមានលុយក្នុង Wallet គ្រប់គ្រាន់ -> កាត់លុយស្វ័យប្រវត្តិតែម្តង
+        if (currentUserBalance >= selectedPrice) {
+            const confirmPay = confirm(`អ្នកមានតុល្យភាពលុយ $${currentUserBalance.toFixed(2)}។ តើអ្នកពិតជាចង់កាត់លុយ $${selectedPrice.toFixed(2)} ដើម្បីទិញ ${selectedPackage} មែនទេ?`);
+            if (confirmPay) {
+                const newBalance = currentUserBalance - selectedPrice;
+                
+                // កាត់លុយក្នុង Database
+                await db.collection('users').doc(currentUser.email.toLowerCase()).update({
+                    balance: newBalance
+                });
 
-        const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
+                alert('✅ ការទូទាត់ជោគជ័យ! ប្រព័ន្ធបានកាត់លុយចេញពីកាបូបរបស់អ្នករួចរាល់។ ទំនិញនឹងចូល Account ក្នងរយៈពេល 1-3 នាទី!');
+                
+                // ផ្ញើសារប្រាប់ Admin តាម Telegram
+                sendTelegramNotification(playerId, "PAID (Wallet)", selectedPrice);
+            }
+        } 
+        // ២. បើភ្ញៀវអត់លុយ ឬលុយមិនគ្រប់ -> បង្ហាញ KHQR ឱ្យស្កេន
+        else {
+            alert(`តុល្យភាពលុយរបស់អ្នកមិនគ្រប់គ្រាន់ទេ ($${currentUserBalance.toFixed(2)})! សូមស្កេន KHQR ដើម្បីទូទាត់ប្រាក់។`);
+            
+            document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
+            const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
 
-        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
-            if (error) console.error(error);
-        });
+            QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
+                if (error) console.error(error);
+            });
 
-        document.getElementById('qrModal').style.display = 'flex';
+            document.getElementById('qrModal').style.display = 'flex';
+            
+            // ផ្ញើសារប្រាប់ Admin តាម Telegram
+            sendTelegramNotification(playerId, "Pending (KHQR Scan)", selectedPrice);
+        }
+    }
 
-        // 📩 Telegram Notification
+    async function sendTelegramNotification(playerId, status, amount) {
         const userEmail = currentUser ? currentUser.email : "មិនបាន Login";
         const userName = currentUser ? currentUser.name : "N/A";
 
@@ -429,7 +453,8 @@
                      `🎮 ហ្គេម: ${currentGame.toUpperCase()}\n` +
                      `🆔 Player ID: \`${playerId}\`\n` +
                      `📦 កញ្ចប់: ${selectedPackage}\n` +
-                     `💵 តម្លៃ: $${selectedPrice.toFixed(2)}`;
+                     `💵 តម្លៃ: $${amount.toFixed(2)}\n` +
+                     `📌 ស្ថានភាព: ${status}`;
 
         try {
             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
