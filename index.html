@@ -194,7 +194,7 @@
             background: #d97706;
         }
         
-        /* Popup QR Code */
+        /* Popup QR Code Modal */
         .qr-modal {
             display: none;
             position: fixed;
@@ -202,30 +202,86 @@
             background: rgba(0,0,0,0.85);
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
-        .qr-content {
+
+        /* KHQR Card Template Styling ដូចរូបភាព */
+        .khqr-card {
             background: #ffffff;
-            color: #0f172a;
-            padding: 24px;
+            color: #000000;
             border-radius: 16px;
+            width: 320px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .khqr-header {
+            background: #e11d48;
+            padding: 12px 0;
             text-align: center;
-            max-width: 360px;
-            width: 90%;
+            position: relative;
+        }
+        .khqr-header-title {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        .khqr-body {
+            padding: 20px 24px;
+        }
+        .khqr-merchant {
+            font-size: 16px;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .khqr-amount {
+            font-size: 26px;
+            font-weight: 800;
+            color: #000000;
+            margin-bottom: 12px;
+        }
+        .khqr-amount span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .khqr-divider {
+            border-top: 2px dashed #cbd5e1;
+            margin: 12px 0 16px 0;
+        }
+        .khqr-qr-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         canvas {
-            margin: 15px 0;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 5px;
+            width: 230px !important;
+            height: 230px !important;
         }
         .loader-box {
             background: #f1f5f9;
             padding: 10px;
             border-radius: 8px;
-            margin-top: 10px;
-            font-size: 13px;
+            margin-top: 15px;
+            font-size: 12px;
             color: #0284c7;
             font-weight: bold;
+            text-align: center;
+        }
+        .btn-close-modal {
+            width: 100%;
+            margin-top: 12px;
+            border: none;
+            background: #e2e8f0;
+            padding: 10px;
+            border-radius: 8px;
+            color: #334155;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -234,13 +290,12 @@
 <div class="container">
     <h2>បញ្ចូល ហ្គេម & សេវាកម្ម</h2>
 
-    <!-- ជំហានទី ០៖ ផ្ទាំង Login ជាមួយ Google (បង្ហាញមុនគេ) -->
+    <!-- ជំហានទី ០៖ ផ្ទាំង Login ជាមួយ Google -->
     <div id="loginSection" class="login-box">
         <i class="fa-solid fa-user-lock"></i>
         <h3 style="margin-top:0;">សូមចូលប្រើប្រាស់មុននឹងទិញ</h3>
         <p style="color:#94a3b8; font-size:14px; margin-bottom:20px;">សូម ចុះឈ្មោះ/Login តាមរយៈ Google ដើម្បីបន្តការបញ្ជាទិញ</p>
         
-        <!-- ប៊ូតុង Google Sign-In ភ្ជាប់ Client ID រួចរាល់ -->
         <div style="display: flex; justify-content: center;">
             <div id="g_id_onload"
                 data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
@@ -250,10 +305,9 @@
         </div>
     </div>
 
-    <!-- ផ្ទាំងទិញពេជ្រ (លាក់ទុក ពេល Login រួចទើបបង្ហាញ) -->
+    <!-- ផ្ទាំងទិញពេជ្រ -->
     <div id="shopSection" style="display: none;">
         
-        <!-- បង្ហាញព័ត៌មានអ្នកប្រើប្រាស់ -->
         <div class="user-profile">
             <div class="user-info">
                 <img id="userImg" src="" alt="Profile">
@@ -297,8 +351,6 @@
         <!-- ៣. ជ្រើសរើសកញ្ចប់ -->
         <div class="form-group">
             <label>៣. ជ្រើសរើសកញ្ចប់សេវាកម្ម</label>
-
-            <!-- Dynamic Container សម្រាប់ប្រភេទ និងកញ្ចប់តាមហ្គេម -->
             <div id="packageContainer"></div>
         </div>
 
@@ -306,21 +358,32 @@
     </div>
 </div>
 
-<!-- Modal បង្ហាញ QR Code -->
+<!-- Modal បង្ហាញ KHQR Form ដូចរូបភាព -->
 <div class="qr-modal" id="qrModal">
-    <div class="qr-content">
-        <h3 style="margin:0; color:#0f172a;">Bakong KHQR Payment</h3>
-        <p style="margin: 5px 0; font-size: 14px; font-weight: bold; color: #475569;">SAMNANG MON</p>
-        <p id="orderSummary" style="font-size:13px; color:#64748b; margin: 5px 0;"></p>
-        
-        <canvas id="qrcodeCanvas"></canvas>
-        
-        <div class="loader-box">
-            ⏳ ប្រព័ន្ធកំពុងផ្ទៀងផ្ទាត់ការទូទាត់ប្រាក់...<br>
-            <span style="font-size:11px; font-weight:normal; color:#64748b;">(ទំនិញនឹងចូល Account ដោយស្វ័យប្រវត្តិក្នងរយៈពេល 1-3 នាទី បន្ទាប់ពីស្កេនរួច)</span>
+    <div class="khqr-card">
+        <!-- Header KHQR ក្រហម -->
+        <div class="khqr-header">
+            <h1 class="khqr-header-title">KHQR</h1>
         </div>
 
-        <button onclick="closeModal()" style="margin-top:15px; border:none; background:#e2e8f0; padding:8px 20px; border-radius:6px; color:#334155; font-weight:bold; cursor:pointer;">បិទ</button>
+        <!-- Body បង្ហាញព័ត៌មាន KHQR -->
+        <div class="khqr-body">
+            <div class="khqr-merchant">SAMNANG MON</div>
+            <div class="khqr-amount" id="displayAmount">0.00 <span>USD</span></div>
+
+            <div class="khqr-divider"></div>
+
+            <!-- កន្លែង QR Code -->
+            <div class="khqr-qr-box">
+                <canvas id="qrcodeCanvas"></canvas>
+            </div>
+
+            <div class="loader-box">
+                ⏳ ប្រព័ន្ធកំពុងផ្ទៀងផ្ទាត់ការទូទាត់ប្រាក់...
+            </div>
+
+            <button class="btn-close-modal" onclick="closeModal()">បិទ</button>
+        </div>
     </div>
 </div>
 
@@ -547,11 +610,12 @@
             return;
         }
 
-        document.getElementById('orderSummary').innerText = `ID: ${playerId} | ${selectedPackage} | $${selectedPrice.toFixed(2)}`;
+        // បង្ហាញតម្លៃទូទាត់លើ KHQR Card Form
+        document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
 
         const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
 
-        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 220 }, function (error) {
+        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
             if (error) console.error(error);
         });
 
