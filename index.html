@@ -46,12 +46,14 @@
             color: #f59e0b;
             margin-bottom: 15px;
         }
+
+        /* ផ្នែកបង្ហាញ Profile + កាបូបលុយភ្ញៀវ */
         .user-profile {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #0f172a;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             border: 1px solid #334155;
@@ -62,9 +64,21 @@
             gap: 10px;
         }
         .user-info img {
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            border: 2px solid #f59e0b;
+        }
+        .wallet-badge {
+            background: #1e293b;
+            color: #22c55e;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 2px;
+            border: 1px solid #22c55e;
         }
         .logout-btn {
             background: #ef4444;
@@ -74,6 +88,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 12px;
+            font-weight: bold;
         }
 
         .form-group {
@@ -305,15 +320,16 @@
         </div>
     </div>
 
-    <!-- ផ្ទាំងទិញពេជ្រ -->
+    <!-- ផ្ទាំងទិញពេជ្រ (បង្ហាញក្រោយ Login) -->
     <div id="shopSection" style="display: none;">
         
+        <!-- បង្ហាញ Profile + កាបូបលុយភ្ញៀវ -->
         <div class="user-profile">
             <div class="user-info">
                 <img id="userImg" src="" alt="Profile">
                 <div>
                     <div id="userName" style="font-weight:bold; font-size:14px;"></div>
-                    <div id="userEmail" style="font-size:11px; color:#94a3b8;"></div>
+                    <div class="wallet-badge"><i class="fa-solid fa-wallet"></i> <span id="userBalance">$0.00</span></div>
                 </div>
             </div>
             <button class="logout-btn" onclick="logout()">ចាកចេញ</button>
@@ -388,11 +404,11 @@
     const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
     const ACCOUNT_NAME = "YUTH STORE";
 
-    // 🔴 ព័ត៌មាន Telegram Bot & Chat ID របស់អ្នក
     const TELEGRAM_BOT_TOKEN = "8806433517:AAGCs1y4YDwqSMiXQoJs1Y-n0DOGDtEDbII";
     const TELEGRAM_CHAT_ID = "8363306657"; 
 
     let currentUser = null;
+    let currentUserBalance = 0.00; // ចំនួនលុយក្នុងកាបូបភ្ញៀវ
     let currentGame = 'ff';
     let selectedPackage = null;
     let selectedPrice = 0;
@@ -411,8 +427,10 @@
         currentUser = responsePayload;
 
         document.getElementById('userName').innerText = responsePayload.name;
-        document.getElementById('userEmail').innerText = responsePayload.email;
         document.getElementById('userImg').src = responsePayload.picture;
+        
+        // បង្ហាញសមតុល្យកាបូបលុយ
+        document.getElementById('userBalance').innerText = `$${currentUserBalance.toFixed(2)}`;
 
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('shopSection').style.display = 'block';
@@ -625,7 +643,7 @@
         const userEmail = currentUser ? currentUser.email : "មិនបាន Login";
         const userName = currentUser ? currentUser.name : "N/A";
 
-        const text = `🔔 **មានការបញ្ជាទិញថ្មី (Pending Payment)!**\n\n` +
+        const text = `🔔 **មានការបញ្ជាទិញថ្មី!**\n\n` +
                      `👤 អតិថិជន: ${userName} (${userEmail})\n` +
                      `🎮 ហ្គេម: ${currentGame.toUpperCase()}\n` +
                      `🆔 Player ID: \`${playerId}\`\n` +
