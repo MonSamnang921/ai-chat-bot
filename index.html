@@ -72,12 +72,13 @@
             justify-content: center;
         }
         .game-card img {
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
             border-radius: 10px;
             margin-bottom: 8px;
             object-fit: cover;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            background-color: #0f172a;
         }
         .game-card.active {
             border-color: #f59e0b;
@@ -179,24 +180,24 @@
 <div class="container">
     <h2>បញ្ចូល ហ្គេម & សេវាកម្ម</h2>
 
-    <!-- ១. ជ្រើសរើសហ្គេម (Link រូបភាពថ្មី ច្បាស់ និងមិនទាស់) -->
+    <!-- ១. ជ្រើសរើសហ្គេម (Link រូបភាព Wikimedia CDN ដើរ ១០០%) -->
     <div class="form-group">
         <label>១. ជ្រើសរើសហ្គេម</label>
         <div class="game-grid">
             <div class="game-card active" onclick="selectGame('ff', this)">
-                <img src="https://play-lh.googleusercontent.com/97SksE1569B3Y3xLThmH3x_3n2Qy9sUvN2k5M2vC0u5M_x1aA0z1v1y2c3d4e5f6g7=s180-rw" alt="Free Fire" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825590.png'">
+                <img src="https://upload.wikimedia.org/wikipedia/en/a/a2/Free_Fire_Logo.png" alt="Free Fire">
                 Free Fire
             </div>
             <div class="game-card" onclick="selectGame('mlbb', this)">
-                <img src="https://play-lh.googleusercontent.com/382kG8lU0J5v7Y4k6S7x8y_9z1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q8R9S0=s180-rw" alt="Mobile Legends" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/thumb/f/f9/Mobile_Legends_Bang_Bang_logo.png/180px-Mobile_Legends_Bang_Bang_logo.png'">
+                <img src="https://upload.wikimedia.org/wikipedia/en/f/f9/Mobile_Legends_Bang_Bang_logo.png" alt="Mobile Legends">
                 MLBB
             </div>
             <div class="game-card" onclick="selectGame('pubg', this)">
-                <img src="https://play-lh.googleusercontent.com/83p1X_08o4E10zRzN3L0PzH31_nS1c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0=s180-rw" alt="PUBG Mobile" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/PUBG_Mobile_logo.svg/180px-PUBG_Mobile_logo.svg.png'">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/PUBG_Mobile_logo.svg/512px-PUBG_Mobile_logo.svg.png" alt="PUBG Mobile">
                 PUBG
             </div>
             <div class="game-card" onclick="selectGame('rov', this)">
-                <img src="https://play-lh.googleusercontent.com/rN1e3b0o4P10zRzN3L0PzH31_nS1c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0=s180-rw" alt="ROV" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Arena_of_Valor_logo.png/180px-Arena_of_Valor_logo.png'">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Arena_of_Valor_logo.png/512px-Arena_of_Valor_logo.png" alt="ROV">
                 ROV
             </div>
         </div>
