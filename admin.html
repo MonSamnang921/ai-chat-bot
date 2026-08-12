@@ -11,7 +11,7 @@
     <style>
         * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif, Arial; }
         body { background-color: #0f172a; color: #ffffff; display: flex; justify-content: center; padding: 20px; }
-        .container { width: 100%; max-width: 450px; background: #1e293b; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .container { width: 100%; max-width: 500px; background: #1e293b; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         h2 { text-align: center; color: #ef4444; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; font-weight: bold; }
@@ -21,6 +21,37 @@
         .btn { width: 100%; padding: 12px; background: #22c55e; color: #fff; font-weight: bold; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
         .btn-danger { background: #ef4444; margin-top: 10px; }
         .login-gate { text-align: center; }
+
+        /* ផ្នែកបង្ហាញតារាងអតិថិជន */
+        .user-stats-box {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 25px;
+            border: 1px solid #334155;
+        }
+        .stat-title {
+            color: #f59e0b;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .user-table th, .user-table td {
+            border: 1px solid #334155;
+            padding: 8px;
+            text-align: left;
+        }
+        .user-table th {
+            background: #1e293b;
+            color: #38bdf8;
+        }
     </style>
 </head>
 <body>
@@ -49,11 +80,30 @@
 
         <button class="btn" onclick="processBalance('add')">➕ បន្ថែមលុយឱ្យភ្ញៀវ</button>
         <button class="btn btn-danger" onclick="processBalance('deduct')">➖ កាត់លុយភ្ញៀវ</button>
+
+        <!-- 📊 ប្រអប់បង្ហាញចំនួនភ្ញៀវ និងបញ្ជី Email -->
+        <div class="user-stats-box">
+            <div class="stat-title">
+                <span>👥 អតិថិជនចុះឈ្មោះសរុប៖</span>
+                <span id="totalUsersCount" style="color: #22c55e;">0 នាក់</span>
+            </div>
+            
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>តុល្យភាព ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="userListBody">
+                    <tr><td colspan="2" style="text-align:center;">កំពុងទាញទិន្នន័យ...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
-    // 🔴 Firebase Config ពិតប្រាកដរបស់អ្នក
     const firebaseConfig = {
       apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
       authDomain: "planning-with-ai-46ea2.firebaseapp.com",
@@ -72,9 +122,30 @@
         if (inputPin === ADMIN_PIN) {
             document.getElementById('pinGate').style.display = 'none';
             document.getElementById('adminControls').style.display = 'block';
+            
+            // ទាញយកបញ្ជី និងចំនួនភ្ញៀវ
+            loadUsersList();
         } else {
             alert('PIN សម្ងាត់មិនត្រឹមត្រូវឡើយ!');
         }
+    }
+
+    // 🔄 ទាញយកចំនួនភ្ញៀវ និង Email មកបង្ហាញ
+    function loadUsersList() {
+        db.collection('users').onSnapshot((snapshot) => {
+            const totalUsers = snapshot.size;
+            document.getElementById('totalUsersCount').innerText = `${totalUsers} នាក់`;
+
+            let tableRows = '';
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const email = doc.id;
+                const balance = data.balance ? data.balance.toFixed(2) : '0.00';
+                tableRows += `<tr><td>${email}</td><td style="color:#22c55e; font-weight:bold;">$${balance}</td></tr>`;
+            });
+
+            document.getElementById('userListBody').innerHTML = tableRows || '<tr><td colspan="2">មិនទាន់មានភ្ញៀវចុះឈ្មោះ</td></tr>';
+        });
     }
 
     async function processBalance(action) {
@@ -104,9 +175,9 @@
         await userRef.set({ balance: newBal }, { merge: true });
 
         if (action === 'add') {
-            alert(`បានបន្ថែមទឹកប្រាក់ $${amount.toFixed(2)} ជូន ${email} រួចរាល់! សមតុល្យថ្មីគឺ: $${newBal.toFixed(2)}`);
+            alert(`បានបន្ថែមទឹកប្រាក់ $${amount.toFixed(2)} ជូន ${email} រួចរាល់!`);
         } else {
-            alert(`បានកាត់ទឹកប្រាក់ $${amount.toFixed(2)} ពី ${email} រួចរាល់! សមតុល្យថ្មីគឺ: $${newBal.toFixed(2)}`);
+            alert(`បានកាត់ទឹកប្រាក់ $${amount.toFixed(2)} ពី ${email} រួចរាល់!`);
         }
 
         document.getElementById('targetEmail').value = '';
