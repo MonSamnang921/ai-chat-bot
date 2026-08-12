@@ -48,6 +48,26 @@
             color: #fff;
             font-size: 16px;
         }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: #334155;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .tab-btn.active {
+            background: #f59e0b;
+            color: #000;
+        }
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -128,14 +148,26 @@
         <input type="text" id="playerId" placeholder="ឧទាហរណ៍: 123456789">
     </div>
 
-    <!-- ២. ជ្រើសរើសចំនួនពេជ្រ -->
+    <!-- ២. ជ្រើសរើសប្រភេទ និងកញ្ចប់ -->
     <div class="form-group">
-        <label>២. ជ្រើសរើសកញ្ចប់ពេជ្រ</label>
+        <label>២. ជ្រើសរើសកញ្ចប់សេវាកម្ម</label>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchCategory('diamonds')">💎 ពេជ្ររាយ</button>
+            <button class="tab-btn" onclick="switchCategory('membership')">👑 កាតសមាជិក</button>
+        </div>
+
+        <!-- ជម្រើស ពេជ្ររាយ -->
         <div class="grid" id="diamondOptions">
-            <div class="card" onclick="selectItem(this, 100, 0.99)">💎 100 ពេជ្រ<br><small>$0.99</small></div>
-            <div class="card" onclick="selectItem(this, 310, 2.99)">💎 310 ពេជ្រ<br><small>$2.99</small></div>
-            <div class="card" onclick="selectItem(this, 520, 4.99)">💎 520 ពេជ្រ<br><small>$4.99</small></div>
-            <div class="card" onclick="selectItem(this, 1060, 9.99)">💎 1060 ពេជ្រ<br><small>$9.99</small></div>
+            <div class="card" onclick="selectItem(this, '💎 100 ពេជ្រ', 0.99)">💎 100 ពេជ្រ<br><small>$0.99</small></div>
+            <div class="card" onclick="selectItem(this, '💎 310 ពេជ្រ', 2.99)">💎 310 ពេជ្រ<br><small>$2.99</small></div>
+            <div class="card" onclick="selectItem(this, '💎 520 ពេជ្រ', 4.99)">💎 520 ពេជ្រ<br><small>$4.99</small></div>
+            <div class="card" onclick="selectItem(this, '💎 1060 ពេជ្រ', 9.99)">💎 1060 ពេជ្រ<br><small>$9.99</small></div>
+        </div>
+
+        <!-- ជម្រើស កាតប្រចាំសប្តាហ៍/ប្រចាំខែ -->
+        <div class="grid" id="membershipOptions" style="display: none;">
+            <div class="card" onclick="selectItem(this, '📅 កាតប្រចាំសប្តាហ៍ (Weekly)', 1.99)">📅 កាតប្រចាំសប្តាហ៍<br><small>$1.99</small></div>
+            <div class="card" onclick="selectItem(this, '📆 កាតប្រចាំខែ (Monthly)', 9.99)">📆 កាតប្រចាំខែ<br><small>$9.99</small></div>
         </div>
     </div>
 
@@ -161,22 +193,37 @@
 </div>
 
 <script>
-    // ព័ត៌មានគណនី Bakong របស់អ្នក
     const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
     const ACCOUNT_NAME = "SAMNANG MON";
     const TELEGRAM_USERNAME = "YourTelegramUsername"; // 🔴 កុំភ្លេចប្តូរ Telegram Username របស់អ្នកត្រង់នេះ
 
-    let selectedDiamond = 0;
+    let selectedPackage = null;
     let selectedPrice = 0;
 
-    function selectItem(element, diamonds, price) {
-        document.querySelectorAll('#diamondOptions .card').forEach(el => el.classList.remove('active'));
+    function switchCategory(type) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.grid .card').forEach(card => card.classList.remove('active'));
+        selectedPackage = null;
+        selectedPrice = 0;
+
+        if (type === 'diamonds') {
+            event.target.classList.add('active');
+            document.getElementById('diamondOptions').style.display = 'grid';
+            document.getElementById('membershipOptions').style.display = 'none';
+        } else {
+            event.target.classList.add('active');
+            document.getElementById('diamondOptions').style.display = 'none';
+            document.getElementById('membershipOptions').style.display = 'grid';
+        }
+    }
+
+    function selectItem(element, packageName, price) {
+        document.querySelectorAll('.grid .card').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
-        selectedDiamond = diamonds;
+        selectedPackage = packageName;
         selectedPrice = price;
     }
 
-    // Function គណនា CRC16 សម្រាប់ EMVCo Standard KHQR
     function crc16(data) {
         let crc = 0xFFFF;
         for (let i = 0; i < data.length; i++) {
@@ -193,30 +240,24 @@
         return crc.toString(16).toUpperCase().padStart(4, '0');
     }
 
-    // Function បង្កើត EMVCo KHQR String ពិតប្រាកដ
     function generateKHQRString(bakongId, merchantName, amount) {
         const formattedAmount = parseFloat(amount).toFixed(2);
-        
-        // ផ្នែកព័ត៌មានគណនី (Tag 29)
         const accountStr = `00${bakongId.length.toString().padStart(2, '0')}${bakongId}`;
         const tag29 = `29${accountStr.length.toString().padStart(2, '0')}${accountStr}`;
-        
-        // ផ្នែកប្រាក់ USD (Tag 53 - 840) និង ចំនួនទឹកប្រាក់ (Tag 54)
         const currencyTag = "5303840";
         const amountTag = `54${formattedAmount.length.toString().padStart(2, '0')}${formattedAmount}`;
         
-        // ផ្នែកព័ត៌មានផ្សេងៗ
         const payload = 
-            "000201" +                          // Payload Format Indicator
-            "010212" +                          // Dynamic QR Code (12)
-            tag29 +                             // Merchant Information
-            "52045999" +                        // Merchant Category Code
-            currencyTag +                       // Currency USD
-            amountTag +                         // Amount
-            "5802KH" +                          // Country Code
-            `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` + // Merchant Name
-            "6010Phnom Penh" +                  // City
-            "6304";                             // CRC Tag Header
+            "000201" +
+            "010212" +
+            tag29 +
+            "52045999" +
+            currencyTag +
+            amountTag +
+            "5802KH" +
+            `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` +
+            "6010Phnom Penh" +
+            "6304";
 
         const crc = crc16(payload);
         return payload + crc;
@@ -229,26 +270,20 @@
             alert('សូមបញ្ចូល Player ID!');
             return;
         }
-        if (selectedDiamond === 0) {
-            alert('សូមជ្រើសរើសកញ្ចប់ពេជ្រ!');
+        if (!selectedPackage) {
+            alert('សូមជ្រើសរើសកញ្ចប់សេវាកម្ម!');
             return;
         }
 
-        document.getElementById('orderSummary').innerText = `ID: ${playerId} | 💎 ${selectedDiamond} ពេជ្រ | $${selectedPrice}`;
+        document.getElementById('orderSummary').innerText = `ID: ${playerId} | ${selectedPackage} | $${selectedPrice}`;
 
-        // បង្កើត KHQR String ដែលត្រូវតាមស្តង់ដារ EMVCo 100%
         const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
 
-        // បង្កើត QR Code លើ Canvas
         QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 220 }, function (error) {
-            if (error) {
-                console.error(error);
-                alert('មានបញ្ហាក្នុងការបង្កើត QR Code!');
-            }
+            if (error) console.error(error);
         });
 
-        // លីងផ្ញើសារ Telegram ទៅកាន់ Admin
-        const message = `ជំរាបសួរ! ខ្ញុំបានទូទាត់ប្រាក់រួចរាល់ហើយ៖%0A- Player ID: ${playerId}%0A- ចំនួនពេជ្រ: ${selectedDiamond}%0A- តម្លៃ: $${selectedPrice}`;
+        const message = `ជំរាបសួរ! ខ្ញុំបានទូទាត់ប្រាក់រួចរាល់ហើយ៖%0A- Player ID: ${playerId}%0A- កញ្ចប់ទិញ: ${selectedPackage}%0A- តម្លៃ: $${selectedPrice}`;
         document.getElementById('telegramBtn').href = `https://t.me/${TELEGRAM_USERNAME}?text=${message}`;
 
         document.getElementById('qrModal').style.display = 'flex';
