@@ -6,6 +6,8 @@
     <title>ហាងបញ្ចូលហ្គេម និងសេវាកម្ម - KHQR Payment</title>
     <!-- Library សម្រាប់បង្កើត QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <!-- FontAwesome Icon សម្រាប់រូប Logo ហ្គេមច្បាស់ៗ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -49,7 +51,7 @@
             font-size: 16px;
         }
         
-        /* Game Selector Grid ជាមួយរូបភាពច្បាស់ */
+        /* Game Selector Grid ជាមួយ Icon ច្បាស់ 100% */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -58,7 +60,7 @@
         }
         .game-card {
             background: #334155;
-            padding: 12px 6px;
+            padding: 14px 6px;
             border-radius: 12px;
             text-align: center;
             cursor: pointer;
@@ -71,15 +73,25 @@
             align-items: center;
             justify-content: center;
         }
-        .game-card img {
+        .game-icon-box {
             width: 50px;
             height: 50px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 8px;
-            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            background-color: #0f172a;
         }
+        
+        /* ពណ៌ Icon តាមហ្គេមនីមួយៗ */
+        .icon-ff { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+        .icon-ml { background: linear-gradient(135deg, #8a2387, #e94057, #f27121); }
+        .icon-pubg { background: linear-gradient(135deg, #f7971e, #ffd200); color: #000 !important; }
+        .icon-rov { background: linear-gradient(135deg, #11998e, #38ef7d); color: #000 !important; }
+
         .game-card.active {
             border-color: #f59e0b;
             background: #0f172a;
@@ -180,24 +192,24 @@
 <div class="container">
     <h2>បញ្ចូល ហ្គេម & សេវាកម្ម</h2>
 
-    <!-- ១. ជ្រើសរើសហ្គេម (Link រូបភាព Wikimedia CDN ដើរ ១០០%) -->
+    <!-- ១. ជ្រើសរើសហ្គេម (ប្រើ Vector Gaming Icons ដើរ ១០០%) -->
     <div class="form-group">
         <label>១. ជ្រើសរើសហ្គេម</label>
         <div class="game-grid">
             <div class="game-card active" onclick="selectGame('ff', this)">
-                <img src="https://upload.wikimedia.org/wikipedia/en/a/a2/Free_Fire_Logo.png" alt="Free Fire">
+                <div class="game-icon-box icon-ff"><i class="fa-solid fa-fire"></i></div>
                 Free Fire
             </div>
             <div class="game-card" onclick="selectGame('mlbb', this)">
-                <img src="https://upload.wikimedia.org/wikipedia/en/f/f9/Mobile_Legends_Bang_Bang_logo.png" alt="Mobile Legends">
+                <div class="game-icon-box icon-ml"><i class="fa-solid fa-shield-halved"></i></div>
                 MLBB
             </div>
             <div class="game-card" onclick="selectGame('pubg', this)">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/PUBG_Mobile_logo.svg/512px-PUBG_Mobile_logo.svg.png" alt="PUBG Mobile">
+                <div class="game-icon-box icon-pubg"><i class="fa-solid fa-crosshairs"></i></div>
                 PUBG
             </div>
             <div class="game-card" onclick="selectGame('rov', this)">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Arena_of_Valor_logo.png/512px-Arena_of_Valor_logo.png" alt="ROV">
+                <div class="game-icon-box icon-rov"><i class="fa-solid fa-crown"></i></div>
                 ROV
             </div>
         </div>
