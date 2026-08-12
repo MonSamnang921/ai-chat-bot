@@ -125,15 +125,14 @@
             border-radius: 8px;
             padding: 5px;
         }
-        .btn-telegram {
-            background: #0088cc;
-            color: #fff;
-            text-decoration: none;
-            display: block;
-            padding: 12px;
+        .loader-box {
+            background: #f1f5f9;
+            padding: 10px;
             border-radius: 8px;
-            font-weight: bold;
             margin-top: 10px;
+            font-size: 13px;
+            color: #0284c7;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -164,7 +163,7 @@
             <div class="card" onclick="selectItem(this, '💎 1060 ពេជ្រ', 9.99)">💎 1060 ពេជ្រ<br><small>$9.99</small></div>
         </div>
 
-        <!-- ជម្រើស កាតប្រចាំសប្តាហ៍/ប្រចាំខែ (តម្លៃខ្ពស់) -->
+        <!-- ជម្រើស កាតសមាជិក -->
         <div class="grid" id="membershipOptions" style="display: none;">
             <div class="card" onclick="selectItem(this, '📅 កាតប្រចាំសប្តាហ៍ (Weekly)', 3.50)">📅 កាតប្រចាំសប្តាហ៍<br><small>$3.50</small></div>
             <div class="card" onclick="selectItem(this, '📆 កាតប្រចាំខែ (Monthly)', 15.00)">📆 កាតប្រចាំខែ<br><small>$15.00</small></div>
@@ -185,19 +184,18 @@
         
         <canvas id="qrcodeCanvas"></canvas>
         
-        <p style="font-size:12px; color:#dc2626; font-weight:bold; margin-top:5px;">
-            *បន្ទាប់ពីស្កេនទូទាត់រួច សូមចុចប៊ូតុងខាងក្រោមដើម្បីផ្ញើវិក្កយបត្រ!
-        </p>
+        <div class="loader-box">
+            ⏳ ប្រព័ន្ធកំពុងផ្ទៀងផ្ទាត់ការទូទាត់ប្រាក់...<br>
+            <span style="font-size:11px; font-weight:normal; color:#64748b;">(ពេជ្រនឹងចូល Account ដោយស្វ័យប្រវត្តិក្នងរយៈពេល 1-3 នាទី បន្ទាប់ពីស្កេនរួច)</span>
+        </div>
 
-        <a href="#" id="telegramBtn" target="_blank" class="btn-telegram">ផ្ញើវិក្កយបត្រទៅ Telegram</a>
-        <button onclick="closeModal()" style="margin-top:10px; border:none; background:none; color:#64748b; cursor:pointer;">បិទ</button>
+        <button onclick="closeModal()" style="margin-top:15px; border:none; background:#e2e8f0; padding:8px 20px; border-radius:6px; color:#334155; font-weight:bold; cursor:pointer;">បិទ</button>
     </div>
 </div>
 
 <script>
     const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
     const ACCOUNT_NAME = "SAMNANG MON";
-    const TELEGRAM_USERNAME = "YourTelegramUsername"; // 🔴 កុំភ្លេចប្តូរ Telegram Username របស់អ្នកត្រង់នេះ
 
     let selectedPackage = null;
     let selectedPrice = 0;
@@ -284,9 +282,6 @@
         QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 220 }, function (error) {
             if (error) console.error(error);
         });
-
-        const message = `ជំរាបសួរ! ខ្ញុំបានទូទាត់ប្រាក់រួចរាល់ហើយ៖%0A- Player ID: ${playerId}%0A- កញ្ចប់ទិញ: ${selectedPackage}%0A- តម្លៃ: $${selectedPrice}`;
-        document.getElementById('telegramBtn').href = `https://t.me/${TELEGRAM_USERNAME}?text=${message}`;
 
         document.getElementById('qrModal').style.display = 'flex';
     }
