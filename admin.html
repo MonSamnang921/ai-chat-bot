@@ -29,7 +29,7 @@
     <div id="pinGate" class="login-gate">
         <p>សូមបញ្ចូល PIN សម្ងាត់ដើម្បីចូលកាន់ប្រព័ន្ធ Admin</p>
         <div class="form-group">
-            <input type="password" id="adminPin" placeholder="បញ្ចូល PIN សម្ងាត់ (ឧទាហរណ៍: 1234)">
+            <input type="password" id="adminPin" placeholder="បញ្ចូល PIN សម្ងាត់">
         </div>
         <button class="btn" onclick="checkPin()">ចូលប្រើប្រាស់</button>
     </div>
@@ -52,8 +52,8 @@
 </div>
 
 <script>
-    // 🔴 កំណត់ PIN សម្ងាត់សម្រាប់ Admin ត្រង់នេះ (អាចប្តូរតាមចិត្ត)
-    const ADMIN_PIN = "123456";
+    // 🔴 លេខ PIN សម្ងាត់ថ្មីសម្រាប់ Admin
+    const ADMIN_PIN = "232344";
 
     function checkPin() {
         const inputPin = document.getElementById('adminPin').value;
@@ -80,7 +80,6 @@
             alert(`បានកាត់ទឹកប្រាក់ $${amount.toFixed(2)} ពី ${email} រួចរាល់!`);
         }
 
-        // សម្អាតប្រអប់បញ្ចូល
         document.getElementById('targetEmail').value = '';
         document.getElementById('addAmount').value = '';
     }
