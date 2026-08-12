@@ -1,42 +1,90 @@
-<!-- ផ្នែក Admin Panel (សម្រាប់តែ Admin បញ្ចូលលុយឱ្យភ្ញៀវ) -->
-<div id="adminSection" class="container" style="margin-top: 30px; border: 2px solid #f59e0b;">
-    <h3 style="color: #f59e0b; text-align: center;"><i class="fa-solid fa-user-shield"></i> Admin Panel (បញ្ចូលលុយ)</h3>
-    
-    <div class="form-group">
-        <label>១. អ៊ីមែលភ្ញៀវ (User Email):</label>
-        <input type="text" id="adminUserEmail" placeholder="ឧទាហរណ៍: user@gmail.com">
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YUTH STORE - Admin Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif, Arial; }
+        body { background-color: #0f172a; color: #ffffff; display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 450px; background: #1e293b; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: #ef4444; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; }
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 16px;
+        }
+        .btn { width: 100%; padding: 12px; background: #22c55e; color: #fff; font-weight: bold; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        .btn-danger { background: #ef4444; margin-top: 10px; }
+        .login-gate { text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
+
+    <!-- ផ្ទាំងវាយ PIN សម្ងាត់ Admin -->
+    <div id="pinGate" class="login-gate">
+        <p>សូមបញ្ចូល PIN សម្ងាត់ដើម្បីចូលកាន់ប្រព័ន្ធ Admin</p>
+        <div class="form-group">
+            <input type="password" id="adminPin" placeholder="បញ្ចូល PIN សម្ងាត់ (ឧទាហរណ៍: 1234)">
+        </div>
+        <button class="btn" onclick="checkPin()">ចូលប្រើប្រាស់</button>
     </div>
 
-    <div class="form-group">
-        <label>២. ចំនួនទឹកប្រាក់ត្រូវបញ្ចូល ($):</label>
-        <input type="text" id="adminAddAmount" placeholder="ឧទាហរណ៍: 10.00">
-    </div>
+    <!-- ផ្ទាំងគ្រប់គ្រងការបញ្ចូលលុយ (លាក់ទុកមុន) -->
+    <div id="adminControls" style="display: none;">
+        <div class="form-group">
+            <label>១. អ៊ីមែលអតិថិជន (User Email):</label>
+            <input type="text" id="targetEmail" placeholder="ឧទាហរណ៍: customer@gmail.com">
+        </div>
 
-    <button class="btn" onclick="adminAddBalance()" style="background: #22c55e; color: #fff;">បញ្ចូលលុយឱ្យភ្ញៀវ</button>
+        <div class="form-group">
+            <label>២. ចំនួនទឹកប្រាក់ ($):</label>
+            <input type="number" id="addAmount" step="0.01" placeholder="ឧទាហរណ៍: 10.00">
+        </div>
+
+        <button class="btn" onclick="processBalance('add')">➕ បន្ថែមលុយឱ្យភ្ញៀវ</button>
+        <button class="btn btn-danger" onclick="processBalance('deduct')">➖ កាត់លុយភ្ញៀវ</button>
+    </div>
 </div>
 
 <script>
-    // សមតុល្យសាកល្បងរបស់អតិថិជន
-    let userBalance = 0.00;
+    // 🔴 កំណត់ PIN សម្ងាត់សម្រាប់ Admin ត្រង់នេះ (អាចប្តូរតាមចិត្ត)
+    const ADMIN_PIN = "123456";
 
-    function adminAddBalance() {
-        const targetEmail = document.getElementById('adminUserEmail').value;
-        const addAmount = parseFloat(document.getElementById('adminAddAmount').value);
+    function checkPin() {
+        const inputPin = document.getElementById('adminPin').value;
+        if (inputPin === ADMIN_PIN) {
+            document.getElementById('pinGate').style.display = 'none';
+            document.getElementById('adminControls').style.display = 'block';
+        } else {
+            alert('PIN សម្ងាត់មិនត្រឹមត្រូវឡើយ!');
+        }
+    }
 
-        if (!targetEmail || isNaN(addAmount)) {
+    function processBalance(action) {
+        const email = document.getElementById('targetEmail').value;
+        const amount = parseFloat(document.getElementById('addAmount').value);
+
+        if (!email || isNaN(amount) || amount <= 0) {
             alert('សូមបញ្ចូល Email និងចំនួនទឹកប្រាក់ឱ្យបានត្រឹមត្រូវ!');
             return;
         }
 
-        // ប្រសិនបើបញ្ចូលត្រូវ Email អតិថិជនដែលកំពុង Login
-        if (currentUser && currentUser.email === targetEmail) {
-            userBalance += addAmount;
-            alert(`បានបញ្ចូលទឹកប្រាក់ $${addAmount.toFixed(2)} ជូន ${targetEmail} រួចរាល់!`);
-            
-            // Update បង្ហាញលើអេក្រង់
-            document.getElementById('displayUserBalance').innerText = `$${userBalance.toFixed(2)}`;
+        if (action === 'add') {
+            alert(`បានបន្ថែមទឹកប្រាក់ $${amount.toFixed(2)} ជូន ${email} រួចរាល់!`);
         } else {
-            alert('រកមិនឃើញ Email អតិថិជននេះនៅលើប្រព័ន្ធឡើយ!');
+            alert(`បានកាត់ទឹកប្រាក់ $${amount.toFixed(2)} ពី ${email} រួចរាល់!`);
         }
+
+        // សម្អាតប្រអប់បញ្ចូល
+        document.getElementById('targetEmail').value = '';
+        document.getElementById('addAmount').value = '';
     }
 </script>
+
+</body>
+</html>
