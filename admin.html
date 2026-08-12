@@ -53,14 +53,14 @@
 </div>
 
 <script>
-    // 🔴 កំណត់រចនាសម្ព័ន្ធ Firebase
+    // 🔴 Firebase Config ពិតប្រាកដរបស់អ្នក
     const firebaseConfig = {
-        apiKey: "AIzaSyDummyKeyForStoreOnly",
-        authDomain: "yuth-store.firebaseapp.com",
-        projectId: "yuth-store",
-        storageBucket: "yuth-store.appspot.com",
-        messagingSenderId: "781995105719",
-        appId: "1:781995105719:web:abcdef123456"
+      apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
+      authDomain: "planning-with-ai-46ea2.firebaseapp.com",
+      projectId: "planning-with-ai-46ea2",
+      storageBucket: "planning-with-ai-46ea2.firebasestorage.app",
+      messagingSenderId: "631178903261",
+      appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -78,7 +78,7 @@
     }
 
     async function processBalance(action) {
-        const email = document.getElementById('targetEmail').value.trim();
+        const email = document.getElementById('targetEmail').value.trim().toLowerCase();
         const amount = parseFloat(document.getElementById('addAmount').value);
 
         if (!email || isNaN(amount) || amount <= 0) {
