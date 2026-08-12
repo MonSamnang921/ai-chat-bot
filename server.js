@@ -1,37 +1,68 @@
-async function generatePayment() {
-    const playerId = document.getElementById('playerId').value;
+const express = require('express');
+const path = require('path');
+const cors = require('cors');
 
-    if (!playerId) {
-        alert('សូមបញ្ចូល Player ID!');
-        return;
-    }
-    if (selectedDiamond === 0) {
-        alert('សូមជ្រើសរើសកញ្ចប់ពេជ្រ!');
-        return;
-    }
+let BakongKHQR, khqrData, IndividualInfo;
+try {
+    const bakong = require('bakong-khqr');
+    BakongKHQR = bakong.BakongKHQR;
+    khqrData = bakong.khqrData;
+    IndividualInfo = bakong.IndividualInfo;
+} catch (e) {
+    console.error("Warning: bakong-khqr package not loaded yet.", e.message);
+}
 
-    document.getElementById('orderSummary').innerText = `ID: ${playerId} | 💎 ${selectedDiamond} ពេជ្រ | $${selectedPrice}`;
+const app = express();
 
+app.use(cors());
+app.use(express.json());
+app.use(express.static(__dirname));
+
+// API បង្កើត KHQR Code
+app.post('/api/generate-khqr', (req, res) => {
     try {
-        // ហៅទៅ Backend ដើម្បីយក KHQR String ពិតប្រាកដ
-        const res = await fetch('/api/generate-khqr', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: selectedPrice })
-        });
-        
-        const data = await res.json();
+        const { amount } = req.body;
 
-        if (data.success) {
-            // យក KHQR String ស្តង់ដារទៅបង្កើតជា QR Code
-            QRCode.toCanvas(document.getElementById('qrcodeCanvas'), data.qrString, { width: 220 });
-            
-            document.getElementById('qrModal').style.display = 'flex';
+        if (!BakongKHQR) {
+            return res.status(500).json({ success: false, error: "Bakong SDK Not Loaded" });
+        }
+
+        const optionalData = {
+            currency: khqrData.currency.usd,
+            amount: parseFloat(amount || 0.99),
+            mobileNumber: "855973777105",
+            storeLabel: "FF Topup",
+            terminalLabel: "Web"
+        };
+
+        const individualInfo = new IndividualInfo(
+            "samnang_mon@bkrt",
+            "SAMNANG MON",
+            "Phnom Penh",
+            optionalData
+        );
+
+        const khqr = new BakongKHQR();
+        const response = khqr.generateIndividual(individualInfo);
+
+        if (response && response.status && response.status.code === 0) {
+            return res.json({ success: true, qrString: response.data.qr });
         } else {
-            alert('មិនអាចបង្កើត KHQR បានទេ!');
+            return res.status(500).json({ success: false, error: "Cannot generate QR" });
         }
     } catch (err) {
-        console.error(err);
-        alert('មានបញ្ហាក្នុងការទាក់ទងទៅ Server!');
+        console.error("Error generating KHQR:", err);
+        return res.status(500).json({ success: false, error: err.message });
     }
-}
+});
+
+// Route ទំព័រដើម
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// កំណត់ Port សម្រាប់ Render
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+});
