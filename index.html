@@ -23,15 +23,86 @@
         .login-box { text-align: center; padding: 30px 10px; }
         .login-box i { font-size: 50px; color: #f59e0b; margin-bottom: 15px; }
 
-        .user-profile { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #334155; }
+        .user-profile { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #334155; }
         .user-info { display: flex; align-items: center; gap: 10px; }
         .user-info img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #f59e0b; }
         .wallet-badge { background: #1e293b; color: #22c55e; padding: 4px 10px; border-radius: 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-top: 2px; border: 1px solid #22c55e; }
         .logout-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
 
+        .deposit-section {
+            background: #1e293b;
+            border: 1px dashed #22c55e;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .btn-deposit {
+            background: #22c55e;
+            color: #000;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .api-box {
+            background: #0f172a;
+            border: 1px solid #38bdf8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .api-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-bottom: 8px;
+        }
+        .api-input-wrap {
+            display: flex;
+            gap: 8px;
+        }
+        .api-key-text {
+            background: #1e293b;
+            color: #facc15;
+            border: 1px solid #475569;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: monospace;
+        }
+        .btn-copy, .btn-gen {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-gen {
+            background: #f59e0b;
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px;
+        }
+
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="text"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 16px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 16px; }
         
         .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         .game-card { background: #334155; padding: 14px 6px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 11px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -53,7 +124,6 @@
         .btn { width: 100%; padding: 14px; background: #f59e0b; color: #000; font-weight: bold; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; margin-top: 10px; }
         .btn:hover { background: #d97706; }
         
-        /* ប៊ូតុង Telegram Contact ផ្នែកខាងក្រោម Support */
         .contact-admin-btn {
             display: flex;
             align-items: center;
@@ -68,9 +138,7 @@
             margin-top: 20px;
             transition: 0.2s;
         }
-        .contact-admin-btn:hover {
-            background: #0077b5;
-        }
+        .contact-admin-btn:hover { background: #0077b5; }
 
         .qr-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
         .khqr-card { background: #ffffff; color: #000000; border-radius: 16px; width: 320px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
@@ -118,6 +186,25 @@
             <button class="logout-btn" onclick="logout()">ចាកចេញ</button>
         </div>
 
+        <div class="deposit-section">
+            <div>
+                <div style="font-weight:bold; font-size:14px; color:#22c55e;"><i class="fa-solid fa-plus-circle"></i> បញ្ចូលលុយក្នុងកាបូប</div>
+                <div style="font-size:11px; color:#94a3b8;">ស្កេន KHQR ដើម្បីសាកប្រាក់ទុកមុន</div>
+            </div>
+            <button class="btn-deposit" onclick="openDepositPrompt()">+ ដាក់លុយ</button>
+        </div>
+
+        <div class="api-box">
+            <div class="api-header">
+                <span><i class="fa-solid fa-robot"></i> Reseller API (ភ្ជាប់ Telegram Bot)</span>
+            </div>
+            <div class="api-input-wrap">
+                <div class="api-key-text" id="apiKeyDisplay">មិនទាន់មាន API Key នៅឡើយទេ</div>
+                <button class="btn-copy" onclick="copyApiKey()"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+            <button class="btn-gen" onclick="generateApiKey()"><i class="fa-solid fa-key"></i> បង្កើត / ផ្លាស់ប្តូរ API Key ថ្មី</button>
+        </div>
+
         <div class="form-group">
             <label>១. ជ្រើសរើសហ្គេម</label>
             <div class="game-grid">
@@ -152,7 +239,6 @@
 
         <button class="btn" onclick="handlePurchase()">ទូទាត់ប្រាក់ឥឡូវនេះ</button>
 
-        <!-- 📲 ប៊ូតុងទាក់ទង Admin Telegram @MeiKhmer -->
         <a href="https://t.me/MeiKhmer" target="_blank" class="contact-admin-btn">
             <i class="fa-brands fa-telegram" style="font-size:20px;"></i> ទាក់ទង Admin តាម Telegram (@MeiKhmer)
         </a>
@@ -175,7 +261,7 @@
                 <canvas id="qrcodeCanvas"></canvas>
             </div>
 
-            <div class="loader-box">
+            <div class="loader-box" id="modalLoaderText">
                 ⏳ ប្រព័ន្ធកំពុងផ្ទៀងផ្ទាត់ការទូទាត់ប្រាក់...
             </div>
 
@@ -204,6 +290,7 @@
 
     let currentUser = null;
     let currentUserBalance = 0.00;
+    let currentApiKey = "";
     let currentGame = 'ff';
     let selectedPackage = null;
     let selectedPrice = 0;
@@ -230,12 +317,78 @@
         const userDocRef = db.collection('users').doc(currentUser.email.toLowerCase());
         userDocRef.onSnapshot((doc) => {
             if (doc.exists) {
-                currentUserBalance = doc.data().balance || 0.00;
+                const data = doc.data();
+                currentUserBalance = data.balance || 0.00;
+                currentApiKey = data.apiKey || "";
             } else {
-                userDocRef.set({ name: currentUser.name, balance: 0.00 });
+                userDocRef.set({ name: currentUser.name, balance: 0.00, apiKey: "" });
                 currentUserBalance = 0.00;
+                currentApiKey = "";
             }
             document.getElementById('userBalance').innerText = `$${currentUserBalance.toFixed(2)}`;
+            document.getElementById('apiKeyDisplay').innerText = currentApiKey || "មិនទាន់មាន API Key នៅឡើយទេ";
+        });
+    }
+
+    async function openDepositPrompt() {
+        if (!currentUser) return;
+        const inputAmount = prompt("សូមបញ្ចូលចំនួនទឹកប្រាក់ដែលអ្នកចង់ដាក់ចូលកាបូប ($):\nឧទាហរណ៍: 1, 2, 5, 10, 20");
+        const depositAmount = parseFloat(inputAmount);
+
+        if (isNaN(depositAmount) || depositAmount <= 0) {
+            if (inputAmount !== null) alert("ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវឡើយ!");
+            return;
+        }
+
+        document.getElementById('displayAmount').innerHTML = `${depositAmount.toFixed(2)} <span>USD</span>`;
+        document.getElementById('modalLoaderText').innerText = "⏳ សូមស្កេនបាញ់លុយ Admin នឹងបញ្ចូលលុយចូលកាបូបជូនភ្លាមៗ!";
+
+        const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, depositAmount);
+        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
+            if (error) console.error(error);
+        });
+
+        document.getElementById('qrModal').style.display = 'flex';
+
+        const text = `💰 **មានសំណើសាកលុយចូលកាបូប (Deposit)!**\n\n` +
+                     `👤 អតិថិជន: ${currentUser.name}\n` +
+                     `📧 Email: \`${currentUser.email.toLowerCase()}\`\n` +
+                     `💵 ចំនួនទឹកប្រាក់: $${depositAmount.toFixed(2)}\n\n` +
+                     `👉 សូម Admin ពិនិត្យមើលគណនី Bakong រួចចូលទៅ /admin.html ដើម្បីបន្ថែមលុយជូនគាត់!`;
+
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: text,
+                    parse_mode: 'Markdown'
+                })
+            });
+        } catch (err) {
+            console.error("Telegram error:", err);
+        }
+    }
+
+    async function generateApiKey() {
+        if (!currentUser) return;
+        const newKey = 'yt_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+        
+        await db.collection('users').doc(currentUser.email.toLowerCase()).update({
+            apiKey: newKey
+        });
+
+        alert('✅ បានបង្កើត API Key ថ្មីដោយជោគជ័យ!');
+    }
+
+    function copyApiKey() {
+        if (!currentApiKey) {
+            alert('សូមចុច "បង្កើត API Key ថ្មី" ជាមុនសិន!');
+            return;
+        }
+        navigator.clipboard.writeText(currentApiKey).then(() => {
+            alert('📋 បាន Copy API Key ទៅក្នុង Clipboard រួចរាល់!');
         });
     }
 
@@ -253,10 +406,12 @@
             ],
             packages: {
                 ff_diamonds: [
-                    { name: '💎 100 ពេជ្រ', price: 0.99 },
-                    { name: '💎 310 ពេជ្រ', price: 2.99 },
-                    { name: '💎 520 ពេជ្រ', price: 4.99 },
-                    { name: '💎 1060 ពេជ្រ', price: 9.99 }
+                    { name: '💎 100 ពេជ្រ', price: 0.05 },
+                    { name: '💎 500 ពេជ្រ', price: 0.15 },
+                    { name: '💎 1,000 ពេជ្រ', price: 0.40 },
+                    { name: '💎 5,000 ពេជ្រ', price: 0.80 },
+                    { name: '💎 10,000 ពេជ្រ', price: 1.20 },
+                    { name: '💎 100,000 ពេជ្រ', price: 3.20 }
                 ],
                 ff_membership: [
                     { name: '📅 កាតប្រចាំសប្តាហ៍', price: 3.50 },
@@ -450,6 +605,8 @@
             alert(`តុល្យភាពលុយរបស់អ្នកមិនគ្រប់គ្រាន់ទេ ($${currentUserBalance.toFixed(2)})! សូមស្កេន KHQR ដើម្បីទូទាត់ប្រាក់។`);
             
             document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
+            document.getElementById('modalLoaderText').innerText = "⏳ ប្រព័ន្ធកំពុងផ្ទៀងផ្ទាត់ការទូទាត់ប្រាក់...";
+
             const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
 
             QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
