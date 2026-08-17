@@ -3,164 +3,515 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - Game Top-Up & Live Chat</title>
-    <!-- Library QR Code & Icons -->
+    <title>YUTH STORE - Game Top-Up</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Sign-in -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         body { background-color: #f8fafc; color: #1e293b; padding-bottom: 80px; }
 
-        /* Navbar */
-        .navbar { background: #ffffff; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100; }
+        .navbar {
+            background: #ffffff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 16px; flex: 1; max-width: 650px; }
         .logo-box { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #0f172a; font-size: 19px; font-weight: 900; }
         .logo-box i { font-size: 24px; color: #e11d48; }
-        
-        .user-pill { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 4px 10px; border-radius: 9999px; border: 1px solid #e2e8f0; }
+
+        .search-wrap { position: relative; flex: 1; margin: 0 12px; }
+        .search-wrap input {
+            width: 100%;
+            padding: 9px 16px 9px 38px;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 13px;
+            outline: none;
+        }
+        .search-wrap input:focus { border-color: #e11d48; background: #fff; }
+        .search-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; }
+
+        .nav-right { display: flex; align-items: center; gap: 10px; }
+        .online-tag {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .online-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        .user-pill { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 4px 10px 4px 5px; border-radius: 9999px; border: 1px solid #e2e8f0; }
         .user-pill img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
         .wallet-text { font-size: 13px; font-weight: 800; color: #16a34a; }
 
         .main-container { max-width: 1240px; margin: 20px auto; padding: 0 16px; }
 
-        /* Banner */
-        .discount-live-bar { background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); color: #ffffff; padding: 10px 16px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 800; display: none; }
+        .auth-alert-banner {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #e11d48;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+        }
 
-        /* Posters Grid */
-        .section-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 14px; }
-        .poster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
-        @media (max-width: 640px) { .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+        .discount-live-bar {
+            background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(225,29,72,0.25);
+        }
 
-        .poster-card { border-radius: 14px; overflow: hidden; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; aspect-ratio: 3/4; position: relative; background: #1e293b; }
-        .poster-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
-        .poster-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(15, 23, 42, 0.9) 100%); z-index: 1; }
-        .poster-art { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 50px; color: rgba(255,255,255,0.2); }
-        .poster-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px; color: #ffffff; z-index: 2; }
-        .poster-title { font-size: 14px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .section-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        
+        /* Quick Scroll */
+        .quick-scroll {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            scrollbar-width: thin;
+        }
+        .quick-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+            width: 72px;
+            text-align: center;
+        }
+        .quick-circle {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid #fff;
+            transition: transform 0.2s;
+        }
+        .quick-item:hover .quick-circle { transform: scale(1.08); border-color: #e11d48; }
+        .quick-name { font-size: 11px; font-weight: 700; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
 
-        /* 🏷️ Package Card with Discount Display */
-        .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
-        .tab-btn { flex: 1; padding: 8px; background: #f1f5f9; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid #e2e8f0; }
+        /* Poster Cards Grid */
+        .poster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 14px;
+        }
+        @media (max-width: 640px) {
+            .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .search-wrap { display: none; }
+        }
+
+        .poster-card {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            aspect-ratio: 3/4;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            background: #1e293b;
+        }
+        .poster-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.25);
+            border-color: #cbd5e1;
+        }
+
+        .poster-art {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 16px 10px;
+        }
+        .poster-art i { font-size: 50px; margin-bottom: 8px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+        .poster-art-title { font-size: 16px; font-weight: 900; letter-spacing: 0.5px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+
+        .c-blue { background: linear-gradient(135deg, #0284c7, #1e1b4b); color: #38bdf8; }
+        .c-orange { background: linear-gradient(135deg, #ea580c, #7c2d12); color: #facc15; }
+        .c-dark { background: linear-gradient(135deg, #475569, #0f172a); color: #cbd5e1; }
+        .c-red { background: linear-gradient(135deg, #dc2626, #450a0a); color: #fca5a5; }
+        .c-purple { background: linear-gradient(135deg, #9333ea, #3b0764); color: #facc15; }
+        .c-green { background: linear-gradient(135deg, #16a34a, #064e3b); color: #86efac; }
+        .c-teal { background: linear-gradient(135deg, #0d9488, #115e59); color: #5eead4; }
+        .c-cyan { background: linear-gradient(135deg, #0891b2, #164e63); color: #a5f3fc; }
+        .c-pink { background: linear-gradient(135deg, #db2777, #831843); color: #fbcfe8; }
+
+        .poster-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(15, 23, 42, 0.95) 100%);
+        }
+        .sold-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #fbbf24;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 9999px;
+            backdrop-filter: blur(4px);
+            z-index: 2;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .poster-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px 10px;
+            color: #ffffff;
+            z-index: 2;
+        }
+        .poster-title {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            line-height: 1.25;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+        }
+        .tag-pill {
+            display: inline-block;
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 9999px;
+        }
+        .tag-event { background: #065f46; color: #34d399; }
+        .tag-hot { background: #991b1b; color: #fca5a5; }
+        .tag-restock { background: #475569; color: #cbd5e1; }
+        .tag-auto { background: #0284c7; color: #bae6fd; }
+
+        /* Floating Actions */
+        .floating-actions {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 99;
+        }
+        .fab-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s;
+        }
+        .fab-btn:hover { transform: scale(1.1); }
+        .fab-chat { background: #0284c7; }
+        .fab-telegram { background: #0088cc; }
+
+        /* Chat Widget */
+        .chat-widget {
+            display: none;
+            position: fixed;
+            bottom: 84px;
+            right: 24px;
+            width: 340px;
+            height: 440px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid #e2e8f0;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+        }
+        .chat-header {
+            background: #0284c7;
+            color: #fff;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f8fafc;
+        }
+        .chat-bubble {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12.5px;
+            line-height: 1.4;
+        }
+        .chat-bubble.guest { align-self: flex-end; background: #0284c7; color: #fff; border-bottom-right-radius: 2px; }
+        .chat-bubble.admin { align-self: flex-start; background: #e2e8f0; color: #0f172a; border-bottom-left-radius: 2px; }
+        .chat-input-area {
+            display: flex;
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #e2e8f0;
+            gap: 6px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9999px;
+            outline: none;
+            font-size: 13px;
+        }
+        .chat-input-area button {
+            background: #0284c7;
+            color: #fff;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 460px;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
+        .modal-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
+        .btn-close { background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+        .form-control {
+            width: 100%;
+            padding: 11px 13px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-control:focus { border-color: #e11d48; }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px; }
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            white-space: nowrap;
+        }
         .tab-btn.active { background: #e11d48; color: #fff; border-color: #e11d48; }
 
         .pkg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .pkg-card { background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 11px; border-radius: 8px; text-align: center; cursor: pointer; position: relative; }
+        .pkg-card {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            padding: 11px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.15s;
+            position: relative;
+        }
         .pkg-card:hover, .pkg-card.active { border-color: #e11d48; background: #fff1f2; }
-        .pkg-badge-discount { position: absolute; top: -6px; right: -6px; background: #e11d48; color: #ffffff; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 6px; }
+        .pkg-badge-discount {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #e11d48;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
         .pkg-name { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 3px; }
-        
-        /* តម្លៃដើម និងតម្លៃចុះ */
-        .pkg-price-row { display: flex; justify-content: center; align-items: baseline; gap: 4px; }
-        .pkg-old-price { font-size: 10px; color: #94a3b8; text-decoration: line-through; }
+        .pkg-old-price { font-size: 11px; color: #94a3b8; text-decoration: line-through; margin-right: 4px; }
         .pkg-price { font-size: 14px; font-weight: 800; color: #e11d48; }
 
-        /* Modals */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
-        .modal-card { background: #ffffff; width: 100%; max-width: 460px; border-radius: 16px; padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 11px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; }
-        .form-control:focus { border-color: #e11d48; }
-        .btn-submit { width: 100%; padding: 13px; background: #e11d48; color: #ffffff; font-size: 15px; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; }
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: #e11d48;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
 
-        /* KHQR Modal */
-        .khqr-red-header { background: #e11d48; padding: 14px; color: #fff; font-size: 20px; font-weight: 900; text-align: center; border-radius: 12px 12px 0 0; }
-        #qrCanvas { width: 200px !important; height: 200px !important; display: block; margin: 20px auto; }
-
-        /* 💬 Floating Chat Button */
-        .chat-btn-guest { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background-color: #0284c7; color: #fff; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 99; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
-        .chat-btn-guest:hover { transform: scale(1.1); }
-        
-        /* Chat Window */
-        .chat-window { display: none; position: fixed; bottom: 90px; right: 20px; width: 330px; height: 450px; background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; z-index: 1000; flex-direction: column; overflow: hidden; }
-        .chat-header { background-color: #0284c7; color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 14px; }
-        .chat-messages { flex: 1; padding: 16px; overflow-y: auto; background-color: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
-        .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; position: relative; }
-        .chat-bubble.admin { align-self: flex-start; background-color: #e2e8f0; color: #1e293b; border-bottom-left-radius: 2px; }
-        .chat-bubble.guest { align-self: flex-end; background-color: #0284c7; color: #fff; border-bottom-right-radius: 2px; }
-        .chat-input-area { display: flex; padding: 10px; border-top: 1px solid #e2e8f0; gap: 8px; background: #fff; }
-        .chat-input-area input { flex: 1; padding: 9px; border: 1px solid #cbd5e1; border-radius: 9999px; outline: none; font-size: 13px; }
-        .chat-input-area button { width: 36px; height: 36px; background-color: #0284c7; color: #fff; border-radius: 50%; border: none; cursor: pointer; }
+        /* KHQR Card */
+        .khqr-modal-card { background: transparent; width: 100%; max-width: 380px; border-radius: 20px; position: relative; }
+        .khqr-ticket { background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .khqr-red-header { background: #e11d48; padding: 14px 20px; display: flex; align-items: center; justify-content: center; }
+        .khqr-ticket-body { padding: 20px 24px; text-align: center; }
+        .khqr-canvas-wrap { position: relative; display: inline-block; padding: 6px; background: #ffffff; border-radius: 12px; }
+        #qrCanvas { width: 210px !important; height: 210px !important; display: block; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <a href="#" class="logo-box">
-            <i class="fa-solid fa-gem"></i>
-            <span>YUTHSTORE</span>
-        </a>
-        <div id="authBox">
-            <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-callback="handleCredentialResponse"></div>
-            <div class="g_id_signin" data-type="standard" data-size="medium" data-shape="pill"></div>
+        <div class="nav-left">
+            <a href="#" class="logo-box">
+                <i class="fa-solid fa-gem"></i>
+                <span>YUTHSTORE</span>
+            </a>
+            <div class="search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="ស្វែងរកហ្គេម..." id="searchInput" onkeyup="filterGames()">
+            </div>
         </div>
-        <div id="userBox" style="display: none;" class="user-pill">
-            <img id="userImg" src="" alt="P">
-            <span class="wallet-text" id="userBalance">$0.00</span>
-            <button onclick="openDepositModal()" style="border:none; background:#e11d48; color:#fff; border-radius:50%; width:18px; height:18px; font-weight:bold; cursor:pointer;" title="Deposit">+</button>
-            <button onclick="logout()" style="border:none; background:transparent; color:#94a3b8; cursor:pointer; font-size:11px;"><i class="fa-solid fa-right-from-bracket"></i></button>
+        <div class="nav-right">
+            <div class="online-tag">
+                <div class="online-dot"></div>
+                <span id="liveOnlineCount">1</span> Online
+            </div>
+            <div id="authBox">
+                <div id="g_id_onload"
+                    data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
+                    data-callback="handleCredentialResponse">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-size="medium" data-shape="pill"></div>
+            </div>
+            <div id="userBox" style="display: none;" class="user-pill">
+                <img id="userImg" src="" alt="Profile">
+                <span class="wallet-text" id="userBalance">$0.00</span>
+                <button onclick="openDepositModal()" style="border:none; background:#e11d48; color:#fff; border-radius:50%; width:18px; height:18px; font-weight:bold; cursor:pointer;">+</button>
+                <button onclick="logout()" style="border:none; background:transparent; color:#94a3b8; cursor:pointer;"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
         </div>
     </nav>
 
     <div class="main-container">
-        <!-- 📢 Discount Banner -->
-        <div class="discount-live-bar" id="liveDiscountBanner">
-            <span><i class="fa-solid fa-fire"></i> ប្រូម៉ូសិនពិសេស៖ បញ្ចុះតម្លៃ <span id="txtDiscountPercent">0</span>% លើគ្រប់កញ្ចប់!</span>
+        <div class="auth-alert-banner" id="loginAlertBanner">
+            <span><i class="fa-solid fa-circle-info"></i> សូមចុច <b>Sign in with Google</b> ខាងលើដើម្បី Login មុននឹងទិញ!</span>
         </div>
 
-        <div class="section-title">All Games</div>
-        <div class="poster-grid">
-            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire')">
-                <div class="poster-art"><i class="fa-solid fa-fire"></i></div>
-                <div class="poster-overlay"></div>
-                <div class="poster-info"><div class="poster-title">Free Fire</div></div>
-            </div>
-            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends')">
-                <div class="poster-art"><i class="fa-solid fa-shield-halved"></i></div>
-                <div class="poster-overlay"></div>
-                <div class="poster-info"><div class="poster-title">Mobile Legends</div></div>
-            </div>
-            <div class="poster-card" onclick="openOrderModal('pubg', 'PUBG Mobile')">
-                <div class="poster-art"><i class="fa-solid fa-crosshairs"></i></div>
-                <div class="poster-overlay"></div>
-                <div class="poster-info"><div class="poster-title">PUBG Mobile</div></div>
-            </div>
+        <div class="discount-live-bar" id="liveDiscountBanner" style="display: none;">
+            <span><i class="fa-solid fa-fire"></i> ប្រូម៉ូសិនពិសេស៖ បញ្ចុះតម្លៃ <span id="txtDiscountPercent">0</span>% លើគ្រប់ហ្គេមទាំងអស់!</span>
         </div>
+
+        <div class="section-title"><i class="fa-solid fa-bolt" style="color:#f59e0b;"></i> Quick Top-Up</div>
+        <div class="quick-scroll" id="quickScrollList"></div>
+
+        <div class="section-title"><i class="fa-solid fa-fire" style="color:#e11d48;"></i> All Games</div>
+        <div class="poster-grid" id="gamesGridContainer"></div>
     </div>
 
-    <!-- 💬 Floating Chat Button -->
-    <button class="chat-btn-guest" onclick="toggleChatWindow()"><i class="fa-solid fa-comments"></i></button>
+    <div class="floating-actions">
+        <button class="fab-btn fab-chat" onclick="toggleChatWidget()"><i class="fa-solid fa-comments"></i></button>
+        <a href="https://t.me/MeiKhmer" target="_blank" class="fab-btn fab-telegram"><i class="fa-brands fa-telegram"></i></a>
+    </div>
 
-    <!-- 💬 Chat Window -->
-    <div class="chat-window" id="chatWindow">
+    <div class="chat-widget" id="chatWidget">
         <div class="chat-header">
-            <span><i class="fa-solid fa-headset"></i> Live Support</span>
-            <button onclick="toggleChatWindow()" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;">&times;</button>
+            <span><i class="fa-solid fa-headset"></i> Live Chat Support</span>
+            <button onclick="toggleChatWidget()" style="background:none; border:none; color:#fff; font-size:16px; cursor:pointer;">&times;</button>
         </div>
-        <div class="chat-messages" id="chatMessagesBox">
-            <div class="chat-bubble admin">សួស្តី! តើខ្ញុំអាចជួយអ្វីបានទេ? សូមវាយសារដើម្បីជជែកជាមួយអេតមីន។</div>
-        </div>
+        <div class="chat-messages" id="chatMessagesBox"></div>
         <div class="chat-input-area">
-            <input type="text" id="chatInputGuest" placeholder="វាយសាររបស់អ្នក..." onkeypress="if(event.key==='Enter') sendGuestMessage()">
+            <input type="text" id="chatInputText" placeholder="វាយសាររបស់អ្នក..." onkeypress="if(event.key==='Enter') sendGuestMessage()">
             <button onclick="sendGuestMessage()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 
-    <!-- Order Modal -->
     <div class="modal" id="orderModal">
         <div class="modal-card">
             <div class="modal-header">
                 <h3 id="modalGameTitle">បញ្ចូលពេជ្រ</h3>
-                <button onclick="closeModal('orderModal')" style="background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+                <button class="btn-close" onclick="closeOrderModal()">&times;</button>
             </div>
             <div class="form-group">
-                <label>១. បញ្ចូល Player ID</label>
+                <label id="lblInputId">១. បញ្ចូល Player ID</label>
                 <input type="text" id="orderPlayerId" class="form-control" placeholder="បញ្ចូល ID">
             </div>
             <div class="form-group">
@@ -168,105 +519,134 @@
                 <div id="pkgTabsContainer" class="tabs"></div>
                 <div id="pkgGridContainer" class="pkg-grid"></div>
             </div>
-            <button class="btn-submit" onclick="handleOrderPurchase()">ទិញឥឡូវនេះ</button>
+            <button class="btn-submit" onclick="handleOrderPurchase()">បញ្ជាទិញឥឡូវនេះ</button>
         </div>
     </div>
 
-    <!-- Deposit Modal -->
     <div class="modal" id="depositModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3>ដាក់លុយ</h3>
-                <button onclick="closeModal('depositModal')" style="background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+                <h3>ដាក់លុយចូលកាបូប</h3>
+                <button class="btn-close" onclick="closeDepositModal()">&times;</button>
             </div>
             <div class="form-group">
-                <label>ចំនួនទឹកប្រាក់ ($ USD)</label>
-                <input type="number" id="depositInput" class="form-control" value="1.00" step="0.1" min="0.1">
+                <label>ចំនួនទឹកប្រាក់ ($ USD) ៖</label>
+                <input type="number" id="depositInput" class="form-control" value="2.00" step="0.01">
             </div>
             <button class="btn-submit" onclick="generateDepositQR()">បង្កើត QR ដាក់លុយ</button>
         </div>
     </div>
 
-    <!-- KHQR Modal -->
     <div class="modal" id="qrModal">
-        <div class="modal-card">
-            <div class="khqr-red-header">ABA KHQR</div>
-            <div style="padding: 20px; text-align: center;">
-                <canvas id="qrCanvas"></canvas>
-                <p style="font-size: 14px; color: #1e293b; font-weight: 800;">ចំនួន៖ $<span id="qrAmountDisplay">0.00</span></p>
-                <button class="btn-submit" style="background:#cbd5e1; color:#1e293b; margin-top:15px;" onclick="closeModal('qrModal')">បិទ</button>
+        <div class="khqr-modal-card">
+            <div class="khqr-top-bar">
+                <div class="khqr-top-title">ABA KHQR</div>
+                <div class="khqr-timer"><i class="fa-regular fa-clock"></i> <span id="countdownText">10:00</span></div>
+                <button class="btn-close-khqr" onclick="closeQRModal()">&times;</button>
+            </div>
+            <div class="khqr-ticket">
+                <div class="khqr-red-header"><span style="color:#fff; font-weight:bold;">KHQR</span></div>
+                <div class="khqr-ticket-body" id="khqrActiveView">
+                    <div class="khqr-store-name">Yuth Store</div>
+                    <div class="khqr-ticket-amount" id="qrAmountDisplay">$0.00 <span>USD</span></div>
+                    <div class="khqr-dashed-line"></div>
+                    <div class="khqr-canvas-wrap"><canvas id="qrCanvas"></canvas></div>
+                </div>
+                <div class="khqr-expired-view" id="khqrExpiredView">
+                    <h4>QR Code បានផុតកំណត់ហើយ!</h4>
+                    <button class="btn-submit" onclick="regenerateQR()">បង្កើត QR ថ្មី</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // *** ជំនួស config ខាងក្រោមជាមួយ config Firebase របស់អ្នក ***
-        const firebaseConfig = YOUR_FIREBASE_CONFIG;
+        const firebaseConfig = {
+            apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
+            authDomain: "planning-with-ai-46ea2.firebaseapp.com",
+            projectId: "planning-with-ai-46ea2",
+            storageBucket: "planning-with-ai-46ea2.firebasestorage.app",
+            messagingSenderId: "631178903261",
+            appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // ជំនួសជាមួយ ABA Bakong ID និងឈ្មោះរបស់អ្នក
-        const BAKONG_ACCOUNT_ID = "YOUR_BAKONG_ID@aba"; 
-        const ACCOUNT_NAME = "YOUR NAME";
+        const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
+        const ACCOUNT_NAME = "YUTH STORE";
+        const TELEGRAM_BOT_TOKEN = "8806433517:AAGCs1y4YDwqSMiXQoJs1Y-n0DOGDtEDbII";
+        const TELEGRAM_CHAT_ID = "8363306657"; 
 
         let currentUser = null;
         let currentUserBalance = 0.00;
-        let currentSelectedGame = '';
+        let currentSelectedGame = 'ff';
+        let currentSelectedGameTitle = '';
         let selectedPackage = null;
         let selectedPrice = 0;
         let discountPercentage = 0;
 
-        // Session ID សម្រាប់ Chat ភ្ញៀវមិនទាន់ Login
-        let guestChatId = localStorage.getItem('guestChatId');
-        if (!guestChatId) {
-            guestChatId = 'guest_' + Date.now();
-            localStorage.setItem('guestChatId', guestChatId);
-        }
+        let qrTimerInterval = null;
+        let remainingSeconds = 600;
+        let lastGeneratedAmountUSD = 0;
 
-        // ទាញ % បញ្ចុះតម្លៃពី Database
+        let sessionId = localStorage.getItem('guest_session_id') || ('sess_' + Math.random().toString(36).substr(2, 9));
+        localStorage.setItem('guest_session_id', sessionId);
+
+        function updateOnlinePresence() {
+            db.collection('online_presence').doc(sessionId).set({
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+                user: currentUser ? currentUser.email : 'Guest'
+            });
+        }
+        setInterval(updateOnlinePresence, 20000);
+        updateOnlinePresence();
+
+        db.collection('online_presence').onSnapshot((snapshot) => {
+            document.getElementById('liveOnlineCount').innerText = snapshot.size || 1;
+        });
+
         db.collection('settings').doc('discount').onSnapshot((doc) => {
-            if (doc.exists) {
-                discountPercentage = doc.data().percent || 0;
-            }
+            discountPercentage = doc.exists ? (doc.data().percent || 0) : 0;
             if (discountPercentage > 0) {
                 document.getElementById('liveDiscountBanner').style.display = 'flex';
                 document.getElementById('txtDiscountPercent').innerText = discountPercentage;
             } else {
                 document.getElementById('liveDiscountBanner').style.display = 'none';
             }
-            // ប្រសិនបើបើក Modal ស្រាប់ ត្រូវ Render កញ្ចប់ឡើងវិញ
-            if (document.getElementById('orderModal').style.display === 'flex') {
-                showTabPackages(gameCatalog[currentSelectedGame].tabs[0].id);
-            }
+            if (document.getElementById('orderModal').style.display === 'flex') { renderPackages(); }
         });
 
         const gameCatalog = {
-            ff: {
-                tabs: [{ name: 'Diamonds', id: 'diamond' }, { name: 'Pass', id: 'pass' }],
-                packages: {
-                    diamond: [{ name: '100💎', price: 1.00 }, { name: '310💎', price: 3.00 }, { name: '520💎', price: 5.00 }],
-                    pass: [{ name: 'Weekly', price: 2.50 }, { name: 'Monthly', price: 10.00 }]
-                }
-            },
-            mlbb: {
-                tabs: [{ name: 'Diamonds', id: 'diamond' }],
-                packages: {
-                    diamond: [{ name: '86💎', price: 1.50 }, { name: '257💎', price: 4.50 }]
-                }
-            },
-            pubg: {
-                tabs: [{ name: 'UC', id: 'uc' }],
-                packages: {
-                    uc: [{ name: '60 UC', price: 1.00 }, { name: '325 UC', price: 5.00 }]
-                }
-            }
+            ff: { title: "Free Fire", color: "c-orange", icon: "fa-fire", tabs: [{ name: '💎 ពេជ្ររាយ', id: 'ff_diamond' }], packages: { ff_diamond: [{ name: '100 ពេជ្រ', price: 0.50 }, { name: '300 ពេជ្រ', price: 1.00 }, { name: '500 ពេជ្រ', price: 2.00 }, { name: '800 ពេជ្រ', price: 5.00 }, { name: '1,000 ពេជ្រ', price: 8.00 }, { name: '10,000 ពេជ្រ', price: 16.00 }] } },
+            mlbb: { title: "Mobile Legends", color: "c-blue", icon: "fa-shield-halved", tabs: [{ name: '💎 Diamonds', id: 'ml_diamonds' }], packages: { ml_diamonds: [{ name: '86 Diamonds', price: 1.50 }, { name: '172 Diamonds', price: 3.00 }, { name: '257 Diamonds', price: 4.50 }] } },
+            pubg: { title: "PUBG Mobile", color: "c-dark", icon: "fa-crosshairs", tabs: [{ name: '💵 UC', id: 'pubg_uc' }], packages: { pubg_uc: [{ name: '60 UC', price: 0.99 }, { name: '325 UC', price: 4.99 }] } }
         };
+
+        function renderCatalog() {
+            const grid = document.getElementById('gamesGridContainer');
+            const quick = document.getElementById('quickScrollList');
+            grid.innerHTML = ''; quick.innerHTML = '';
+            for (let key in gameCatalog) {
+                let g = gameCatalog[key];
+                grid.innerHTML += `
+                    <div class="poster-card" onclick="openOrderModal('${key}', '${g.title}')">
+                        <div class="poster-art ${g.color}"><i class="fa-solid ${g.icon}"></i><div class="poster-art-title">${g.title}</div></div>
+                        <div class="poster-overlay"></div>
+                        <div class="poster-info"><div class="poster-title">${g.title}</div></div>
+                    </div>`;
+                quick.innerHTML += `
+                    <div class="quick-item" onclick="openOrderModal('${key}', '${g.title}')">
+                        <div class="quick-circle ${g.color}"><i class="fa-solid ${g.icon}"></i></div>
+                        <div class="quick-name">${g.title}</div>
+                    </div>`;
+            }
+        }
+        renderCatalog();
 
         function parseJwt (token) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-            return JSON.parse(jsonPayload);
+            return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
         }
 
         function handleCredentialResponse(response) {
@@ -275,197 +655,119 @@
             document.getElementById('userImg').src = payload.picture;
             document.getElementById('authBox').style.display = 'none';
             document.getElementById('userBox').style.display = 'flex';
+            document.getElementById('loginAlertBanner').style.display = 'none';
+            updateOnlinePresence();
 
-            const userRef = db.collection('users').doc(currentUser.email.toLowerCase());
-            userRef.onSnapshot((doc) => {
-                if (doc.exists) {
-                    currentUserBalance = doc.data().balance || 0.00;
-                } else {
-                    userRef.set({ name: currentUser.name, balance: 0.00 });
-                    currentUserBalance = 0.00;
-                }
+            db.collection('users').doc(currentUser.email.toLowerCase()).onSnapshot((doc) => {
+                currentUserBalance = doc.exists ? (doc.data().balance || 0.00) : 0.00;
+                if (!doc.exists) { db.collection('users').doc(currentUser.email.toLowerCase()).set({ name: currentUser.name, balance: 0.00 }); }
                 document.getElementById('userBalance').innerText = `$${currentUserBalance.toFixed(2)}`;
             });
         }
 
-        function logout() {
-            currentUser = null;
-            document.getElementById('authBox').style.display = 'block';
-            document.getElementById('userBox').style.display = 'none';
-        }
-
+        function logout() { currentUser = null; document.getElementById('authBox').style.display = 'block'; document.getElementById('userBox').style.display = 'none'; document.getElementById('loginAlertBanner').style.display = 'flex'; }
         function openOrderModal(gameKey, gameTitle) {
-            currentSelectedGame = gameKey;
+            currentSelectedGame = gameKey; currentSelectedGameTitle = gameTitle;
             document.getElementById('modalGameTitle').innerText = gameTitle;
-            const data = gameCatalog[gameKey];
-            const tabContainer = document.getElementById('pkgTabsContainer');
-            tabContainer.innerHTML = '';
-
-            data.tabs.forEach((tab, index) => {
-                const btn = document.createElement('button');
-                btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
-                btn.innerText = tab.name;
-                btn.onclick = () => {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    showTabPackages(tab.id);
-                };
-                tabContainer.appendChild(btn);
-            });
-            showTabPackages(data.tabs[0].id);
+            const inputField = document.getElementById('orderPlayerId');
+            const lblField = document.getElementById('lblInputId');
+            if (gameKey === 'ff') { lblField.innerText = "១. បញ្ចូល Free Fire Player ID"; inputField.placeholder = "Player ID"; }
+            else if (gameKey === 'mlbb') { lblField.innerText = "១. បញ្ចូល User ID & Zone ID"; inputField.placeholder = "User ID (Zone)"; }
+            else { lblField.innerText = "១. បញ្ចូល Player ID"; inputField.placeholder = "ID ហ្គេម"; }
+            renderPackages();
             document.getElementById('orderModal').style.display = 'flex';
         }
+        function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
+        function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
+        function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
+        function closeQRModal() { clearInterval(qrTimerInterval); document.getElementById('qrModal').style.display = 'none'; }
 
-        // 🏷️ បង្ហាញតម្លៃដើម និងតម្លៃចុះជូនភ្ញៀវ
+        function renderPackages() {
+            const data = gameCatalog[currentSelectedGame];
+            const tabContainer = document.getElementById('pkgTabsContainer');
+            tabContainer.innerHTML = '';
+            data.tabs.forEach((tab, index) => {
+                tabContainer.innerHTML += `<button class="tab-btn ${index === 0 ? 'active' : ''}" onclick="showTabPackages('${tab.id}')">${tab.name}</button>`;
+            });
+            showTabPackages(data.tabs[0].id);
+        }
+
         function showTabPackages(tabId) {
+            const data = gameCatalog[currentSelectedGame];
             const pkgContainer = document.getElementById('pkgGridContainer');
             pkgContainer.innerHTML = '';
-            const pkgs = gameCatalog[currentSelectedGame].packages[tabId];
-
-            pkgs.forEach((item, idx) => {
+            data.packages[tabId].forEach((item, idx) => {
                 const finalPrice = discountPercentage > 0 ? (item.price * (1 - discountPercentage / 100)) : item.price;
-                if (idx === 0) { selectedPackage = item.name; selectedPrice = finalPrice; }
-
-                const card = document.createElement('div');
-                card.className = `pkg-card ${idx === 0 ? 'active' : ''}`;
-                
-                let priceHtml = '';
-                let badgeHtml = '';
-
-                if (discountPercentage > 0) {
-                    badgeHtml = `<div class="pkg-badge-discount">-${discountPercentage}%</div>`;
-                    priceHtml = `
-                        <div class="pkg-price-row">
-                            <span class="pkg-old-price">$${item.price.toFixed(2)}</span>
+                if(idx === 0) { selectedPackage = item.name; selectedPrice = finalPrice; }
+                pkgContainer.innerHTML += `
+                    <div class="pkg-card ${idx === 0 ? 'active' : ''}" onclick="selectCard(this, '${item.name}', ${finalPrice})">
+                        ${discountPercentage > 0 ? `<div class="pkg-badge-discount">-${discountPercentage}%</div>` : ''}
+                        <div class="pkg-name">${item.name}</div>
+                        <div>
+                            ${discountPercentage > 0 ? `<span class="pkg-old-price">$${item.price.toFixed(2)}</span>` : ''}
                             <span class="pkg-price">$${finalPrice.toFixed(2)}</span>
                         </div>
-                    `;
-                } else {
-                    priceHtml = `<span class="pkg-price">$${item.price.toFixed(2)}</span>`;
-                }
-
-                card.innerHTML = `${badgeHtml}<div class="pkg-name">${item.name}</div>${priceHtml}`;
-                card.onclick = () => {
-                    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
-                    card.classList.add('active');
-                    selectedPackage = item.name;
-                    selectedPrice = finalPrice;
-                };
-                pkgContainer.appendChild(card);
+                    </div>`;
             });
         }
 
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
+        function selectCard(card, name, price) {
+            document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active'); selectedPackage = name; selectedPrice = price;
+        }
 
         async function handleOrderPurchase() {
-            if (!currentUser) { alert('សូម Login សិន!'); return; }
             const playerId = document.getElementById('orderPlayerId').value.trim();
-            if (!playerId || !selectedPackage) { alert('សូមបំពេញព័ត៌មាន!'); return; }
-
-            if (currentUserBalance >= selectedPrice) {
-                if (confirm(`ទិញ ${selectedPackage} សម្រាប់ ID: ${playerId} តម្លៃ $${selectedPrice.toFixed(2)}? លុយនឹងត្រូវកាត់ពី Wallet។`)) {
-                    const userRef = db.collection('users').doc(currentUser.email.toLowerCase());
-                    await userRef.update({ balance: currentUserBalance - selectedPrice });
-                    
-                    // បង្កើត Order
-                    await db.collection('orders').add({
-                        userEmail: currentUser.email.toLowerCase(),
-                        userName: currentUser.name,
-                        game: currentSelectedGame,
-                        playerId: playerId,
-                        package: selectedPackage,
-                        price: selectedPrice,
-                        status: 'paid_wallet',
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    closeModal('orderModal');
-                    alert('ការទិញជោគជ័យ! រង់ចាំអេតមីនបញ្ចូលឱ្យ។');
+            if (!playerId) { alert('សូមបញ្ចូល Player ID!'); return; }
+            if (currentUser && currentUserBalance >= selectedPrice) {
+                if (confirm(`ទិញ ${selectedPackage} តម្លៃ $${selectedPrice.toFixed(2)}?`)) {
+                    await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: currentUserBalance - selectedPrice });
+                    closeOrderModal(); alert('✅ ជោគជ័យ!'); sendOrderTelegram(playerId, selectedPrice, "PAID (Wallet)");
                 }
-            } else {
-                alert(`លុយ Wallet មិនគ្រាន់។ សូមស្កេនទូទាត់ពេញចំនួន $${selectedPrice.toFixed(2)}`);
-                showQR(selectedPrice);
-            }
+            } else { closeOrderModal(); showQR(selectedPrice); sendOrderTelegram(playerId, selectedPrice, "Pending (KHQR)"); }
         }
 
-        function generateDepositQR() {
-            const amount = parseFloat(document.getElementById('depositInput').value);
-            if (isNaN(amount) || amount <= 0) return;
-            showQR(amount);
-        }
-
+        function generateDepositQR() { showQR(parseFloat(document.getElementById('depositInput').value)); closeDepositModal(); }
         function showQR(amountUSD) {
-            document.getElementById('qrAmountDisplay').innerText = amountUSD.toFixed(2);
-            // សម្រាប់ Demo យើងប្រើ QR ធម្មតា។ សម្រាប់ ABA ពិតប្រាកដ អ្នកត្រូវការកូដបង្កើត KHQR String។
-            const qrString = `https://yuthstore.com/pay?amount=${amountUSD}&id=${currentUser ? currentUser.email : guestChatId}`;
-            QRCode.toCanvas(document.getElementById('qrCanvas'), qrString, { width: 200, margin: 1 });
+            lastGeneratedAmountUSD = amountUSD;
+            document.getElementById('qrAmountDisplay').innerHTML = `$${amountUSD.toFixed(2)} <span>USD</span>`;
+            document.getElementById('khqrActiveView').style.display = 'block';
+            document.getElementById('khqrExpiredView').style.display = 'none';
+            QRCode.toCanvas(document.getElementById('qrCanvas'), generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, amountUSD), { width: 210, margin: 1 });
             document.getElementById('qrModal').style.display = 'flex';
+            clearInterval(qrTimerInterval); remainingSeconds = 600;
+            qrTimerInterval = setInterval(() => {
+                let m = Math.floor(remainingSeconds / 60), s = remainingSeconds % 60;
+                document.getElementById('countdownText').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                if (--remainingSeconds < 0) { clearInterval(qrTimerInterval); document.getElementById('khqrActiveView').style.display = 'none'; document.getElementById('khqrExpiredView').style.display = 'block'; }
+            }, 1000);
         }
+        function regenerateQR() { showQR(lastGeneratedAmountUSD); }
 
-        // 💬 Live Chat
-        let chatListenUnsubscribe = null;
-
-        function toggleChatWindow() {
-            const win = document.getElementById('chatWindow');
-            if (win.style.display === 'flex') {
-                win.style.display = 'none';
-                if (chatListenUnsubscribe) chatListenUnsubscribe();
-            } else {
-                win.style.display = 'flex';
-                listenToChatMessages();
-                document.getElementById('chatInputGuest').focus();
-            }
-        }
-
-        function getChatId() {
-            return currentUser ? currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_') : guestChatId;
-        }
-
-        function listenToChatMessages() {
-            const chatId = getChatId();
-            if (chatListenUnsubscribe) chatListenUnsubscribe();
-
-            chatListenUnsubscribe = db.collection('chats').doc(chatId).collection('messages')
-                .orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
-                    const box = document.getElementById('chatMessagesBox');
-                    box.innerHTML = '';
-                    snapshot.forEach((doc) => {
-                        const msg = doc.data();
-                        const bubble = document.createElement('div');
-                        bubble.className = `chat-bubble ${msg.sender === 'admin' ? 'admin' : 'guest'}`;
-                        bubble.innerText = msg.text;
-                        box.appendChild(bubble);
+        function toggleChatWidget() {
+            const widget = document.getElementById('chatWidget');
+            widget.style.display = widget.style.display === 'flex' ? 'none' : 'flex';
+            if (widget.style.display === 'flex') {
+                const currentChatId = currentUser ? currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_') : sessionId;
+                db.collection('chats').doc(currentChatId).collection('messages').orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
+                    const box = document.getElementById('chatMessagesBox'); box.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        let msg = doc.data();
+                        box.innerHTML += `<div class="chat-bubble ${msg.sender === 'admin' ? 'admin' : 'guest'}">${msg.text}</div>`;
                     });
                     box.scrollTop = box.scrollHeight;
                 });
+            }
         }
 
         async function sendGuestMessage() {
-            const input = document.getElementById('chatInputGuest');
-            const text = input.value.trim();
+            const text = document.getElementById('chatInputText').value.trim();
             if (!text) return;
-
-            const chatId = getChatId();
+            const currentChatId = currentUser ? currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_') : sessionId;
             const senderName = currentUser ? currentUser.name : 'Guest';
-
-            // Update ព័ត៌មាន Chat មេ ដើម្បីឱ្យអេតមីនឃើញ
-            await db.collection('chats').doc(chatId).set({
-                chatId: chatId,
-                clientName: senderName,
-                lastMessage: text,
-                unread: true, // សារមិនទាន់អានសម្រាប់អេតមីន
-                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-
-            // បន្ថែមសារ
-            await db.collection('chats').doc(chatId).collection('messages').add({
-                text: text,
-                sender: 'guest',
-                senderName: senderName,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            input.value = '';
+            await db.collection('chats').doc(currentChatId).set({ chatId: currentChatId, clientName: senderName, clientEmail: currentUser ? currentUser.email : 'Guest', lastMessage: text, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            await db.collection('chats').doc(currentChatId).collection('messages').add({ text: text, sender: 'guest', senderName: senderName, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('chatInputText').value = '';
         }
     </script>
 </body>
