@@ -3,182 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - Admin Management</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase SDK -->
+    <title>YUTH STORE - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <style>
-        * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif, Arial; }
-        body { background-color: #0f172a; color: #ffffff; display: flex; justify-content: center; padding: 20px; }
-        .container { width: 100%; max-width: 500px; background: #1e293b; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        h2 { text-align: center; color: #ef4444; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-weight: bold; }
-        input[type="text"], input[type="password"], input[type="number"] {
-            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 16px;
-        }
-        .btn { width: 100%; padding: 12px; background: #22c55e; color: #fff; font-weight: bold; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
-        .btn-danger { background: #ef4444; margin-top: 10px; }
-        .login-gate { text-align: center; }
 
-        .user-stats-box {
-            background: #0f172a;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 25px;
-            border: 1px solid #334155;
-        }
-        .stat-title {
-            color: #f59e0b;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .user-table {
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; padding: 24px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; border-bottom: 1px solid #334155; padding-bottom: 16px; }
+        .header h1 { font-size: 22px; font-weight: 900; color: #e11d48; display: flex; align-items: center; gap: 10px; }
+        .btn-view-site { color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 700; }
+
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .card h2 { font-size: 16px; font-weight: 800; margin-bottom: 14px; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #94a3b8; }
+        .form-control {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
         }
-        .user-table th, .user-table td {
-            border: 1px solid #334155;
-            padding: 8px;
-            text-align: left;
+        .form-control:focus { border-color: #e11d48; }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #e11d48;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.15s;
         }
-        .user-table th {
-            background: #1e293b;
-            color: #38bdf8;
-        }
+        .btn-save:hover { background: #be123c; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #334155; }
+        th { color: #94a3b8; font-weight: 800; }
+        .balance-badge { font-weight: 900; color: #4ade80; }
+        .btn-action { background: #0284c7; color: #fff; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2><i class="fa-solid fa-user-shield"></i> Admin Panel</h2>
-
-    <div id="pinGate" class="login-gate">
-        <p>សូមបញ្ចូល PIN សម្ងាត់ដើម្បីចូលកាន់ប្រព័ន្ធ Admin</p>
-        <div class="form-group">
-            <input type="password" id="adminPin" placeholder="បញ្ចូល PIN សម្ងាត់">
-        </div>
-        <button class="btn" onclick="checkPin()">ចូលប្រើប្រាស់</button>
-    </div>
-
-    <div id="adminControls" style="display: none;">
-        <div class="form-group">
-            <label>១. អ៊ីមែលអតិថិជន (User Email):</label>
-            <input type="text" id="targetEmail" placeholder="ឧទាហរណ៍: customer@gmail.com">
+    <div class="container">
+        <div class="header">
+            <h1><i class="fa-solid fa-screwdriver-wrench"></i> YUTH STORE ADMIN PANEL</h1>
+            <a href="index.html" class="btn-view-site"><i class="fa-solid fa-arrow-up-right-from-square"></i> ទៅកាន់ទំព័រមុខ</a>
         </div>
 
-        <div class="form-group">
-            <label>២. ចំនួនទឹកប្រាក់ ($):</label>
-            <input type="number" id="addAmount" step="0.01" placeholder="ឧទាហរណ៍: 10.00">
-        </div>
-
-        <button class="btn" onclick="processBalance('add')">➕ បន្ថែមលុយឱ្យភ្ញៀវ</button>
-        <button class="btn btn-danger" onclick="processBalance('deduct')">➖ កាត់លុយភ្ញៀវ</button>
-
-        <div class="user-stats-box">
-            <div class="stat-title">
-                <span>👥 អតិថិជនចុះឈ្មោះសរុប៖</span>
-                <span id="totalUsersCount" style="color: #22c55e;">0 នាក់</span>
+        <div class="card">
+            <h2><i class="fa-solid fa-tags"></i> កំណត់ការបញ្ចុះតម្លៃទូទាំងវេបសាយ (Global Discount %)</h2>
+            <div class="form-group">
+                <label>ភាគរយបញ្ចុះតម្លៃ (% Discount):</label>
+                <input type="number" id="discountPercentInput" class="form-control" placeholder="ឧទាហរណ៍: 20 (ស្មើ 20%)" min="0" max="90" value="0">
             </div>
-            
-            <table class="user-table">
+            <button class="btn-save" onclick="updateDiscount()"><i class="fa-solid fa-check"></i> រក្សាទុកភាគរយ Discount</button>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-users"></i> គ្រប់គ្រងសមតុល្យកាបូបភ្ញៀវ (User Balances)</h2>
+            <table>
                 <thead>
                     <tr>
-                        <th>Email</th>
-                        <th>តុល្យភាព ($)</th>
+                        <th>Email ភ្ញៀវ</th>
+                        <th>ឈ្មោះ</th>
+                        <th>ទឹកប្រាក់ ($)</th>
+                        <th>សកម្មភាព</th>
                     </tr>
                 </thead>
                 <tbody id="userListBody">
-                    <tr><td colspan="2" style="text-align:center;">កំពុងទាញទិន្នន័យ...</td></tr>
+                    <tr><td colspan="4" style="text-align:center; color:#64748b;">កំពុងទាញទិន្នន័យ...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
-</div>
 
-<script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
-      authDomain: "planning-with-ai-46ea2.firebaseapp.com",
-      projectId: "planning-with-ai-46ea2",
-      storageBucket: "planning-with-ai-46ea2.firebasestorage.app",
-      messagingSenderId: "631178903261",
-      appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
+            authDomain: "planning-with-ai-46ea2.firebaseapp.com",
+            projectId: "planning-with-ai-46ea2",
+            storageBucket: "planning-with-ai-46ea2.firebasestorage.app",
+            messagingSenderId: "631178903261",
+            appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    const ADMIN_PIN = "232344";
+        db.collection('settings').doc('discount').onSnapshot((doc) => {
+            if (doc.exists) {
+                document.getElementById('discountPercentInput').value = doc.data().percent || 0;
+            }
+        });
 
-    function checkPin() {
-        const inputPin = document.getElementById('adminPin').value;
-        if (inputPin === ADMIN_PIN) {
-            document.getElementById('pinGate').style.display = 'none';
-            document.getElementById('adminControls').style.display = 'block';
-            loadUsersList();
-        } else {
-            alert('PIN សម្ងាត់មិនត្រឹមត្រូវឡើយ!');
+        async function updateDiscount() {
+            const percent = parseFloat(document.getElementById('discountPercentInput').value) || 0;
+            if (percent < 0 || percent > 90) { alert('ភាគរយត្រូវនៅចន្លោះពី 0 ដល់ 90%!'); return; }
+            await db.collection('settings').doc('discount').set({ percent: percent });
+            alert(`✅ បានដាក់ប្រូម៉ូសិនបញ្ចុះតម្លៃ ${percent}% ជោគជ័យ!`);
         }
-    }
 
-    function loadUsersList() {
         db.collection('users').onSnapshot((snapshot) => {
-            const totalUsers = snapshot.size;
-            document.getElementById('totalUsersCount').innerText = `${totalUsers} នាក់`;
-
-            let tableRows = '';
+            const tbody = document.getElementById('userListBody');
+            tbody.innerHTML = '';
+            if (snapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">មិនទាន់មានទិន្នន័យភ្ញៀវនៅឡើយទេ។</td></tr>';
+                return;
+            }
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                const email = doc.id;
-                const balance = data.balance ? data.balance.toFixed(2) : '0.00';
-                tableRows += `<tr><td>${email}</td><td style="color:#22c55e; font-weight:bold;">$${balance}</td></tr>`;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${doc.id}</b></td>
+                    <td>${data.name || 'User'}</td>
+                    <td><span class="balance-badge">$${(data.balance || 0).toFixed(2)}</span></td>
+                    <td>
+                        <button class="btn-action" onclick="adjustBalance('${doc.id}', ${data.balance || 0})"><i class="fa-solid fa-plus-minus"></i> កែប្រែទឹកប្រាក់</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
-
-            document.getElementById('userListBody').innerHTML = tableRows || '<tr><td colspan="2">មិនទាន់មានភ្ញៀវចុះឈ្មោះ</td></tr>';
         });
-    }
 
-    async function processBalance(action) {
-        const email = document.getElementById('targetEmail').value.trim().toLowerCase();
-        const amount = parseFloat(document.getElementById('addAmount').value);
-
-        if (!email || isNaN(amount) || amount <= 0) {
-            alert('សូមបញ្ចូល Email និងចំនួនទឹកប្រាក់ឱ្យបានត្រឹមត្រូវ!');
-            return;
+        async function adjustBalance(email, currentBal) {
+            const newBalStr = prompt(`បញ្ចូលទឹកប្រាក់ថ្មីសម្រាប់ (${email}) ៖`, currentBal.toFixed(2));
+            if (newBalStr !== null) {
+                const newBal = parseFloat(newBalStr);
+                if (!isNaN(newBal) && newBal >= 0) {
+                    await db.collection('users').doc(email).update({ balance: newBal });
+                    alert(`✅ បានកែសម្រួលលុយ ${email} ទៅជា $${newBal.toFixed(2)}!`);
+                } else {
+                    alert('ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ!');
+                }
+            }
         }
-
-        const userRef = db.collection('users').doc(email);
-        const doc = await userRef.get();
-
-        let currentBal = 0.00;
-        if (doc.exists) {
-            currentBal = doc.data().balance || 0.00;
-        }
-
-        let newBal = currentBal;
-        if (action === 'add') {
-            newBal += amount;
-        } else {
-            newBal = Math.max(0, newBal - amount);
-        }
-
-        await userRef.set({ balance: newBal }, { merge: true });
-
-        if (action === 'add') {
-            alert(`បានបន្ថែមទឹកប្រាក់ $${amount.toFixed(2)} ជូន ${email} រួចរាល់!`);
-        } else {
-            alert(`បានកាត់ទឹកប្រាក់ $${amount.toFixed(2)} ពី ${email} រួចរាល់!`);
-        }
-
-        document.getElementById('targetEmail').value = '';
-        document.getElementById('addAmount').value = '';
-    }
-</script>
-
+    </script>
 </body>
 </html>
