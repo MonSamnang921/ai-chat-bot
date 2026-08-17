@@ -22,7 +22,6 @@
         .btn-danger { background: #ef4444; margin-top: 10px; }
         .login-gate { text-align: center; }
 
-        /* ផ្នែកបង្ហាញតារាងអតិថិជន */
         .user-stats-box {
             background: #0f172a;
             padding: 15px;
@@ -81,7 +80,6 @@
         <button class="btn" onclick="processBalance('add')">➕ បន្ថែមលុយឱ្យភ្ញៀវ</button>
         <button class="btn btn-danger" onclick="processBalance('deduct')">➖ កាត់លុយភ្ញៀវ</button>
 
-        <!-- 📊 ប្រអប់បង្ហាញចំនួនភ្ញៀវ និងបញ្ជី Email -->
         <div class="user-stats-box">
             <div class="stat-title">
                 <span>👥 អតិថិជនចុះឈ្មោះសរុប៖</span>
@@ -122,15 +120,12 @@
         if (inputPin === ADMIN_PIN) {
             document.getElementById('pinGate').style.display = 'none';
             document.getElementById('adminControls').style.display = 'block';
-            
-            // ទាញយកបញ្ជី និងចំនួនភ្ញៀវ
             loadUsersList();
         } else {
             alert('PIN សម្ងាត់មិនត្រឹមត្រូវឡើយ!');
         }
     }
 
-    // 🔄 ទាញយកចំនួនភ្ញៀវ និង Email មកបង្ហាញ
     function loadUsersList() {
         db.collection('users').onSnapshot((snapshot) => {
             const totalUsers = snapshot.size;
