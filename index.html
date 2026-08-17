@@ -284,6 +284,7 @@
         });
     }
 
+    /* Modal Controls */
     function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
     function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
     function setDepositAmount(amount) { document.getElementById('customDepositAmount').value = amount; }
@@ -416,6 +417,45 @@
         selectedPrice = price;
     }
 
+    function crc16(data) {
+        let crc = 0xFFFF;
+        for (let i = 0; i < data.length; i++) {
+            crc ^= data.charCodeAt(i) << 8;
+            for (let j = 0; j < 8; j++) {
+                if ((crc & 0x8000) !== 0) {
+                    crc = (crc << 1) ^ 0x1021;
+                } else {
+                    crc = crc << 1;
+                }
+            }
+        }
+        crc = crc & 0xFFFF;
+        return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
+
+    function generateKHQRString(bakongId, merchantName, amount) {
+        const formattedAmount = parseFloat(amount).toFixed(2);
+        const accountStr = `00${bakongId.length.toString().padStart(2, '0')}${bakongId}`;
+        const tag29 = `29${accountStr.length.toString().padStart(2, '0')}${accountStr}`;
+        const currencyTag = "5303840";
+        const amountTag = `54${formattedAmount.length.toString().padStart(2, '0')}${formattedAmount}`;
+        
+        const payload = 
+            "000201" +
+            "010212" +
+            tag29 +
+            "52045999" +
+            currencyTag +
+            amountTag +
+            "5802KH" +
+            `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` +
+            "6010Phnom Penh" +
+            "6304";
+
+        const crc = crc16(payload);
+        return payload + crc;
+    }
+
     async function handlePurchase() {
         let playerId = document.getElementById('playerId').value;
         if (!playerId) { alert('សូមបញ្ចូល Player ID!'); return; }
@@ -427,20 +467,25 @@
                 const newBalance = currentUserBalance - selectedPrice;
                 await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: newBalance });
                 alert('✅ បានបញ្ជាទិញជោគជ័យ! Admin នឹងបញ្ចូលឱ្យក្នុងពេលឆាប់ៗ!');
-                sendTelegramNotification(playerId, "PAID", selectedPrice);
+                sendTelegramNotification(playerId, "PAID (Wallet)", selectedPrice);
             }
         } else {
-            alert('សមតុល្យមិនគ្រប់គ្រាន់!');
-            openDepositModal();
+            document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
+            const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
+            QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
+                if (error) console.error(error);
+            });
+            document.getElementById('qrModal').style.display = 'flex';
+            sendTelegramNotification(playerId, "Pending (KHQR Scan)", selectedPrice);
         }
     }
 
     async function sendTelegramNotification(playerId, status, amount) {
-        const text = `🔔 Order: ${selectedPackage} | តម្លៃ: $${amount} | ID: ${playerId}`;
+        const text = `🔔 **ការបញ្ជាទិញថ្មី**\n🎮 ហ្គេម: ${currentActiveKey.toUpperCase()}\n📦 កញ្ចប់: ${selectedPackage}\n💵 តម្លៃ: $${amount}\n🆔 ID: \`${playerId}\`\n📌 ស្ថានភាព: ${status}`;
         await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
+            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
         });
     }
 
