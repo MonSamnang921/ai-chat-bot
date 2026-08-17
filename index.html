@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YUTH STORE - Game Top-Up</title>
-    <!-- Library QR Code & Icons -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Sign-in -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
@@ -17,7 +14,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         body { background-color: #f8fafc; color: #1e293b; padding-bottom: 50px; }
 
-        /* Navbar */
         .navbar {
             background: #ffffff;
             padding: 12px 24px;
@@ -69,7 +65,20 @@
             font-weight: 700;
         }
 
-        /* ⚡ Quick Top-Up Bar */
+        .discount-live-bar {
+            background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(225,29,72,0.25);
+        }
+
         .section-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .quick-scroll {
             display: flex;
@@ -106,27 +115,6 @@
         .quick-item:hover .quick-circle { transform: scale(1.08); border-color: #e11d48; }
         .quick-name { font-size: 11px; font-weight: 700; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
 
-        /* 📢 Events Banner */
-        .events-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 28px; }
-        @media (max-width: 640px) { .events-grid { grid-template-columns: 1fr; } }
-        .event-banner {
-            border-radius: 14px;
-            padding: 20px;
-            color: #fff;
-            font-weight: 800;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 110px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .event-banner:hover { transform: translateY(-2px); }
-        .event-anniv { background: linear-gradient(135deg, #4c1d95, #c026d3); }
-        .event-discount { background: linear-gradient(135deg, #dc2626, #f97316); }
-
-        /* 🎮 Posters Grid */
         .poster-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -169,7 +157,6 @@
         .poster-art i { font-size: 50px; margin-bottom: 8px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
         .poster-art-title { font-size: 16px; font-weight: 900; letter-spacing: 0.5px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
 
-        /* Colors & Theme */
         .c-blue { background: linear-gradient(135deg, #0284c7, #1e1b4b); color: #38bdf8; }
         .c-orange { background: linear-gradient(135deg, #ea580c, #7c2d12); color: #facc15; }
         .c-dark { background: linear-gradient(135deg, #475569, #0f172a); color: #cbd5e1; }
@@ -227,7 +214,6 @@
         .tag-restock { background: #475569; color: #cbd5e1; }
         .tag-auto { background: #0284c7; color: #bae6fd; }
 
-        /* Floating Telegram Support */
         .fab-telegram {
             position: fixed;
             bottom: 24px;
@@ -246,7 +232,6 @@
             z-index: 99;
         }
 
-        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -315,9 +300,22 @@
             text-align: center;
             cursor: pointer;
             transition: 0.15s;
+            position: relative;
         }
         .pkg-card:hover, .pkg-card.active { border-color: #e11d48; background: #fff1f2; }
+        .pkg-badge-discount {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #e11d48;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
         .pkg-name { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 3px; }
+        .pkg-old-price { font-size: 11px; color: #94a3b8; text-decoration: line-through; margin-right: 4px; }
         .pkg-price { font-size: 14px; font-weight: 800; color: #e11d48; }
 
         .btn-submit {
@@ -334,7 +332,6 @@
         }
         .btn-submit:hover { background: #be123c; }
 
-        /* ABA KHQR Modal ($ USD) */
         .khqr-modal-card {
             background: transparent;
             width: 100%;
@@ -433,7 +430,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <nav class="navbar">
         <div class="nav-left">
             <a href="#" class="logo-box">
@@ -463,13 +459,16 @@
         </div>
     </nav>
 
-    <!-- Main Container -->
     <div class="main-container">
         <div class="auth-alert-banner" id="loginAlertBanner">
             <span><i class="fa-solid fa-circle-info"></i> សូមចុច <b>Sign in with Google</b> ខាងលើដើម្បីចុះឈ្មោះ/Login មុននឹងបញ្ជាទិញពេជ្រហ្គេម!</span>
         </div>
 
-        <!-- ⚡ ១. Quick Top-Up Slider -->
+        <div class="discount-live-bar" id="liveDiscountBanner" style="display: none;">
+            <span><i class="fa-solid fa-fire"></i> មហាសង្ក្រាន្តប្រូម៉ូសិនពិសេស៖ បញ្ចុះតម្លៃ <span id="txtDiscountPercent">0</span>% លើគ្រប់ហ្គេមទាំងអស់!</span>
+            <span style="font-size:11px; background:rgba(0,0,0,0.2); padding:3px 8px; border-radius:6px;">PROMO APPLIED</span>
+        </div>
+
         <div class="section-title"><i class="fa-solid fa-bolt" style="color:#f59e0b;"></i> Quick Top-Up</div>
         <div class="quick-scroll">
             <div class="quick-item" onclick="openOrderModal('mlbb', 'Mobile Legends')">
@@ -506,30 +505,9 @@
             </div>
         </div>
 
-        <!-- 📢 ២. Events Banner -->
-        <div class="section-title"><i class="fa-solid fa-bullhorn" style="color:#e11d48;"></i> Events & Promo</div>
-        <div class="events-grid">
-            <div class="event-banner event-anniv" onclick="openOrderModal('ff', 'Free Fire')">
-                <div>
-                    <span style="background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px; font-size:11px;">ANNIVERSARY EVENT</span>
-                    <h3 style="margin-top:6px; font-size:18px;">Free Fire Mega Promo</h3>
-                </div>
-                <div style="font-size:12px; opacity:0.9;">បញ្ចុះតម្លៃពិសេសលើគ្រប់កញ្ចប់ពេជ្រ</div>
-            </div>
-            <div class="event-banner event-discount" onclick="openOrderModal('mlbb', 'Mobile Legends')">
-                <div>
-                    <span style="background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px; font-size:11px;">DISCOUNT SPECIAL</span>
-                    <h3 style="margin-top:6px; font-size:18px;">Mobile Legends Weekly Pass</h3>
-                </div>
-                <div style="font-size:12px; opacity:0.9;">ទទួលបានការបញ្ចុះតម្លៃរហូតដល់ 30%</div>
-            </div>
-        </div>
-
-        <!-- 🎮 ៣. All Games Grid (ឈ្មោះហ្គេមសុទ្ធសាធ) -->
         <div class="section-title"><i class="fa-solid fa-fire" style="color:#e11d48;"></i> All Games</div>
 
         <div class="poster-grid" id="gamesGrid">
-            <!-- Row 1 -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends')">
                 <div class="poster-art c-blue"><i class="fa-solid fa-shield-halved"></i><div class="poster-art-title">MLBB</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">29k+ Sold</div>
@@ -560,8 +538,6 @@
                 <div class="poster-overlay"></div><div class="sold-badge">140 Sold</div>
                 <div class="poster-info"><div class="poster-title">Monthly Pass</div><span class="tag-pill tag-restock">RESTOCKING</span></div>
             </div>
-
-            <!-- Row 2 -->
             <div class="poster-card" onclick="openOrderModal('less_more', 'Less is More')">
                 <div class="poster-art c-dark"><i class="fa-solid fa-gem"></i><div class="poster-art-title">LESS IS MORE</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">171 Sold</div>
@@ -592,8 +568,6 @@
                 <div class="poster-overlay"></div><div class="sold-badge">9k+ Sold</div>
                 <div class="poster-info"><div class="poster-title">Level Up Pass</div><span class="tag-pill tag-hot">Hot</span></div>
             </div>
-
-            <!-- Row 3 -->
             <div class="poster-card" onclick="openOrderModal('roblox', 'Roblox')">
                 <div class="poster-art c-blue"><i class="fa-solid fa-cube"></i><div class="poster-art-title">ROBLOX</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">497 Sold</div>
@@ -624,8 +598,6 @@
                 <div class="poster-overlay"></div><div class="sold-badge">429 Sold</div>
                 <div class="poster-info"><div class="poster-title">Magic Chess</div><span class="tag-pill tag-auto">ស្វ័យប្រវត្តិ ⚡</span></div>
             </div>
-
-            <!-- Row 4 -->
             <div class="poster-card" onclick="openOrderModal('valorant', 'Valorant')">
                 <div class="poster-art c-red"><i class="fa-solid fa-crosshairs"></i><div class="poster-art-title">VALORANT</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">457 Sold</div>
@@ -656,8 +628,6 @@
                 <div class="poster-overlay"></div><div class="sold-badge">459 Sold</div>
                 <div class="poster-info"><div class="poster-title">8 Ball Pool</div><span class="tag-pill tag-hot">New 🔥</span></div>
             </div>
-
-            <!-- Row 5 -->
             <div class="poster-card" onclick="openOrderModal('nikki', 'Infinity Nikki')">
                 <div class="poster-art c-pink"><i class="fa-solid fa-wand-magic-sparkles"></i><div class="poster-art-title">INFINITY NIKKI</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">136 Sold</div>
@@ -681,10 +651,8 @@
         </div>
     </div>
 
-    <!-- Floating Telegram Support -->
     <a href="https://t.me/MeiKhmer" target="_blank" class="fab-telegram"><i class="fa-brands fa-telegram"></i></a>
 
-    <!-- Order Modal -->
     <div class="modal" id="orderModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -704,7 +672,6 @@
         </div>
     </div>
 
-    <!-- Deposit Modal -->
     <div class="modal" id="depositModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -719,7 +686,6 @@
         </div>
     </div>
 
-    <!-- ABA KHQR Modal ($ USD + Timer 10mn) -->
     <div class="modal" id="qrModal">
         <div class="khqr-modal-card">
             <div class="khqr-top-bar">
@@ -784,10 +750,28 @@
         let currentSelectedGameTitle = '';
         let selectedPackage = null;
         let selectedPrice = 0;
+        let discountPercentage = 0;
 
         let qrTimerInterval = null;
         let remainingSeconds = 600;
         let lastGeneratedAmountUSD = 0;
+
+        db.collection('settings').doc('discount').onSnapshot((doc) => {
+            if (doc.exists) {
+                discountPercentage = doc.data().percent || 0;
+            } else {
+                discountPercentage = 0;
+            }
+            if (discountPercentage > 0) {
+                document.getElementById('liveDiscountBanner').style.display = 'flex';
+                document.getElementById('txtDiscountPercent').innerText = discountPercentage;
+            } else {
+                document.getElementById('liveDiscountBanner').style.display = 'none';
+            }
+            if (document.getElementById('orderModal').style.display === 'flex') {
+                renderPackages();
+            }
+        });
 
         function parseJwt (token) {
             var base64Url = token.split('.')[1];
@@ -1058,17 +1042,38 @@
             data.packages[tabId].forEach((item, idx) => {
                 const card = document.createElement('div');
                 card.className = `pkg-card ${idx === 0 ? 'active' : ''}`;
-                if(idx === 0) { selectedPackage = item.name; selectedPrice = item.price; }
+                
+                const finalPrice = discountPercentage > 0 ? (item.price * (1 - discountPercentage / 100)) : item.price;
+
+                if (idx === 0) { 
+                    selectedPackage = item.name; 
+                    selectedPrice = finalPrice; 
+                }
+
+                let discountBadgeHtml = '';
+                let priceHtml = `<span class="pkg-price">$${finalPrice.toFixed(2)}</span>`;
+
+                if (discountPercentage > 0) {
+                    discountBadgeHtml = `<div class="pkg-badge-discount">-${discountPercentage}%</div>`;
+                    priceHtml = `
+                        <div>
+                            <span class="pkg-old-price">$${item.price.toFixed(2)}</span>
+                            <span class="pkg-price">$${finalPrice.toFixed(2)}</span>
+                        </div>
+                    `;
+                }
 
                 card.innerHTML = `
+                    ${discountBadgeHtml}
                     <div class="pkg-name">${item.name}</div>
-                    <div class="pkg-price">$${item.price.toFixed(2)}</div>
+                    ${priceHtml}
                 `;
+
                 card.onclick = () => {
                     document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
                     card.classList.add('active');
                     selectedPackage = item.name;
-                    selectedPrice = item.price;
+                    selectedPrice = finalPrice;
                 };
                 pkgContainer.appendChild(card);
             });
@@ -1090,7 +1095,7 @@
             const formattedAmount = parseFloat(amount).toFixed(2);
             const accountStr = `00${bakongId.length.toString().padStart(2, '0')}${bakongId}`;
             const tag29 = `29${accountStr.length.toString().padStart(2, '0')}${accountStr}`;
-            const currencyTag = "5303840"; // USD
+            const currencyTag = "5303840";
             const amountTag = `54${formattedAmount.length.toString().padStart(2, '0')}${formattedAmount}`;
             const payload = "000201010212" + tag29 + "52045999" + currencyTag + amountTag + "5802KH" +
                             `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` + "6010Phnom Penh6304";
@@ -1118,7 +1123,7 @@
                     const newBal = currentUserBalance - selectedPrice;
                     await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: newBal });
                     closeOrderModal();
-                    alert('✅ ការបញ្ជាទិញជោគជ័យ! ទំនិញនឹងចូលគណនីក្នុងរយៈពេល ១-៣ នាទី!');
+                    alert(`✅ ការបញ្ជាទិញជោគជ័យ! លុយដែលនៅសល់ក្នុងកាបូប: $${newBal.toFixed(2)}`);
                     sendOrderTelegram(playerId, selectedPrice, "PAID (Wallet)");
                 }
             } else {
@@ -1177,7 +1182,7 @@
 
         async function sendOrderTelegram(playerId, amount, status) {
             const user = currentUser ? `${currentUser.name} (${currentUser.email})` : 'Guest';
-            const text = `🔔 **ការបញ្ជាទិញថ្មី**\n🎮 ហ្គេម: ${currentSelectedGameTitle}\n📦 កញ្ចប់: ${selectedPackage}\n💵 តម្លៃ: $${amount.toFixed(2)}\n🆔 Player ID: \`${playerId}\`\n👤 អតិថិជន: ${user}\n📌 ស្ថានភាព: ${status}`;
+            const text = `🔔 **ការបញ្ជាទិញថ្មី (តម្លៃប្រូម៉ូសិន)**\n🎮 ហ្គេម: ${currentSelectedGameTitle}\n📦 កញ្ចប់: ${selectedPackage}\n🏷️ បញ្ចុះតម្លៃ: ${discountPercentage}%\n💵 តម្លៃទូទាត់: $${amount.toFixed(2)}\n🆔 Player ID: \`${playerId}\`\n👤 អតិថិជន: ${user}\n📌 ស្ថានភាព: ${status}`;
             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
