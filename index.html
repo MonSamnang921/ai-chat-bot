@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - Game Top-Up & Digital Services</title>
+    <title>YUTH STORE - Game Top-Up</title>
     <!-- Library QR Code & Icons -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -179,7 +179,6 @@
         .c-teal { background: linear-gradient(135deg, #0d9488, #115e59); color: #5eead4; }
         .c-cyan { background: linear-gradient(135deg, #0891b2, #164e63); color: #a5f3fc; }
         .c-pink { background: linear-gradient(135deg, #db2777, #831843); color: #fbcfe8; }
-        .c-white { background: linear-gradient(135deg, #f8fafc, #cbd5e1); color: #0f172a; }
 
         .poster-overlay {
             position: absolute;
@@ -443,7 +442,7 @@
             </a>
             <div class="search-wrap">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="ស្វែងរកហ្គេម ឬ App Premium..." id="searchInput" onkeyup="filterGames()">
+                <input type="text" placeholder="ស្វែងរកហ្គេម..." id="searchInput" onkeyup="filterGames()">
             </div>
         </div>
         <div class="nav-right">
@@ -485,21 +484,9 @@
                 <div class="quick-circle c-dark"><i class="fa-solid fa-crosshairs"></i></div>
                 <div class="quick-name">PUBG</div>
             </div>
-            <div class="quick-item" onclick="openOrderModal('roblox', 'Roblox Gift Card')">
+            <div class="quick-item" onclick="openOrderModal('roblox', 'Roblox')">
                 <div class="quick-circle c-red"><i class="fa-solid fa-cube"></i></div>
                 <div class="quick-name">Roblox</div>
-            </div>
-            <div class="quick-item" onclick="openOrderModal('chatgpt', 'ChatGPT Plus')">
-                <div class="quick-circle c-white"><i class="fa-solid fa-robot" style="color:#10b981;"></i></div>
-                <div class="quick-name">ChatGPT</div>
-            </div>
-            <div class="quick-item" onclick="openOrderModal('surfshark', 'Surfshark VPN')">
-                <div class="quick-circle c-teal"><i class="fa-solid fa-shield-virus"></i></div>
-                <div class="quick-name">Surfshark</div>
-            </div>
-            <div class="quick-item" onclick="openOrderModal('canva', 'Canva Pro')">
-                <div class="quick-circle c-blue"><i class="fa-solid fa-palette"></i></div>
-                <div class="quick-name">Canva Pro</div>
             </div>
             <div class="quick-item" onclick="openOrderModal('valorant', 'Valorant')">
                 <div class="quick-circle c-red"><i class="fa-solid fa-crosshairs"></i></div>
@@ -508,6 +495,14 @@
             <div class="quick-item" onclick="openOrderModal('hok', 'Honor of Kings')">
                 <div class="quick-circle c-orange"><i class="fa-solid fa-crown"></i></div>
                 <div class="quick-name">HOK</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('8ball', '8 Ball Pool')">
+                <div class="quick-circle c-blue"><i class="fa-solid fa-circle-dot"></i></div>
+                <div class="quick-name">8 Ball</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('clash_royale', 'Clash Royale')">
+                <div class="quick-circle c-green"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="quick-name">Clash</div>
             </div>
         </div>
 
@@ -530,25 +525,25 @@
             </div>
         </div>
 
-        <!-- 🎮 ៣. All Games & Apps Grid (សរុប ៣៣ មុខទំនិញ) -->
-        <div class="section-title"><i class="fa-solid fa-fire" style="color:#e11d48;"></i> All Games & Apps</div>
+        <!-- 🎮 ៣. All Games Grid (ហ្គេមសុទ្ធសាធ) -->
+        <div class="section-title"><i class="fa-solid fa-fire" style="color:#e11d48;"></i> All Games (ហ្គេមទាំងអស់)</div>
 
         <div class="poster-grid" id="gamesGrid">
             <!-- Row 1 -->
-            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [khmer]')">
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends')">
                 <div class="poster-art c-blue"><i class="fa-solid fa-shield-halved"></i><div class="poster-art-title">MLBB</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">29k+ Sold</div>
-                <div class="poster-info"><div class="poster-title">Mobile Legends [khmer]</div><span class="tag-pill tag-event">Event ✨</span></div>
+                <div class="poster-info"><div class="poster-title">Mobile Legends</div><span class="tag-pill tag-event">Event ✨</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន')">
+            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire')">
                 <div class="poster-art c-orange"><i class="fa-solid fa-fire"></i><div class="poster-art-title">FREE FIRE</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">90k+ Sold</div>
-                <div class="poster-info"><div class="poster-title">Free Fire [KH/SG/MY] លឿន</div><span class="tag-pill tag-event">Event</span></div>
+                <div class="poster-info"><div class="poster-title">Free Fire</div><span class="tag-pill tag-event">Event</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន V2')">
+            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire V2')">
                 <div class="poster-art c-dark"><i class="fa-solid fa-bolt"></i><div class="poster-art-title">FREE FIRE V2</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">3k+ Sold</div>
-                <div class="poster-info"><div class="poster-title">Free Fire [KH/SG/MY] លឿន V2</div><span class="tag-pill tag-restock">RESTOCKING</span></div>
+                <div class="poster-info"><div class="poster-title">Free Fire V2</div><span class="tag-pill tag-restock">RESTOCKING</span></div>
             </div>
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Russia]')">
                 <div class="poster-art c-blue"><i class="fa-solid fa-shield"></i><div class="poster-art-title">MLBB RU</div></div>
@@ -560,10 +555,10 @@
                 <div class="poster-overlay"></div><div class="sold-badge">185 Sold</div>
                 <div class="poster-info"><div class="poster-title">Mobile Legends [Singapore]</div><span class="tag-pill tag-event">Event</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('monthly_pass', 'Monthly 7.25$')">
+            <div class="poster-card" onclick="openOrderModal('monthly_pass', 'Monthly Pass')">
                 <div class="poster-art c-dark"><div style="font-size: 28px; font-weight: 900;">$7.25</div><div style="font-size: 11px;">MONTHLY PASS</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">140 Sold</div>
-                <div class="poster-info"><div class="poster-title">Monthly 7.25$</div><span class="tag-pill tag-restock">RESTOCKING</span></div>
+                <div class="poster-info"><div class="poster-title">Monthly Pass</div><span class="tag-pill tag-restock">RESTOCKING</span></div>
             </div>
 
             <!-- Row 2 -->
@@ -577,20 +572,20 @@
                 <div class="poster-overlay"></div><div class="sold-badge">7k+ Sold</div>
                 <div class="poster-info"><div class="poster-title">Free Fire [VN]</div><span class="tag-pill tag-hot">Hot</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('pubg', 'Pubg Mobile Global')">
+            <div class="poster-card" onclick="openOrderModal('pubg', 'PUBG Mobile')">
                 <div class="poster-art c-dark"><i class="fa-solid fa-crosshairs"></i><div class="poster-art-title">PUBG</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">940 Sold</div>
-                <div class="poster-info"><div class="poster-title">Pubg Mobile Global</div><span class="tag-pill tag-hot">Hot ⚡</span></div>
+                <div class="poster-info"><div class="poster-title">PUBG Mobile</div><span class="tag-pill tag-hot">Hot ⚡</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Philippines]')">
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Philippines]')">
                 <div class="poster-art c-blue"><i class="fa-solid fa-dragon"></i><div class="poster-art-title">MLBB PH</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">559 Sold</div>
-                <div class="poster-info"><div class="poster-title">MLBB [Philippines]</div><span class="tag-pill tag-hot">Hot ⚡</span></div>
+                <div class="poster-info"><div class="poster-title">Mobile Legends [Philippines]</div><span class="tag-pill tag-hot">Hot ⚡</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Indonesia]')">
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Indonesia]')">
                 <div class="poster-art c-cyan"><i class="fa-solid fa-wand-magic-sparkles"></i><div class="poster-art-title">MLBB ID</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">164 Sold</div>
-                <div class="poster-info"><div class="poster-title">MLBB [Indonesia]</div><span class="tag-pill tag-hot">Hot ⚡</span></div>
+                <div class="poster-info"><div class="poster-title">Mobile Legends [Indonesia]</div><span class="tag-pill tag-hot">Hot ⚡</span></div>
             </div>
             <div class="poster-card" onclick="openOrderModal('levelup_pass', 'Level Up Pass')">
                 <div class="poster-art c-purple"><i class="fa-solid fa-angles-up"></i><div class="poster-art-title">LEVEL UP PASS</div></div>
@@ -599,38 +594,16 @@
             </div>
 
             <!-- Row 3 -->
-            <div class="poster-card" onclick="openOrderModal('roblox', 'Robux Gift Card')">
+            <div class="poster-card" onclick="openOrderModal('roblox', 'Roblox')">
                 <div class="poster-art c-blue"><i class="fa-solid fa-cube"></i><div class="poster-art-title">ROBLOX</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">497 Sold</div>
-                <div class="poster-info"><div class="poster-title">Robux Gift Card</div><span class="tag-pill tag-hot">Hot</span></div>
+                <div class="poster-info"><div class="poster-title">Roblox</div><span class="tag-pill tag-hot">Hot</span></div>
             </div>
             <div class="poster-card" onclick="openOrderModal('heartopia', 'Heartopia')">
                 <div class="poster-art c-dark"><i class="fa-solid fa-heart"></i><div class="poster-art-title">HEARTOPIA</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">254 Sold</div>
                 <div class="poster-info"><div class="poster-title">Heartopia</div><span class="tag-pill tag-restock">RESTOCKING</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('surfshark', 'SurfShark VPN Acc')">
-                <div class="poster-art c-teal"><i class="fa-solid fa-shield-virus"></i><div class="poster-art-title">SURFSHARK</div></div>
-                <div class="poster-overlay"></div><div class="sold-badge">276 Sold</div>
-                <div class="poster-info"><div class="poster-title">SurfShark VPN Acc</div><span class="tag-pill tag-hot">Hot</span></div>
-            </div>
-            <div class="poster-card" onclick="openOrderModal('chatgpt', 'ChatGPT Plus')">
-                <div class="poster-art c-white"><i class="fa-solid fa-robot" style="color:#10b981;"></i><div class="poster-art-title" style="color:#0f172a;">ChatGPT Plus</div></div>
-                <div class="poster-overlay"></div><div class="sold-badge">512 Sold</div>
-                <div class="poster-info"><div class="poster-title">ChatGPT Plus</div><span class="tag-pill tag-hot">Hot</span></div>
-            </div>
-            <div class="poster-card" onclick="openOrderModal('psn', 'Playstation Gift Card')">
-                <div class="poster-art c-blue"><i class="fa-brands fa-playstation"></i><div class="poster-art-title">PLAYSTATION</div></div>
-                <div class="poster-overlay"></div><div class="sold-badge">852 Sold</div>
-                <div class="poster-info"><div class="poster-title">Playstation Gift Card</div><span class="tag-pill tag-hot">Hot</span></div>
-            </div>
-            <div class="poster-card" onclick="openOrderModal('xbox', 'Xbox Gift Card')">
-                <div class="poster-art c-green"><i class="fa-brands fa-xbox"></i><div class="poster-art-title">XBOX</div></div>
-                <div class="poster-overlay"></div><div class="sold-badge">432 Sold</div>
-                <div class="poster-info"><div class="poster-title">Xbox Gift Card</div><span class="tag-pill tag-hot">Hot</span></div>
-            </div>
-
-            <!-- Row 4 -->
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [Taiwan]')">
                 <div class="poster-art c-dark"><i class="fa-solid fa-fire"></i><div class="poster-art-title">FF TAIWAN</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">367 Sold</div>
@@ -646,23 +619,23 @@
                 <div class="poster-overlay"></div><div class="sold-badge">1k+ Sold</div>
                 <div class="poster-info"><div class="poster-title">Honor of Kings</div><span class="tag-pill tag-auto">ស្វ័យប្រវត្តិ ⚡</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('magic_chess', 'Magic Chess: Go Go')">
+            <div class="poster-card" onclick="openOrderModal('magic_chess', 'Magic Chess')">
                 <div class="poster-art c-purple"><i class="fa-solid fa-chess"></i><div class="poster-art-title">MAGIC CHESS</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">429 Sold</div>
-                <div class="poster-info"><div class="poster-title">Magic Chess: Go Go</div><span class="tag-pill tag-auto">ស្វ័យប្រវត្តិ ⚡</span></div>
+                <div class="poster-info"><div class="poster-title">Magic Chess</div><span class="tag-pill tag-auto">ស្វ័យប្រវត្តិ ⚡</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('valorant', 'Valorant KH')">
+
+            <!-- Row 4 -->
+            <div class="poster-card" onclick="openOrderModal('valorant', 'Valorant')">
                 <div class="poster-art c-red"><i class="fa-solid fa-crosshairs"></i><div class="poster-art-title">VALORANT</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">457 Sold</div>
-                <div class="poster-info"><div class="poster-title">Valorant KH</div><span class="tag-pill tag-auto">ស្វ័យប្រវត្តិ ⚡</span></div>
+                <div class="poster-info"><div class="poster-title">Valorant</div><span class="tag-pill tag-auto">ស្វ័យប្រវត្តិ ⚡</span></div>
             </div>
             <div class="poster-card" onclick="openOrderModal('blood_strike', 'Blood Strike')">
                 <div class="poster-art c-teal"><i class="fa-solid fa-gun"></i><div class="poster-art-title">BLOOD STRIKE</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">123 Sold</div>
                 <div class="poster-info"><div class="poster-title">Blood Strike</div><span class="tag-pill tag-auto">Auto Service ⚡</span></div>
             </div>
-
-            <!-- Row 5 -->
             <div class="poster-card" onclick="openOrderModal('zepeto', 'Zepeto')">
                 <div class="poster-art c-purple"><i class="fa-solid fa-user-astronaut"></i><div class="poster-art-title">ZEPETO</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">370 Sold</div>
@@ -678,33 +651,13 @@
                 <div class="poster-overlay"></div><div class="sold-badge">458 Sold</div>
                 <div class="poster-info"><div class="poster-title">Free Fire EU & TR</div><span class="tag-pill tag-hot">New</span></div>
             </div>
-            <div class="poster-card" onclick="openOrderModal('roblox', 'Robux Telegram')">
-                <div class="poster-art c-dark"><i class="fa-solid fa-cube"></i><div class="poster-art-title">ROBUX BOT</div></div>
-                <div class="poster-overlay"></div><div class="sold-badge">112 Sold</div>
-                <div class="poster-info"><div class="poster-title">Robux (Telegram)</div><span class="tag-pill tag-hot">Telegram</span></div>
-            </div>
-            <div class="poster-card" onclick="openOrderModal('smile_coin', 'Smile Coin BR')">
-                <div class="poster-art c-dark"><i class="fa-solid fa-coins" style="color:#10b981;"></i><div class="poster-art-title">SMILE COIN</div></div>
-                <div class="poster-overlay"></div><div class="sold-badge">48 Sold</div>
-                <div class="poster-info"><div class="poster-title">Smile Coin BR</div><span class="tag-pill tag-auto">Telegram ⚡</span></div>
-            </div>
-            <div class="poster-card" onclick="openOrderModal('office365', 'Office License 2024')">
-                <div class="poster-art c-white"><i class="fa-brands fa-microsoft" style="color:#ea580c;"></i><div class="poster-art-title" style="color:#0f172a;">Office 2024</div></div>
-                <div class="poster-overlay"></div><div class="sold-badge">204 Sold</div>
-                <div class="poster-info"><div class="poster-title">Office License 2024</div><span class="tag-pill tag-auto">ពេញមួយជីវិត</span></div>
-            </div>
-
-            <!-- Row 6 -->
-            <div class="poster-card" onclick="openOrderModal('canva', 'Canva Pro Lifetime')">
-                <div class="poster-art c-blue"><i class="fa-solid fa-palette"></i><div class="poster-art-title">CANVA PRO</div></div>
-                <div class="poster-overlay"></div><div class="sold-badge">757 Sold</div>
-                <div class="poster-info"><div class="poster-title">Canva Pro Lifetime</div><span class="tag-pill tag-auto">ពេញមួយជីវិត ⚡</span></div>
-            </div>
             <div class="poster-card" onclick="openOrderModal('8ball', '8 Ball Pool')">
                 <div class="poster-art c-blue"><i class="fa-solid fa-circle-dot"></i><div class="poster-art-title">8 BALL POOL</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">459 Sold</div>
-                <div class="poster-info"><div class="poster-title">8BallPool</div><span class="tag-pill tag-hot">New 🔥</span></div>
+                <div class="poster-info"><div class="poster-title">8 Ball Pool</div><span class="tag-pill tag-hot">New 🔥</span></div>
             </div>
+
+            <!-- Row 5 -->
             <div class="poster-card" onclick="openOrderModal('nikki', 'Infinity Nikki')">
                 <div class="poster-art c-pink"><i class="fa-solid fa-wand-magic-sparkles"></i><div class="poster-art-title">INFINITY NIKKI</div></div>
                 <div class="poster-overlay"></div><div class="sold-badge">136 Sold</div>
@@ -735,12 +688,12 @@
     <div class="modal" id="orderModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3 id="modalGameTitle">បញ្ចូលពេជ្រ / សេវាកម្ម</h3>
+                <h3 id="modalGameTitle">បញ្ចូលពេជ្រហ្គេម</h3>
                 <button class="btn-close" onclick="closeOrderModal()">&times;</button>
             </div>
             <div class="form-group">
-                <label id="lblInputId">១. បញ្ចូល Player ID / Email / Username</label>
-                <input type="text" id="orderPlayerId" class="form-control" placeholder="បញ្ចូល ID អ្នកលេង ឬ Email ទទួលសេវា">
+                <label id="lblInputId">១. បញ្ចូល Player ID</label>
+                <input type="text" id="orderPlayerId" class="form-control" placeholder="បញ្ចូល Player ID អ្នកលេង">
             </div>
             <div class="form-group">
                 <label>២. ជ្រើសរើសកញ្ចប់</label>
@@ -872,16 +825,18 @@
             document.getElementById('loginAlertBanner').style.display = 'flex';
         }
 
+        // តារាងតម្លៃហ្គេមសុទ្ធសាធ ១០០%
         const gameCatalog = {
             ff: {
                 tabs: [{ name: '💎 ពេជ្ររាយ', id: 'ff_diamond' }, { name: '👑 Pass/កាត', id: 'ff_pass' }],
                 packages: {
                     ff_diamond: [
-                        { name: '100 ពេជ្រ', price: 0.05 },
-                        { name: '500 ពេជ្រ', price: 0.15 },
-                        { name: '1,000 ពេជ្រ', price: 0.40 },
-                        { name: '5,000 ពេជ្រ', price: 0.80 },
-                        { name: '10,000 ពេជ្រ', price: 1.20 }
+                        { name: '100 ពេជ្រ', price: 0.50 },
+                        { name: '300 ពេជ្រ', price: 1.00 },
+                        { name: '500 ពេជ្រ', price: 2.00 },
+                        { name: '800 ពេជ្រ', price: 5.00 },
+                        { name: '1,000 ពេជ្រ', price: 8.00 },
+                        { name: '10,000 ពេជ្រ', price: 16.00 }
                     ],
                     ff_pass: [
                         { name: 'កាតសប្តាហ៍', price: 3.50 },
@@ -918,37 +873,10 @@
                 tabs: [{ name: '💎 Robux', id: 'rbx' }],
                 packages: {
                     rbx: [
-                        { name: '80 Robux ($1)', price: 1.10 },
-                        { name: '400 Robux ($5)', price: 5.20 },
-                        { name: '800 Robux ($10)', price: 10.20 },
-                        { name: '2000 Robux ($25)', price: 25.50 }
-                    ]
-                }
-            },
-            chatgpt: {
-                tabs: [{ name: '🤖 Subscription', id: 'gpt' }],
-                packages: {
-                    gpt: [
-                        { name: 'ChatGPT Plus (1 ខែ)', price: 21.00 },
-                        { name: 'Claude Pro (1 ខែ)', price: 21.00 }
-                    ]
-                }
-            },
-            surfshark: {
-                tabs: [{ name: '🛡️ VPN Plan', id: 'vpn' }],
-                packages: {
-                    vpn: [
-                        { name: 'Surfshark VPN (1 ខែ)', price: 3.50 },
-                        { name: 'Surfshark VPN (1 ឆ្នាំ)', price: 24.00 }
-                    ]
-                }
-            },
-            canva: {
-                tabs: [{ name: '🎨 Canva Pro', id: 'canva_p' }],
-                packages: {
-                    canva_p: [
-                        { name: 'Canva Pro 1 ឆ្នាំ', price: 3.50 },
-                        { name: 'Canva Pro Lifetime (ពេញ១ជីវិត)', price: 6.00 }
+                        { name: '80 Robux', price: 1.10 },
+                        { name: '400 Robux', price: 5.20 },
+                        { name: '800 Robux', price: 10.20 },
+                        { name: '2000 Robux', price: 25.50 }
                     ]
                 }
             },
@@ -990,22 +918,64 @@
                     lp: [{ name: 'Free Fire Level Up Pass', price: 8.00 }]
                 }
             },
-            psn: {
-                tabs: [{ name: '🎮 Card', id: 'ps' }],
+            heartopia: {
+                tabs: [{ name: '🌟 Packages', id: 'ht' }],
                 packages: {
-                    ps: [{ name: 'PlayStation $10 US', price: 10.50 }, { name: 'PlayStation $25 US', price: 25.50 }]
+                    ht: [{ name: 'Starter Pack', price: 2.00 }, { name: 'Deluxe Pack', price: 6.50 }]
                 }
             },
-            xbox: {
-                tabs: [{ name: '🎮 Card', id: 'xb' }],
+            magic_chess: {
+                tabs: [{ name: '♟️ Pass', id: 'mc' }],
                 packages: {
-                    xb: [{ name: 'Xbox $10 US', price: 10.50 }, { name: 'Xbox $25 US', price: 25.50 }]
+                    mc: [{ name: 'Season Pass', price: 3.50 }, { name: 'Commander Skin', price: 5.00 }]
                 }
             },
-            office365: {
-                tabs: [{ name: '💼 License', id: 'ms' }],
+            blood_strike: {
+                tabs: [{ name: '🔫 Gold', id: 'bs' }],
                 packages: {
-                    ms: [{ name: 'Office 2024 Pro Plus Key', price: 8.00 }]
+                    bs: [{ name: '100 Gold', price: 1.20 }, { name: '500 Gold', price: 5.50 }]
+                }
+            },
+            zepeto: {
+                tabs: [{ name: '👗 ZEM / Coins', id: 'zp' }],
+                packages: {
+                    zp: [{ name: '29 ZEM', price: 2.20 }, { name: '60 ZEM', price: 4.50 }]
+                }
+            },
+            farlight: {
+                tabs: [{ name: '🚀 Diamonds', id: 'fl' }],
+                packages: {
+                    fl: [{ name: '60 Diamonds', price: 0.99 }, { name: '330 Diamonds', price: 4.99 }]
+                }
+            },
+            '8ball': {
+                tabs: [{ name: '🎱 Cash / Coins', id: 'eb' }],
+                packages: {
+                    eb: [{ name: 'Pool Pass', price: 4.99 }, { name: 'Pro Cue Pack', price: 7.50 }]
+                }
+            },
+            nikki: {
+                tabs: [{ name: '✨ Stellar Crystals', id: 'nk' }],
+                packages: {
+                    nk: [{ name: 'Monthly Card', price: 4.99 }, { name: 'Gift Pack', price: 9.99 }]
+                }
+            },
+            clash_royale: {
+                tabs: [{ name: '👑 Pass Royale', id: 'cr' }],
+                packages: {
+                    cr: [{ name: 'Gold Pass', price: 5.99 }, { name: 'Diamond Pass', price: 11.99 }]
+                }
+            },
+            marvel_rivals: {
+                tabs: [{ name: '🦸 Tokens', id: 'mr' }],
+                packages: {
+                    mr: [{ name: 'Battle Pass', price: 9.99 }, { name: 'Hero Pack', price: 19.99 }]
+                }
+            },
+            delta_force: {
+                tabs: [{ name: '🎯 Delta Coins', id: 'df' }],
+                packages: {
+                    df: [{ name: 'Standard Pass', price: 4.99 }, { name: 'Elite Pass', price: 9.99 }]
                 }
             }
         };
@@ -1019,6 +989,28 @@
             currentSelectedGame = gameCatalog[gameKey] ? gameKey : 'ff';
             currentSelectedGameTitle = gameTitle;
             document.getElementById('modalGameTitle').innerText = gameTitle;
+            
+            const inputField = document.getElementById('orderPlayerId');
+            const lblField = document.getElementById('lblInputId');
+            inputField.value = '';
+
+            if (currentSelectedGame === 'ff' || currentSelectedGame === 'monthly_pass' || currentSelectedGame === 'less_more' || currentSelectedGame === 'levelup_pass') {
+                lblField.innerText = "១. បញ្ចូល Free Fire Player ID";
+                inputField.placeholder = "បញ្ចូល Player ID (ឧទាហរណ៍: 123456789)";
+            } else if (currentSelectedGame === 'mlbb') {
+                lblField.innerText = "១. បញ្ចូល User ID & Zone ID";
+                inputField.placeholder = "ឧទាហរណ៍: 12345678 (Zone: 1234)";
+            } else if (currentSelectedGame === 'pubg') {
+                lblField.innerText = "១. បញ្ចូល PUBG Character ID";
+                inputField.placeholder = "បញ្ចូល Character ID (ឧទាហរណ៍: 5123456789)";
+            } else if (currentSelectedGame === 'roblox') {
+                lblField.innerText = "១. បញ្ចូល Roblox Username";
+                inputField.placeholder = "បញ្ចូល Roblox Username";
+            } else {
+                lblField.innerText = "១. បញ្ចូល Player ID / Account ID";
+                inputField.placeholder = "បញ្ចូល ID អ្នកលេង";
+            }
+
             renderPackages();
             document.getElementById('orderModal').style.display = 'flex';
         }
@@ -1112,11 +1104,17 @@
                 return;
             }
             const playerId = document.getElementById('orderPlayerId').value.trim();
-            if (!playerId) { alert('សូមបញ្ចូល Player ID ឬ Email!'); return; }
-            if (!selectedPackage) { alert('សូមជ្រើសរើសកញ្ចប់!'); return; }
+            if (!playerId) { 
+                alert('⚠️ សូមបញ្ចូល Player ID ឱ្យបានត្រឹមត្រូវជាមុនសិន!'); 
+                return; 
+            }
+            if (!selectedPackage) { 
+                alert('⚠️ សូមជ្រើសរើសកញ្ចប់!'); 
+                return; 
+            }
 
             if (currentUserBalance >= selectedPrice) {
-                const confirmBuy = confirm(`ទិញ ${selectedPackage} តម្លៃ $${selectedPrice.toFixed(2)}?`);
+                const confirmBuy = confirm(`ទិញ ${selectedPackage} សម្រាប់ ID: ${playerId} តម្លៃ $${selectedPrice.toFixed(2)}?`);
                 if (confirmBuy) {
                     const newBal = currentUserBalance - selectedPrice;
                     await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: newBal });
@@ -1141,6 +1139,7 @@
         function showQR(amountUSD) {
             lastGeneratedAmountUSD = amountUSD;
             document.getElementById('qrAmountDisplay').innerHTML = `$${amountUSD.toFixed(2)} <span>USD</span>`;
+            
             document.getElementById('khqrActiveView').style.display = 'block';
             document.getElementById('khqrExpiredView').style.display = 'none';
 
@@ -1179,7 +1178,7 @@
 
         async function sendOrderTelegram(playerId, amount, status) {
             const user = currentUser ? `${currentUser.name} (${currentUser.email})` : 'Guest';
-            const text = `🔔 **ការបញ្ជាទិញថ្មី**\n🎮 សេវាកម្ម: ${currentSelectedGameTitle}\n📦 កញ្ចប់: ${selectedPackage}\n💵 តម្លៃ: $${amount.toFixed(2)}\n🆔 Player ID/Email: \`${playerId}\`\n👤 អតិថិជន: ${user}\n📌 ស្ថានភាព: ${status}`;
+            const text = `🔔 **ការបញ្ជាទិញថ្មី**\n🎮 ហ្គេម: ${currentSelectedGameTitle}\n📦 កញ្ចប់: ${selectedPackage}\n💵 តម្លៃ: $${amount.toFixed(2)}\n🆔 Player ID: \`${playerId}\`\n👤 អតិថិជន: ${user}\n📌 ស្ថានភាព: ${status}`;
             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
