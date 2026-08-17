@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - បញ្ចូលពេជ្រ Free Fire & សេវាកម្ម</title>
+    <title>YUTH STORE - បញ្ចូលហ្គេម & អាខោន</title>
     <!-- Library QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <!-- FontAwesome Icon -->
@@ -103,7 +103,7 @@
         .khqr-divider { border-top: 2px dashed #cbd5e1; margin: 12px 0 16px 0; }
         .khqr-qr-box { display: flex; justify-content: center; align-items: center; }
         canvas { width: 230px !important; height: 230px !important; }
-        .loader-box { background: #f1f5f9; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 12px; color: #0284c7; font-weight: bold; text-align: center; }
+        .loader-box { background: #fef2f2; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 12px; color: #b91c1c; font-weight: bold; text-align: center; line-height: 1.5; }
         .btn-close-modal { width: 100%; margin-top: 14px; border: none; background: #334155; padding: 10px; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
     </style>
 </head>
@@ -231,7 +231,7 @@
     </div>
 </div>
 
-<!-- Modal បង្ហាញ Account ពេលទូទាត់ជោគជ័យ -->
+<!-- Modal បង្ហាញ Account ពេលកាត់លុយកាបូបជោគជ័យ -->
 <div class="modal" id="accountResultModal">
     <div class="modal-content">
         <div class="modal-title" style="color:#22c55e;"><i class="fa-solid fa-circle-check"></i> ការទិញបានជោគជ័យ!</div>
@@ -311,12 +311,16 @@
                 <canvas id="qrcodeCanvas"></canvas>
             </div>
 
-            <div class="loader-box" id="modalLoaderText">
-                ⏳ ប្រព័ន្ធកំពុងរង់ចាំការទូទាត់ប្រាក់...
+            <!-- សារព្រមានច្បាស់ៗ៖ ត្រូវតែបាញ់លុយ រួចទាក់ទង Admin ពិនិត្យទើបបាន Account -->
+            <div class="loader-box">
+                ⚠️ <b>ការជូនដំណឹងសំខាន់៖</b><br>
+                សូមស្កេនបាញ់ប្រាក់ឱ្យបានត្រឹមត្រូវ។ បន្ទាប់ពីបាញ់រួច សូមផ្ញើវិក្កយបត្រ (Receipt) ទៅកាន់ Admin តាម Telegram ដើម្បីផ្ទៀងផ្ទាត់ និងទទួលយក Account ភ្លាមៗ!
             </div>
 
-            <button class="btn" onclick="completeDirectPayment()" style="background:#22c55e; color:#000; font-size:15px; padding:10px; margin-top:12px;"><i class="fa-solid fa-check"></i> ខ្ញុំបានបាញ់ប្រាក់រួចហើយ</button>
-            <button class="btn-close-modal" onclick="closeModal()" style="background:#e2e8f0; color:#334155; margin-top:8px;">បិទ</button>
+            <a href="https://t.me/MeiKhmer" target="_blank" class="contact-admin-btn" style="margin-top: 12px; padding: 10px; font-size: 14px;">
+                <i class="fa-brands fa-telegram"></i> ផ្ញើវិក្កយបត្រទៅ Admin (@MeiKhmer)
+            </a>
+            <button class="btn-close-modal" onclick="closeModal()" style="background:#e2e8f0; color:#334155; margin-top:8px;">បិទផ្ទាំងនេះ</button>
         </div>
     </div>
 </div>
@@ -343,7 +347,7 @@
     let currentUserBalance = 0.00;
     let currentApiKey = "";
     
-    let currentMainCategory = 'game'; // 'game' ឬ 'digital'
+    let currentMainCategory = 'game';
     let currentActiveKey = 'ff';
     let selectedPackage = null;
     let selectedPrice = 0;
@@ -384,7 +388,6 @@
         });
     }
 
-    /* Modal Controls */
     function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
     function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
     function setDepositAmount(amount) { document.getElementById('customDepositAmount').value = amount; }
@@ -399,7 +402,6 @@
         });
     }
 
-    /* 🔄 ប្តូរ Category */
     function switchCategory(cat) {
         currentMainCategory = cat;
         selectedPackage = null;
@@ -459,9 +461,7 @@
         renderPackages();
     }
 
-    // 📦 តារាងទិន្នន័យទំនិញ
     const fullStoreData = {
-        // --- GAMES ---
         ff: {
             tabs: [
                 { name: '💎 ពេជ្ររាយ', id: 'ff_diamonds' },
@@ -521,8 +521,6 @@
                 ]
             }
         },
-
-        // --- DIGITAL SERVICES ---
         capcut: {
             tabs: [{ name: 'CapCut Pro', id: 'capcut_tab' }],
             packages: {
@@ -707,7 +705,7 @@
             return;
         }
 
-        // ១. បើភ្ញៀវមានលុយគ្រប់គ្រាន់ -> កាត់លុយ Wallet ភ្លាមៗ
+        // ១. បើភ្ញៀវមានលុយគ្រប់គ្រាន់ក្នុងកាបូប -> កាត់លុយ Wallet ភ្លាម និងប្រគល់ Account ភ្លាម
         if (currentUserBalance >= selectedPrice) {
             const confirmPay = confirm(`អ្នកមានសមតុល្យ $${currentUserBalance.toFixed(2)}។ តើអ្នកចង់កាត់ $${selectedPrice.toFixed(2)} ដើម្បីទិញ [${selectedPackage}] ដែរឬទេ?`);
             if (confirmPay) {
@@ -722,10 +720,9 @@
                 }
             }
         } 
-        // ២. បើអត់លុយ -> បង្ហាញ KHQR សម្រាប់ស្កេន
+        // ២. បើភ្ញៀវខ្វះលុយ -> បង្ហាញ KHQR ឱ្យស្កេនបាញ់ប្រាក់ (អត់មានចេញ Account ឱ្យទេ លុះត្រាតែទាក់ទង Admin ពិនិត្យសិន)
         else {
             document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
-            document.getElementById('modalLoaderText').innerText = "⏳ សូមស្កេនបាញ់ប្រាក់ រួចចុចប៊ូតុងបៃតងខាងក្រោមដើម្បីបញ្ចប់!";
 
             const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
             QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
@@ -733,17 +730,9 @@
             });
 
             document.getElementById('qrModal').style.display = 'flex';
-        }
-    }
-
-    function completeDirectPayment() {
-        closeModal();
-        let playerId = document.getElementById('playerId').value;
-        if (currentMainCategory === 'game') {
-            alert('✅ បានទទួលសំណើទូទាត់! Admin នឹងពិនិត្យ និងបញ្ចូលពេជ្រជូនអ្នកភ្លាមៗ!');
-            sendTelegramNotification(playerId, "PAID (KHQR Direct Scan)", selectedPrice);
-        } else {
-            deliverAccountToUser("PAID (KHQR Direct Scan)");
+            
+            // ផ្ញើសារប្រាប់ Admin ថាមានអ្នកបើក QR បម្រុងនឹងបាញ់លុយ
+            sendTelegramNotification(playerId || "KHQR Pending", "Pending (Scan KHQR)", selectedPrice);
         }
     }
 
@@ -769,7 +758,6 @@
         closeDepositModal();
 
         document.getElementById('displayAmount').innerHTML = `${depositAmount.toFixed(2)} <span>USD</span>`;
-        document.getElementById('modalLoaderText').innerText = "⏳ សូមស្កេនបាញ់លុយ Admin នឹងបញ្ចូលលុយចូលកាបូបជូនភ្លាមៗ!";
 
         const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, depositAmount);
         QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
