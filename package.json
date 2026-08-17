@@ -1,22 +1,14 @@
-<!-- 🎮 ផ្នែកជ្រើសរើសហ្គេម (រូបភាពពិត ១០០%) -->
-        <div class="form-group">
-            <label>១. ជ្រើសរើសហ្គេម</label>
-            <div class="game-grid">
-                <div class="game-card active" onclick="selectGame('ff', this)">
-                    <img src="https://cdn2.steamgriddb.com/icon/97804470217ecfe8b78eb2c1e8d91c7a.png" class="game-img" alt="Free Fire">
-                    <span>Free Fire</span>
-                </div>
-                <div class="game-card" onclick="selectGame('mlbb', this)">
-                    <img src="https://cdn2.steamgriddb.com/icon/cae526279f53835f8d0a514ae5b70fc1.png" class="game-img" alt="MLBB">
-                    <span>MLBB</span>
-                </div>
-                <div class="game-card" onclick="selectGame('pubg', this)">
-                    <img src="https://cdn2.steamgriddb.com/icon/b7d79b29cb2d075ba703c3ae4f23b7ff.png" class="game-img" alt="PUBG">
-                    <span>PUBG</span>
-                </div>
-                <div class="game-card" onclick="selectGame('rov', this)">
-                    <img src="https://cdn2.steamgriddb.com/icon/47a276eb553bbfaec9c394c86beee218.png" class="game-img" alt="ROV">
-                    <span>ROV</span>
-                </div>
-            </div>
-        </div>
+{
+  "name": "yuth-store",
+  "version": "1.0.0",
+  "description": "Game Top Up and Reseller API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "firebase-admin": "^11.11.0",
+    "cors": "^2.8.5"
+  }
+}
