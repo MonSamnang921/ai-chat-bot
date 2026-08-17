@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - អាខោន & សេវាឌីជីថល</title>
+    <title>YUTH STORE - សេវាកម្មឌីជីថល និងអាខោន Premium</title>
     <!-- Library QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <!-- FontAwesome Icon -->
@@ -37,20 +37,24 @@
         .logout-btn { background: #ef4444; color: #fff; border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .logout-btn:hover { background: #dc2626; }
 
-        .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 10px; font-weight: bold; font-size: 14px; }
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; }
 
-        /* 📅 Category Grid តាមអាយុកាល */
-        .age-category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .age-cat-card { background: #334155; padding: 14px 6px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 12px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-        .age-cat-card i { font-size: 20px; color: #f59e0b; }
-        .age-cat-card.active { border-color: #f59e0b; background: #0f172a; color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.3); }
+        /* 🛍️ Grid Service Selector (មានរូបភាព Logo ពិត ១០០%) */
+        .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .service-card { background: #334155; padding: 12px 6px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 12px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+        .service-img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .service-card:hover, .service-card.active { border-color: #f59e0b; background: #0f172a; color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.3); }
 
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .card { background: #334155; padding: 16px 12px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; line-height: 1.4; font-size: 12px; display: flex; flex-direction: column; justify-content: space-between; min-height: 85px; }
-        .card:hover, .card.active { border-color: #f59e0b; background: #0f172a; }
-        
+        /* 📅 Grid អាយុកាល/រយៈពេល (មានរូបភាព) */
+        .age-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .age-card { background: #334155; padding: 14px 10px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 120px; }
+        .age-card:hover, .age-card.active { border-color: #38bdf8; background: #0f172a; }
+        .age-card-img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; margin-bottom: 6px; }
+        .age-title { font-weight: bold; font-size: 12px; color: #ffffff; line-height: 1.3; }
+        .age-price { color: #f59e0b; font-weight: bold; font-size: 15px; margin-top: 6px; }
+
         .btn { width: 100%; padding: 14px; background: #f59e0b; color: #000; font-weight: bold; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .btn:hover { background: #d97706; }
         
@@ -123,36 +127,44 @@
             </div>
         </div>
 
-        <!-- 📅 ជ្រើសរើសតាមអាយុកាល (១ខែ, ៦ខែ, ១ឆ្នាំ, ២ឆ្នាំ) -->
+        <!-- 🛍️ ជំហានទី ១: ជ្រើសរើសសេវាកម្ម (មានរូបភាព Logo ពិត ១០០%) -->
         <div class="form-group">
-            <label>១. ជ្រើសរើសអាយុកាលអាខោន / រយៈពេលប្រើប្រាស់</label>
-            <div class="age-category-grid">
-                <div class="age-cat-card active" onclick="selectAgeCategory('age_1m', this)">
-                    <i class="fa-regular fa-calendar"></i>
-                    <span>អាយុ ១ ខែ</span>
+            <label>១. ជ្រើសរើសសេវាកម្មដែលអ្នកត្រូវការ</label>
+            <div class="service-grid">
+                <div class="service-card active" onclick="selectMainService('capcut', this)">
+                    <img src="https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" class="service-img" alt="CapCut">
+                    <span>CapCut Pro</span>
                 </div>
-                <div class="age-cat-card" onclick="selectAgeCategory('age_6m', this)">
-                    <i class="fa-regular fa-calendar-days"></i>
-                    <span>អាយុ ៦ ខែ</span>
+                <div class="service-card" onclick="selectMainService('ai_tools', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png" class="service-img" alt="Gemini">
+                    <span>Gemini / AI</span>
                 </div>
-                <div class="age-cat-card" onclick="selectAgeCategory('age_1y', this)">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span>អាយុ ១ ឆ្នាំ</span>
+                <div class="service-card" onclick="selectMainService('netflix', this)">
+                    <img src="https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png" class="service-img" alt="Netflix">
+                    <span>Netflix</span>
                 </div>
-                <div class="age-cat-card" onclick="selectAgeCategory('age_2y', this)">
-                    <i class="fa-solid fa-crown"></i>
-                    <span>អាយុ ២ ឆ្នាំ</span>
+                <div class="service-card" onclick="selectMainService('vpn', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/NordVPN_logo.svg/1200px-NordVPN_logo.svg.png" class="service-img" alt="VPN">
+                    <span>VPN Services</span>
+                </div>
+                <div class="service-card" onclick="selectMainService('ms_office', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_logo_%282019%E2%80%93present%29.svg.png" class="service-img" alt="Office">
+                    <span>Office / Win</span>
+                </div>
+                <div class="service-card" onclick="selectMainService('facebook', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" class="service-img" alt="Facebook">
+                    <span>FB Accounts</span>
                 </div>
             </div>
         </div>
 
-        <!-- ជ្រើសរើសកញ្ចប់ -->
+        <!-- 📅 ជំហានទី ២: ជ្រើសរើសអាយុកាល/កញ្ចប់ (មានរូបភាពច្បាស់ៗ) -->
         <div class="form-group">
-            <label>២. ជ្រើសរើសកញ្ចប់អាខោនដែលចង់ទិញ</label>
-            <div id="packageContainer"></div>
+            <label id="durationLabel">២. ជ្រើសរើសអាយុកាលអាខោន / រយៈពេលប្រើប្រាស់</label>
+            <div class="age-grid" id="durationContainer"></div>
         </div>
 
-        <button class="btn" onclick="handlePurchase()">ទិញអាខោនភ្លាមៗឥឡូវនេះ</button>
+        <button class="btn" onclick="handlePurchase()"><i class="fa-solid fa-cart-shopping"></i> ទិញអាខោនឥឡូវនេះ</button>
 
         <a href="https://t.me/MeiKhmer" target="_blank" class="contact-admin-btn">
             <i class="fa-brands fa-telegram" style="font-size:20px;"></i> ទាក់ទង Admin តាម Telegram (@MeiKhmer)
@@ -160,14 +172,14 @@
     </div>
 </div>
 
-<!-- Modal បង្ហាញ Account/Key ពេលទិញជោគជ័យ -->
+<!-- Modal បង្ហាញ Account ពេលទូទាត់ជោគជ័យ -->
 <div class="modal" id="accountResultModal">
     <div class="modal-content">
         <div class="modal-title" style="color:#22c55e;"><i class="fa-solid fa-circle-check"></i> ការទិញបានជោគជ័យ!</div>
         <p style="font-size:13px; color:#94a3b8; margin:0;">នេះជាព័ត៌មានគណនី / Code / Key របស់អ្នក៖</p>
         
         <div class="account-result-box" id="accountResultText">
-            Account Info Here
+            Account Info
         </div>
 
         <button class="btn" onclick="copyAccountInfo()" style="background:#0284c7; color:#fff; font-size:15px; padding:11px;"><i class="fa-solid fa-copy"></i> ចម្លងព័ត៌មាន (Copy)</button>
@@ -241,10 +253,11 @@
             </div>
 
             <div class="loader-box" id="modalLoaderText">
-                ⏳ ប្រព័ន្ធកំពុងផ្ទៀងផ្ទាត់ការទូទាត់ប្រាក់...
+                ⏳ ប្រព័ន្ធកំពុងរង់ចាំការទូទាត់ប្រាក់...
             </div>
 
-            <button class="btn-close-modal" onclick="closeModal()" style="background:#e2e8f0; color:#334155;">បិទ</button>
+            <button class="btn" onclick="completeDirectPayment()" style="background:#22c55e; color:#000; font-size:15px; padding:10px; margin-top:12px;"><i class="fa-solid fa-check"></i> ខ្ញុំបានបាញ់ប្រាក់រួចហើយ (យក Account)</button>
+            <button class="btn-close-modal" onclick="closeModal()" style="background:#e2e8f0; color:#334155; margin-top:8px;">បិទ</button>
         </div>
     </div>
 </div>
@@ -270,7 +283,8 @@
     let currentUser = null;
     let currentUserBalance = 0.00;
     let currentApiKey = "";
-    let currentAgeKey = 'age_1m';      
+    
+    let currentSelectedService = 'capcut';
     let selectedPackage = null;
     let selectedPrice = 0;
     let generatedAccountData = "";
@@ -321,165 +335,104 @@
     function closeAccountResultModal() { document.getElementById('accountResultModal').style.display = 'none'; }
     function copyAccountInfo() {
         navigator.clipboard.writeText(generatedAccountData).then(() => {
-            alert('📋 បាន Copy ព័ត៌មានរួចរាល់!');
+            alert('📋 បាន Copy ព័ត៌មានអាខោនរួចរាល់!');
         });
     }
 
-    function selectAgeCategory(ageKey, element) {
-        document.querySelectorAll('.age-cat-card').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-        currentAgeKey = ageKey;
-        selectedPackage = null;
-        selectedPrice = 0;
-        renderPackages();
-    }
-
-    async function confirmDepositProcess() {
-        if (!currentUser) return;
-        const depositAmount = parseFloat(document.getElementById('customDepositAmount').value);
-
-        if (isNaN(depositAmount) || depositAmount <= 0) {
-            alert("សូមជ្រើសរើស ឬបញ្ចូលចំនួនទឹកប្រាក់ឱ្យបានត្រឹមត្រូវ!");
-            return;
-        }
-
-        closeDepositModal();
-
-        document.getElementById('displayAmount').innerHTML = `${depositAmount.toFixed(2)} <span>USD</span>`;
-        document.getElementById('modalLoaderText').innerText = "⏳ សូមស្កេនបាញ់លុយ Admin នឹងបញ្ចូលលុយចូលកាបូបជូនភ្លាមៗ!";
-
-        const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, depositAmount);
-        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
-            if (error) console.error(error);
-        });
-
-        document.getElementById('qrModal').style.display = 'flex';
-
-        const text = `💰 **មានសំណើសាកលុយចូលកាបូប (Deposit)!**\n\n` +
-                     `👤 អតិថិជន: ${currentUser.name}\n` +
-                     `📧 Email: \`${currentUser.email.toLowerCase()}\`\n` +
-                     `💵 ចំនួនទឹកប្រាក់: $${depositAmount.toFixed(2)}\n\n` +
-                     `👉 សូម Admin ពិនិត្យមើលគណនី Bakong រួចចូលទៅ /admin.html ដើម្បីបន្ថែមលុយជូនគាត់!`;
-
-        try {
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: text,
-                    parse_mode: 'Markdown'
-                })
-            });
-        } catch (err) {
-            console.error("Telegram error:", err);
-        }
-    }
-
-    async function generateApiKey() {
-        if (!currentUser) return;
-        const newKey = 'yt_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-        await db.collection('users').doc(currentUser.email.toLowerCase()).update({ apiKey: newKey });
-        alert('✅ បានបង្កើត API Key ថ្មីដោយជោគជ័យ!');
-    }
-
-    function copyApiKey() {
-        if (!currentApiKey) {
-            alert('សូមចុច "បង្កើត API Key ថ្មី" ជាមុនសិន!');
-            return;
-        }
-        navigator.clipboard.writeText(currentApiKey).then(() => {
-            alert('📋 បាន Copy API Key ទៅក្នុង Clipboard រួចរាល់!');
-        });
-    }
-
-    function logout() {
-        currentUser = null;
-        document.getElementById('loginSection').style.display = 'block';
-        document.getElementById('shopSection').style.display = 'none';
-    }
-
-    // 📦 តារាងទិន្នន័យបែងចែកតាមអាយុកាល (១ខែ, ៦ខែ, ១ឆ្នាំ, ២ឆ្នាំ)
-    const storeAgeData = {
-        age_1m: {
-            packages: [
-                { name: '🛍️ Capcut Pro 1 Month FW', price: 3.29 },
-                { name: '🛍️ Chatgpt plus 1M (apple pay ) NW', price: 6.85 },
-                { name: '🛍️ HBO MAX STANDARD 1Month', price: 4.60 },
-                { name: '🛍️ NETFLIX PREMIUM 4K 1MONTHS [ NW ]', price: 3.50 },
-                { name: '🛍️ Proton VPN Plus – 1 Month (10 devices)', price: 6.00 },
-                { name: '🛍️ Capcut pro 7 Days', price: 1.25 },
-                { name: '🛍️ Capcut Pro 7D FW', price: 1.15 },
-                { name: '🛍️ Claude 100$ Api 10 D warranty', price: 8.25 },
-                { name: '🛍️ ICLOUD MAIL', price: 1.06 },
-                { name: '👤 FB Clone ខ្មែរ (Active 1ខែ)', price: 0.30 }
+    /* 📦 ទិន្នន័យ Catalog រួមបញ្ចូល Logo ពិតប្រាកដ ១០០% សម្រាប់គ្រប់ Item */
+    const catalogData = {
+        capcut: {
+            title: "CapCut Pro Video Editor",
+            durations: [
+                { name: "Capcut Pro (7 ថ្ងៃ)", price: 1.25, img: "https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" },
+                { name: "Capcut Pro (1 ខែ)", price: 3.29, img: "https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" },
+                { name: "Capcut Pro (6 ខែ)", price: 13.00, img: "https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" },
+                { name: "Capcut Pro (1 ឆ្នាំ)", price: 24.00, img: "https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" }
             ]
         },
-        age_6m: {
-            packages: [
-                { name: '🛍️ CAPCUT PRO 6MONTHS', price: 13.00 },
-                { name: '🛍️ Amazon prime 6 months video 6 profile', price: 5.00 },
-                { name: '🛍️ MICROSOFT 365 PREMIUM FAMILY 6MONTHS', price: 6.00 },
-                { name: '🛍️ NORD VPN 3MONTHS COUPON', price: 5.00 },
-                { name: '🛍️ Netflix 5 profiles Full Access', price: 5.00 },
-                { name: '🛍️ Spotify Premium 2Months', price: 3.70 },
-                { name: '🛍️ Slot - Canva Pro Team Edu 5M', price: 3.70 },
-                { name: '🛍️ Snapchat Plus+ 3M FW available', price: 5.50 },
-                { name: '🛡️ FB 2FA + Cookie (អាយុ 6ខែ)', price: 1.20 }
+        ai_tools: {
+            title: "AI & Developer Tools",
+            durations: [
+                { name: "ChatGPT Plus (1 ខែ)", price: 6.85, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png" },
+                { name: "Gemini Pro (18 ខែ)", price: 2.52, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png" },
+                { name: "Claude API $100 (10 ថ្ងៃ)", price: 8.25, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Anthropic_logo.svg/1200px-Anthropic_logo.svg.png" },
+                { name: "edX Premium (12 ខែ)", price: 5.40, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/EdX.svg/1200px-EdX.svg.png" }
             ]
         },
-        age_1y: {
-            packages: [
-                { name: '🛍️ Adobe Express Premium (12 Months)', price: 2.90 },
-                { name: '🛍️ Autodesk Education Plan — 1 Year', price: 7.00 },
-                { name: '🛍️ edX Premium 12Months', price: 5.40 },
-                { name: '🛍️ Gemini 18 months', price: 2.48 },
-                { name: '🛍️ Gemini Pro 18Months (link)', price: 2.52 },
-                { name: '🛍️ iLovePdf Premium 1Yr', price: 4.50 },
-                { name: '🛍️ Microsoft Office 365 Plus 1 year', price: 4.30 },
-                { name: '🛍️ Microsoft Office 365 Plus 1 year (v2)', price: 4.29 },
-                { name: '💼 FB Profile Pro (អាយុ 1ឆ្នាំ)', price: 2.50 }
+        netflix: {
+            title: "Netflix & Entertainment",
+            durations: [
+                { name: "Netflix Premium 4K (1 ខែ)", price: 3.50, img: "https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png" },
+                { name: "HBO MAX Standard (1 ខែ)", price: 4.60, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/HBO_Max_Logo.svg/1200px-HBO_Max_Logo.svg.png" },
+                { name: "Spotify Premium (2 ខែ)", price: 3.70, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png" },
+                { name: "Amazon Prime Video (6 ខែ)", price: 5.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Prime_Video.png/1200px-Prime_Video.png" }
             ]
         },
-        age_2y: {
-            packages: [
-                { name: '🛍️ Figma Pro Edu 2yrs', price: 11.00 },
-                { name: '🛍️ Miro Lifetime Panel 100 invite', price: 12.00 },
-                { name: '🛍️ Key 🔑 Windows 11 Pro (Retail)', price: 5.65 },
-                { name: '🛍️ Key🔑 Windows 10 pro (Retail)', price: 5.00 },
-                { name: '💎 FB ចាស់ឆ្នាំ (អាយុ 2-5ឆ្នាំ)', price: 3.50 },
-                { name: '🏢 FB Business Manager (BM50/BM350)', price: 5.00 }
+        vpn: {
+            title: "VPN Secure Services",
+            durations: [
+                { name: "Proton VPN Plus (1 ខែ)", price: 6.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/ProtonVPN_logo.svg/1200px-ProtonVPN_logo.svg.png" },
+                { name: "NordVPN Premium (3 ខែ)", price: 5.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/NordVPN_logo.svg/1200px-NordVPN_logo.svg.png" },
+                { name: "NordVPN Premium (1 ឆ្នាំ)", price: 15.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/NordVPN_logo.svg/1200px-NordVPN_logo.svg.png" },
+                { name: "Proton VPN Plus (2 ឆ្នាំ)", price: 25.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/ProtonVPN_logo.svg/1200px-ProtonVPN_logo.svg.png" }
+            ]
+        },
+        ms_office: {
+            title: "Microsoft & Software Keys",
+            durations: [
+                { name: "Microsoft 365 Family (6 ខែ)", price: 6.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_logo_%282019%E2%80%93present%29.svg.png" },
+                { name: "Microsoft Office 365 (1 ឆ្នាំ)", price: 4.30, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_logo_%282019%E2%80%93present%29.svg.png" },
+                { name: "Windows 10 Pro Retail (2 ឆ្នាំ)", price: 5.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Windows_logo_-_2012_%28dark_blue%29.svg/1024px-Windows_logo_-_2012_%28dark_blue%29.svg.png" },
+                { name: "Windows 11 Pro Retail (2 ឆ្នាំ)", price: 5.65, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Windows_logo_-_2021.svg/1024px-Windows_logo_-_2021.svg.png" }
+            ]
+        },
+        facebook: {
+            title: "Facebook Accounts",
+            durations: [
+                { name: "FB Clone Active (អាយុ 1 ខែ)", price: 0.30, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" },
+                { name: "FB 2FA + Cookie (អាយុ 6 ខែ)", price: 1.20, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" },
+                { name: "FB Profile Pro (អាយុ 1 ឆ្នាំ)", price: 2.50, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" },
+                { name: "FB ចាស់ឆ្នាំ / Ads BM (អាយុ 2-5 ឆ្នាំ)", price: 5.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" }
             ]
         }
     };
 
-    function renderPackages() {
-        const data = storeAgeData[currentAgeKey];
-        const container = document.getElementById('packageContainer');
-        container.innerHTML = '';
-
-        const gridDiv = document.createElement('div');
-        gridDiv.className = 'grid';
-
-        data.packages.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            
-            card.innerHTML = `
-                <div style="font-weight:600;">${item.name}</div>
-                <div style="color:#f59e0b; font-weight:bold; font-size:14px; margin-top:8px;">$${item.price.toFixed(2)}</div>
-            `;
-            card.onclick = () => selectItem(card, item.name, item.price);
-            gridDiv.appendChild(card);
-        });
-
-        container.appendChild(gridDiv);
+    function selectMainService(serviceKey, element) {
+        document.querySelectorAll('.service-card').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        currentSelectedService = serviceKey;
+        selectedPackage = null;
+        selectedPrice = 0;
+        renderDurations();
     }
 
-    function selectItem(element, packageName, price) {
-        document.querySelectorAll('.card').forEach(el => el.classList.remove('active'));
+    function renderDurations() {
+        const data = catalogData[currentSelectedService];
+        const container = document.getElementById('durationContainer');
+        container.innerHTML = '';
+
+        data.durations.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = `age-card ${index === 0 ? 'active' : ''}`;
+            if(index === 0) {
+                selectedPackage = item.name;
+                selectedPrice = item.price;
+            }
+
+            card.innerHTML = `
+                <img src="${item.img}" class="age-card-img" alt="${item.name}">
+                <div class="age-title">${item.name}</div>
+                <div class="age-price">$${item.price.toFixed(2)}</div>
+            `;
+            card.onclick = () => selectDurationItem(card, item.name, item.price);
+            container.appendChild(card);
+        });
+    }
+
+    function selectDurationItem(element, name, price) {
+        document.querySelectorAll('.age-card').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
-        selectedPackage = packageName;
+        selectedPackage = name;
         selectedPrice = price;
     }
 
@@ -524,44 +477,106 @@
 
     async function handlePurchase() {
         if (!selectedPackage) {
-            alert('សូមជ្រើសរើសអាខោន ឬសេវាកម្មដែលចង់ទិញ!');
+            alert('សូមជ្រើសរើសអាយុកាលសេវាកម្ម!');
             return;
         }
 
+        // ១. បើភ្ញៀវមានលុយគ្រប់គ្រាន់ -> កាត់លុយ Wallet ភ្លាមៗ
         if (currentUserBalance >= selectedPrice) {
-            const confirmPay = confirm(`អ្នកមានតុល្យភាពលុយ $${currentUserBalance.toFixed(2)}។ តើអ្នកពិតជាចង់កាត់លុយ $${selectedPrice.toFixed(2)} ដើម្បីទិញ ${selectedPackage} មែនទេ?`);
+            const confirmPay = confirm(`អ្នកមានសមតុល្យ $${currentUserBalance.toFixed(2)}។ តើអ្នកចង់កាត់ $${selectedPrice.toFixed(2)} ដើម្បីទិញ [${selectedPackage}] ដែរឬទេ?`);
             if (confirmPay) {
                 const newBalance = currentUserBalance - selectedPrice;
-                
-                await db.collection('users').doc(currentUser.email.toLowerCase()).update({
-                    balance: newBalance
-                });
-
-                const randomKey = "YUTH-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-                generatedAccountData = `[ព័ត៌មានអាខោន / KEY]\nសេវាកម្ម: ${selectedPackage}\nKey/Account:\n${randomKey}\n\n👉 សូមទាក់ទង Admin តាម Telegram (@MeiKhmer) ដើម្បី Activate!`;
-
-                document.getElementById('accountResultText').innerText = generatedAccountData;
-                document.getElementById('accountResultModal').style.display = 'flex';
-
-                sendTelegramNotification(randomKey, "PAID (Account Delivered)", selectedPrice, generatedAccountData);
+                await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: newBalance });
+                deliverAccountToUser("PAID (Wallet)");
             }
         } 
+        // ២. បើអត់លុយ -> បង្ហាញ KHQR សម្រាប់ស្កេនទូទាត់ភ្លាមៗ
         else {
-            alert(`តុល្យភាពលុយរបស់អ្នកមិនគ្រប់គ្រាន់ទេ ($${currentUserBalance.toFixed(2)})! សូមស្កេន KHQR ដើម្បីទូទាត់ប្រាក់។`);
-            
             document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
-            document.getElementById('modalLoaderText').innerText = "⏳ ប្រព័ន្ធកំពុងផ្ទៀងផ្ទាត់ការទូទាត់ប្រាក់...";
+            document.getElementById('modalLoaderText').innerText = "⏳ សូមស្កេនបាញ់ប្រាក់ រួចចុចប៊ូតុងបៃតងខាងក្រោមដើម្បីទទួល Account!";
 
             const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
-
             QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
                 if (error) console.error(error);
             });
 
             document.getElementById('qrModal').style.display = 'flex';
-            
-            sendTelegramNotification("Instant Buy", "Pending (KHQR Scan)", selectedPrice);
         }
+    }
+
+    function completeDirectPayment() {
+        closeModal();
+        deliverAccountToUser("PAID (KHQR Direct Scan)");
+    }
+
+    function deliverAccountToUser(statusText) {
+        const randomKey = "ACC-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+        generatedAccountData = `[ព័ត៌មានអាខោន / KEY]\nសេវាកម្ម: ${selectedPackage}\nKey/Account Info:\n${randomKey}\n\n👉 សូមទាក់ទង Admin តាម Telegram (@MeiKhmer) ដើម្បី Activate ឬទទួលជំនួយ!`;
+
+        document.getElementById('accountResultText').innerText = generatedAccountData;
+        document.getElementById('accountResultModal').style.display = 'flex';
+
+        sendTelegramNotification(randomKey, statusText, selectedPrice, generatedAccountData);
+    }
+
+    async function confirmDepositProcess() {
+        if (!currentUser) return;
+        const depositAmount = parseFloat(document.getElementById('customDepositAmount').value);
+
+        if (isNaN(depositAmount) || depositAmount <= 0) {
+            alert("សូមជ្រើសរើស ឬបញ្ចូលចំនួនទឹកប្រាក់ឱ្យបានត្រឹមត្រូវ!");
+            return;
+        }
+
+        closeDepositModal();
+
+        document.getElementById('displayAmount').innerHTML = `${depositAmount.toFixed(2)} <span>USD</span>`;
+        document.getElementById('modalLoaderText').innerText = "⏳ សូមស្កេនបាញ់លុយ Admin នឹងបញ្ចូលលុយចូលកាបូបជូនភ្លាមៗ!";
+
+        const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, depositAmount);
+        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
+            if (error) console.error(error);
+        });
+
+        document.getElementById('qrModal').style.display = 'flex';
+
+        const text = `💰 **មានសំណើសាកលុយចូលកាបូប (Deposit)!**\n\n` +
+                     `👤 អតិថិជន: ${currentUser.name}\n` +
+                     `📧 Email: \`${currentUser.email.toLowerCase()}\`\n` +
+                     `💵 ចំនួនទឹកប្រាក់: $${depositAmount.toFixed(2)}`;
+
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
+            });
+        } catch (err) {
+            console.error("Telegram error:", err);
+        }
+    }
+
+    async function generateApiKey() {
+        if (!currentUser) return;
+        const newKey = 'yt_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+        await db.collection('users').doc(currentUser.email.toLowerCase()).update({ apiKey: newKey });
+        alert('✅ បានបង្កើត API Key ថ្មីដោយជោគជ័យ!');
+    }
+
+    function copyApiKey() {
+        if (!currentApiKey) {
+            alert('សូមចុច "បង្កើត API Key ថ្មី" ជាមុនសិន!');
+            return;
+        }
+        navigator.clipboard.writeText(currentApiKey).then(() => {
+            alert('📋 បាន Copy API Key ទៅក្នុង Clipboard រួចរាល់!');
+        });
+    }
+
+    function logout() {
+        currentUser = null;
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('shopSection').style.display = 'none';
     }
 
     async function sendTelegramNotification(playerId, status, amount, accInfo = "") {
@@ -597,7 +612,7 @@
         document.getElementById('qrModal').style.display = 'none';
     }
 
-    renderPackages();
+    renderDurations();
 </script>
 
 </body>
