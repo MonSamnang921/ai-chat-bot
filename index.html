@@ -41,10 +41,10 @@
         label { display: block; margin-bottom: 10px; font-weight: bold; font-size: 14px; }
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; }
 
-        /* 🎮 Grid Game */
+        /* 🎮 Grid Game (រូបភាពច្បាស់មិន Error) */
         .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         .game-card { background: #334155; padding: 12px 4px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 11px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-        .game-img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .game-img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
         .game-card:hover, .game-card.active { border-color: #f59e0b; background: #0f172a; color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.3); }
 
         .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px; }
@@ -86,7 +86,6 @@
         .khqr-divider { border-top: 2px dashed #cbd5e1; margin: 12px 0 16px 0; }
         .khqr-qr-box { display: flex; justify-content: center; align-items: center; }
         canvas { width: 230px !important; height: 230px !important; }
-        .loader-box { background: #fef2f2; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 12px; color: #b91c1c; font-weight: bold; text-align: center; line-height: 1.5; }
         .btn-close-modal { width: 100%; margin-top: 14px; border: none; background: #334155; padding: 10px; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
     </style>
 </head>
@@ -126,24 +125,24 @@
             </div>
         </div>
 
-        <!-- 🎮 ផ្នែកហ្គេម -->
+        <!-- 🎮 ផ្នែកហ្គេម (រូបភាពពិត ១០០%) -->
         <div class="form-group">
             <label>១. ជ្រើសរើសហ្គេម</label>
             <div class="game-grid">
                 <div class="game-card active" onclick="selectGame('ff', this)">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" class="game-img" alt="Free Fire">
+                    <img src="https://cdn2.steamgriddb.com/icon/97804470217ecfe8b78eb2c1e8d91c7a.png" class="game-img" alt="Free Fire">
                     <span>Free Fire</span>
                 </div>
                 <div class="game-card" onclick="selectGame('mlbb', this)">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" class="game-img" alt="MLBB">
+                    <img src="https://cdn2.steamgriddb.com/icon/cae526279f53835f8d0a514ae5b70fc1.png" class="game-img" alt="MLBB">
                     <span>MLBB</span>
                 </div>
                 <div class="game-card" onclick="selectGame('pubg', this)">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/PUBG_Mobile_Logo.svg/1200px-PUBG_Mobile_Logo.svg.png" class="game-img" alt="PUBG">
+                    <img src="https://cdn2.steamgriddb.com/icon/b7d79b29cb2d075ba703c3ae4f23b7ff.png" class="game-img" alt="PUBG">
                     <span>PUBG</span>
                 </div>
                 <div class="game-card" onclick="selectGame('rov', this)">
-                    <img src="https://play-lh.googleusercontent.com/zW-n0p0g8w9vYnQG7v_f8b4g2yC8-qZ8w2xY7v9w" class="game-img" alt="ROV" onerror="this.src='https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png'">
+                    <img src="https://cdn2.steamgriddb.com/icon/47a276eb553bbfaec9c394c86beee218.png" class="game-img" alt="ROV">
                     <span>ROV</span>
                 </div>
             </div>
@@ -157,7 +156,7 @@
 
         <!-- ជ្រើសរើសកញ្ចប់ -->
         <div class="form-group">
-            <label id="packageSectionLabel">៣. ជ្រើសរើសកញ្ចប់ពេជ្រ</label>
+            <label id="packageSectionLabel">៣. ជ្រើសរើសកញ្ចប់ពេជ្រ Free Fire</label>
             <div id="packageContainer"></div>
         </div>
 
@@ -285,7 +284,6 @@
         });
     }
 
-    /* Modal Controls */
     function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
     function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
     function setDepositAmount(amount) { document.getElementById('customDepositAmount').value = amount; }
@@ -299,6 +297,14 @@
         currentActiveKey = gameKey;
         selectedPackage = null;
         selectedPrice = 0;
+        
+        const labels = {
+            ff: "៣. ជ្រើសរើសកញ្ចប់ពេជ្រ Free Fire",
+            mlbb: "៣. ជ្រើសរើសកញ្ចប់ Diamonds MLBB",
+            pubg: "៣. ជ្រើសរើសកញ្ចប់ UC PUBG",
+            rov: "៣. ជ្រើសរើសកញ្ចប់ Coupons ROV"
+        };
+        document.getElementById('packageSectionLabel').innerText = labels[gameKey];
         renderPackages();
     }
 
