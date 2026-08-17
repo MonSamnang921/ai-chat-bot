@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - បញ្ចូលពេជ្រហ្គេម</title>
-    <!-- Library QR Code -->
+    <title>YUTH STORE - Game Top-Up Platform</title>
+    <!-- Library QR Code & Icons -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-    <!-- FontAwesome Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Sign-in -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -15,520 +14,702 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <style>
-        * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif, Arial; }
-        body { background-color: #0b1120; color: #ffffff; display: flex; justify-content: center; padding: 20px; position: relative; }
-        .container { width: 100%; max-width: 500px; background: #1e293b; padding: 24px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 1px solid #334155; }
-        h2 { text-align: center; color: #f59e0b; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px; }
-        
-        .login-box { text-align: center; padding: 30px 10px; }
-        .login-box i { font-size: 55px; color: #f59e0b; margin-bottom: 15px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #f8fafc; color: #1e293b; }
 
-        /* Profile Header */
-        .user-profile { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 16px; border-radius: 14px; margin-bottom: 20px; border: 1px solid #334155; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .user-info img { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.3); }
-        .wallet-badge { background: rgba(34, 197, 94, 0.15); color: #4ade80; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; margin-top: 4px; border: 1px solid #22c55e; }
-        
-        .profile-actions { display: flex; align-items: center; gap: 6px; }
-        .btn-action-deposit { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(16,185,129,0.3); transition: 0.2s; }
-        .btn-action-deposit:hover { transform: translateY(-1px); }
-        .btn-settings { background: #334155; color: #38bdf8; border: 1px solid #475569; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-settings:hover { background: #0284c7; color: #fff; border-color: #0284c7; }
-        .logout-btn { background: #ef4444; color: #fff; border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .logout-btn:hover { background: #dc2626; }
+        /* Navbar Header */
+        .navbar {
+            background: #ffffff;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 20px; flex: 1; max-width: 700px; }
+        .logo-box { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0f172a; font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+        .logo-box i { font-size: 26px; color: #e11d48; }
 
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 10px; font-weight: bold; font-size: 14px; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; }
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            margin: 0 15px;
+        }
+        .search-wrap input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .search-wrap input:focus { border-color: #e11d48; background: #fff; box-shadow: 0 0 0 3px rgba(225,29,72,0.1); }
+        .search-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px; }
 
-        /* 🎮 Game Selection Design (គ្មានថ្ងៃខូចរូបភាព) */
-        .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .game-card { background: #334155; padding: 14px 6px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 11px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-        .game-icon-box { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        
-        /* ពណ៌ Gradient សម្រាប់ហ្គេមនីមួយៗ */
-        .bg-ff { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
-        .bg-mlbb { background: linear-gradient(135deg, #8a2387, #e94057, #f27121); }
-        .bg-pubg { background: linear-gradient(135deg, #f7971e, #ffd200); color: #000 !important; }
-        .bg-rov { background: linear-gradient(135deg, #00c6ff, #0072ff); }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .btn-lang {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+        }
+        .btn-auth-pink {
+            background: #e11d48;
+            color: #ffffff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-auth-pink:hover { background: #be123c; }
 
-        .game-card:hover, .game-card.active { border-color: #f59e0b; background: #0f172a; color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.3); }
+        /* User Profile Pill */
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 4px 12px 4px 6px;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+        }
+        .user-pill img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .wallet-text { font-size: 13px; font-weight: 800; color: #16a34a; }
 
-        .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px; }
-        .tab-btn { flex: 1; padding: 10px 8px; background: #334155; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; white-space: nowrap; }
-        .tab-btn.active { background: #f59e0b; color: #000; }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .card { background: #334155; padding: 14px 10px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85px; }
-        .card:hover, .card.active { border-color: #f59e0b; background: #0f172a; }
-        .card-title { font-weight: bold; font-size: 13px; color: #ffffff; line-height: 1.3; }
-        .card-price { color: #f59e0b; font-weight: bold; font-size: 15px; margin-top: 6px; }
-        
-        .btn { width: 100%; padding: 14px; background: #f59e0b; color: #000; font-weight: bold; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .btn:hover { background: #d97706; }
-        
-        .contact-admin-btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: #0088cc; color: #ffffff; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: 20px; transition: 0.2s; }
-        .contact-admin-btn:hover { background: #0077b5; }
+        /* Main Container */
+        .main-container { max-width: 1280px; margin: 30px auto; padding: 0 20px; }
+        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 20px; font-weight: 800; color: #0f172a; }
+        .section-header i { color: #e11d48; }
 
-        /* Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: #1e293b; color: #ffffff; border-radius: 16px; width: 100%; max-width: 440px; padding: 24px; border: 1px solid #475569; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
-        .modal-title { font-size: 18px; font-weight: bold; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        
-        .quick-amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .btn-quick-amount { background: #334155; color: #fff; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-quick-amount:hover { background: #059669; border-color: #10b981; }
+        /* Poster Cards Grid (ទម្រង់ដូច Poster JLASTORE) */
+        .poster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        @media (max-width: 640px) {
+            .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .nav-left { gap: 10px; }
+            .search-wrap { display: none; }
+        }
 
-        .api-input-wrap { display: flex; gap: 8px; margin-bottom: 12px; }
-        .api-key-text { background: #0f172a; color: #fbbf24; border: 1px solid #334155; padding: 10px 12px; border-radius: 8px; font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace; }
-        .btn-copy { background: #0284c7; color: #ffffff; border: none; padding: 0 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
-        .btn-gen { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; border: none; width: 100%; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .poster-card {
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            aspect-ratio: 3/4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .poster-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px -10px rgba(0,0,0,0.15);
+            border-color: #cbd5e1;
+        }
+        .poster-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .poster-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 50%, rgba(15,23,42,0.95) 100%);
+        }
+        .sold-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(15, 23, 42, 0.75);
+            color: #fbbf24;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .poster-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 14px 12px;
+            color: #ffffff;
+        }
+        .poster-title {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+        .tag-pill {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+        }
+        .tag-event { background: #065f46; color: #34d399; }
+        .tag-hot { background: #991b1b; color: #fca5a5; }
 
-        .khqr-card { background: #ffffff; color: #000000; border-radius: 16px; width: 320px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
-        .khqr-header { background: #e11d48; padding: 12px 0; text-align: center; }
-        .khqr-header-title { color: #ffffff; font-size: 24px; font-weight: 900; letter-spacing: 2px; font-family: Arial, sans-serif; margin: 0; }
-        .khqr-body { padding: 20px 24px; }
-        .khqr-merchant { font-size: 16px; color: #1e293b; font-weight: 600; margin-bottom: 4px; }
-        .khqr-amount { font-size: 26px; font-weight: 800; color: #000000; margin-bottom: 12px; }
-        .khqr-amount span { font-size: 14px; font-weight: 600; color: #64748b; }
-        .khqr-divider { border-top: 2px dashed #cbd5e1; margin: 12px 0 16px 0; }
-        .khqr-qr-box { display: flex; justify-content: center; align-items: center; }
-        canvas { width: 230px !important; height: 230px !important; }
-        .btn-close-modal { width: 100%; margin-top: 14px; border: none; background: #334155; padding: 10px; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
+        /* Floating Telegram Support Button */
+        .fab-telegram {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: #0088cc;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            box-shadow: 0 10px 25px rgba(0,136,204,0.4);
+            text-decoration: none;
+            z-index: 999;
+            transition: transform 0.2s;
+        }
+        .fab-telegram:hover { transform: scale(1.1); }
+
+        /* Pop-up Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 14px;
+        }
+        .modal-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; }
+        .btn-close { background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-control:focus { border-color: #e11d48; }
+
+        /* Package Tabs & Grid */
+        .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+        .tab-btn {
+            flex: 1;
+            padding: 9px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+        }
+        .tab-btn.active { background: #e11d48; color: #fff; border-color: #e11d48; }
+
+        .pkg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .pkg-card {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .pkg-card:hover, .pkg-card.active { border-color: #e11d48; background: #fff1f2; }
+        .pkg-name { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+        .pkg-price { font-size: 14px; font-weight: 800; color: #e11d48; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #e11d48;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 14px;
+            transition: 0.2s;
+        }
+        .btn-submit:hover { background: #be123c; }
+
+        /* KHQR Pop Card */
+        .khqr-box { text-align: center; padding: 10px 0; }
+        .khqr-amount { font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 12px; }
+        .khqr-amount span { font-size: 14px; color: #64748b; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>YUTH STORE - បញ្ចូលពេជ្រហ្គេម</h2>
-
-    <div id="loginSection" class="login-box">
-        <i class="fa-solid fa-user-lock"></i>
-        <h3 style="margin-top:0;">សូមចូលប្រើប្រាស់មុននឹងទិញ</h3>
-        <p style="color:#94a3b8; font-size:14px; margin-bottom:20px;">សូម ចុះឈ្មោះ/Login តាមរយៈ Google ដើម្បីបន្តការបញ្ជាទិញ</p>
-        
-        <div style="display: flex; justify-content: center;">
-            <div id="g_id_onload"
-                data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
-                data-callback="handleCredentialResponse">
+    <!-- 🌟 Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="#" class="logo-box">
+                <i class="fa-solid fa-gem"></i>
+                <span>YUTHSTORE</span>
+            </a>
+            <div class="search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="ស្វែងរកហ្គេម ឬសេវាកម្ម..." id="searchInput" onkeyup="filterGames()">
             </div>
-            <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with"></div>
         </div>
-    </div>
-
-    <div id="shopSection" style="display: none;">
-        <!-- Header Profile -->
-        <div class="user-profile">
-            <div class="user-info">
+        <div class="nav-right">
+            <button class="btn-lang"><i class="fa-solid fa-globe"></i> EN / KHR</button>
+            <div id="authBox">
+                <div id="g_id_onload"
+                    data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
+                    data-callback="handleCredentialResponse">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-size="medium" data-shape="pill"></div>
+            </div>
+            <div id="userBox" style="display: none;" class="user-pill">
                 <img id="userImg" src="" alt="Profile">
-                <div>
-                    <div id="userName" style="font-weight:bold; font-size:14px;"></div>
-                    <div class="wallet-badge"><i class="fa-solid fa-wallet"></i> <span id="userBalance">$0.00</span></div>
-                </div>
-            </div>
-            <div class="profile-actions">
-                <button class="btn-action-deposit" onclick="openDepositModal()"><i class="fa-solid fa-plus"></i> ដាក់លុយ</button>
-                <button class="btn-settings" onclick="openSettingsModal()" title="ការកំណត់ API"><i class="fa-solid fa-gear"></i></button>
-                <button class="logout-btn" onclick="logout()" title="ចាកចេញ"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <span class="wallet-text" id="userBalance">$0.00</span>
+                <button onclick="openDepositModal()" style="border:none; background:#e11d48; color:#fff; border-radius:50%; width:20px; height:20px; font-weight:bold; cursor:pointer;" title="បញ្ចូលលុយ">+</button>
+                <button onclick="logout()" style="border:none; background:transparent; color:#94a3b8; cursor:pointer; font-size:12px;" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </div>
+    </nav>
 
-        <!-- 🎮 ផ្នែកជ្រើសរើសហ្គេម (Icon ស្អាត រូបមិនខូច ១០០%) -->
-        <div class="form-group">
-            <label>១. ជ្រើសរើសហ្គេម</label>
-            <div class="game-grid">
-                <div class="game-card active" onclick="selectGame('ff', this)">
-                    <div class="game-icon-box bg-ff"><i class="fa-solid fa-fire"></i></div>
-                    <span>Free Fire</span>
-                </div>
-                <div class="game-card" onclick="selectGame('mlbb', this)">
-                    <div class="game-icon-box bg-mlbb"><i class="fa-solid fa-shield-halved"></i></div>
-                    <span>MLBB</span>
-                </div>
-                <div class="game-card" onclick="selectGame('pubg', this)">
-                    <div class="game-icon-box bg-pubg"><i class="fa-solid fa-crosshairs"></i></div>
-                    <span>PUBG</span>
-                </div>
-                <div class="game-card" onclick="selectGame('rov', this)">
-                    <div class="game-icon-box bg-rov"><i class="fa-solid fa-crown"></i></div>
-                    <span>ROV</span>
+    <!-- 🎮 Main Body Content -->
+    <div class="main-container">
+        <div class="section-header">
+            <i class="fa-solid fa-fire"></i>
+            <span>All Games & Services (ហ្គេមទាំងអស់)</span>
+        </div>
+
+        <!-- 🖼️ Posters Grid ដូច JLASTORE -->
+        <div class="poster-grid" id="gamesGrid">
+            <!-- Free Fire KH -->
+            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន')">
+                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="Free Fire">
+                <div class="poster-gradient"></div>
+                <div class="sold-badge">90k+ Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Free Fire [KH/SG/MY] លឿន</div>
+                    <span class="tag-pill tag-event">Event ✨</span>
                 </div>
             </div>
-        </div>
 
-        <!-- បញ្ចូល Player ID -->
-        <div class="form-group">
-            <label for="playerId">២. បញ្ចូល Player ID</label>
-            <input type="text" id="playerId" placeholder="បញ្ចូល ID អ្នកលេង (ឧទាហរណ៍: 123456789)">
-        </div>
-
-        <!-- ជ្រើសរើសកញ្ចប់ -->
-        <div class="form-group">
-            <label id="packageSectionLabel">៣. ជ្រើសរើសកញ្ចប់ពេជ្រ Free Fire</label>
-            <div id="packageContainer"></div>
-        </div>
-
-        <button class="btn" onclick="handlePurchase()"><i class="fa-solid fa-cart-shopping"></i> ទិញឥឡូវនេះ</button>
-
-        <a href="https://t.me/MeiKhmer" target="_blank" class="contact-admin-btn">
-            <i class="fa-brands fa-telegram" style="font-size:20px;"></i> ទាក់ទង Admin តាម Telegram (@MeiKhmer)
-        </a>
-    </div>
-</div>
-
-<!-- Modal ដាក់លុយ -->
-<div class="modal" id="depositModal">
-    <div class="modal-content">
-        <div class="modal-title" style="color:#22c55e;"><i class="fa-solid fa-circle-dollar-to-slot"></i> ដាក់លុយចូលកាបូប</div>
-        
-        <p style="font-size:13px; color:#94a3b8; margin-top:0; margin-bottom:12px;">ជ្រើសរើសចំនួនទឹកប្រាក់រហ័ស ឬវាយបញ្ចូល៖</p>
-        <div class="quick-amount-grid">
-            <button class="btn-quick-amount" onclick="setDepositAmount(1)">$1.00</button>
-            <button class="btn-quick-amount" onclick="setDepositAmount(2)">$2.00</button>
-            <button class="btn-quick-amount" onclick="setDepositAmount(5)">$5.00</button>
-            <button class="btn-quick-amount" onclick="setDepositAmount(10)">$10.00</button>
-            <button class="btn-quick-amount" onclick="setDepositAmount(20)">$20.00</button>
-            <button class="btn-quick-amount" onclick="setDepositAmount(50)">$50.00</button>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 12px;">
-            <label style="font-size:13px;">ចំនួនទឹកប្រាក់ ($) ៖</label>
-            <input type="number" id="customDepositAmount" step="0.01" placeholder="បញ្ចូលចំនួនទឹកប្រាក់">
-        </div>
-
-        <button class="btn" onclick="confirmDepositProcess()" style="background:#22c55e; color:#000;"><i class="fa-solid fa-qrcode"></i> បង្កើត KHQR ដាក់លុយ</button>
-        <button class="btn-close-modal" onclick="closeDepositModal()">បិទ</button>
-    </div>
-</div>
-
-<!-- Modal Settings -->
-<div class="modal" id="settingsModal">
-    <div class="modal-content">
-        <div class="modal-title" style="color:#38bdf8;"><i class="fa-solid fa-gear"></i> ការកំណត់គណនី និង Reseller API</div>
-        <div style="margin-bottom: 15px;">
-            <label style="font-size: 13px; color: #94a3b8;">🔑 កូដសម្ងាត់ API Key របស់អ្នក៖</label>
-            <div class="api-input-wrap" style="margin-top:6px;">
-                <div class="api-key-text" id="apiKeyDisplay">មិនទាន់មាន API Key នៅឡើយទេ</div>
-                <button class="btn-copy" onclick="copyApiKey()"><i class="fa-solid fa-copy"></i> Copy</button>
+            <!-- Free Fire V2 -->
+            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន V2')">
+                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="Free Fire V2">
+                <div class="poster-gradient"></div>
+                <div class="sold-badge">3k+ Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Free Fire [KH/SG/MY] លឿន V2</div>
+                    <span class="tag-pill tag-hot">Hot 🔥</span>
+                </div>
             </div>
-            <button class="btn-gen" onclick="generateApiKey()"><i class="fa-solid fa-arrows-rotate"></i> បង្កើត / ផ្លាស់ប្តូរ API Key ថ្មី</button>
-        </div>
-        <button class="btn-close-modal" onclick="closeSettingsModal()">បិទ</button>
-    </div>
-</div>
 
-<!-- Modal KHQR -->
-<div class="modal" id="qrModal">
-    <div class="khqr-card">
-        <div class="khqr-header">
-            <h1 class="khqr-header-title">KHQR</h1>
-        </div>
-        <div class="khqr-body">
-            <div class="khqr-merchant">YUTH STORE</div>
-            <div class="khqr-amount" id="displayAmount">0.00 <span>USD</span></div>
-            <div class="khqr-divider"></div>
-            <div class="khqr-qr-box">
-                <canvas id="qrcodeCanvas"></canvas>
+            <!-- MLBB Khmer -->
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Khmer]')">
+                <img src="https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="MLBB">
+                <div class="poster-gradient"></div>
+                <div class="sold-badge">29k+ Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Mobile Legends [Khmer]</div>
+                    <span class="tag-pill tag-event">Event ✨</span>
+                </div>
             </div>
-            <button class="btn-close-modal" onclick="closeModal()" style="background:#e2e8f0; color:#334155; margin-top:8px;">បិទផ្ទាំងនេះ</button>
+
+            <!-- MLBB Singapore -->
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Singapore]')">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="MLBB SG">
+                <div class="poster-gradient"></div>
+                <div class="sold-badge">185 Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Mobile Legends [Singapore]</div>
+                    <span class="tag-pill tag-event">Event ✨</span>
+                </div>
+            </div>
+
+            <!-- PUBG Mobile Global -->
+            <div class="poster-card" onclick="openOrderModal('pubg', 'PUBG Mobile Global')">
+                <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="PUBG">
+                <div class="poster-gradient"></div>
+                <div class="sold-badge">940 Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">PUBG Mobile Global</div>
+                    <span class="tag-pill tag-hot">Hot ⚡</span>
+                </div>
+            </div>
+
+            <!-- ROV Coupons -->
+            <div class="poster-card" onclick="openOrderModal('rov', 'Arena of Valor (ROV)')">
+                <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="ROV">
+                <div class="poster-gradient"></div>
+                <div class="sold-badge">1.2k Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Arena of Valor (ROV)</div>
+                    <span class="tag-pill tag-hot">Hot 🔥</span>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
-      authDomain: "planning-with-ai-46ea2.firebaseapp.com",
-      projectId: "planning-with-ai-46ea2",
-      storageBucket: "planning-with-ai-46ea2.firebasestorage.app",
-      messagingSenderId: "631178903261",
-      appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    <!-- Floating Telegram Support -->
+    <a href="https://t.me/MeiKhmer" target="_blank" class="fab-telegram" title="ទាក់ទង Admin">
+        <i class="fa-brands fa-telegram"></i>
+    </a>
 
-    const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
-    const ACCOUNT_NAME = "YUTH STORE";
+    <!-- 🛒 Modal បញ្ជាទិញហ្គេម -->
+    <div class="modal" id="orderModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalGameTitle">បញ្ចូលពេជ្រ</h3>
+                <button class="btn-close" onclick="closeOrderModal()">&times;</button>
+            </div>
 
-    const TELEGRAM_BOT_TOKEN = "8806433517:AAGCs1y4YDwqSMiXQoJs1Y-n0DOGDtEDbII";
-    const TELEGRAM_CHAT_ID = "8363306657"; 
+            <div class="form-group">
+                <label>១. បញ្ចូល Player ID / Zone ID</label>
+                <input type="text" id="orderPlayerId" class="form-control" placeholder="ឧទាហរណ៍: 12345678 (Zone: 1234)">
+            </div>
 
-    let currentUser = null;
-    let currentUserBalance = 0.00;
-    let currentApiKey = "";
-    
-    let currentActiveKey = 'ff';
-    let selectedPackage = null;
-    let selectedPrice = 0;
+            <div class="form-group">
+                <label>២. ជ្រើសរើសកញ្ចប់ពេជ្រ</label>
+                <div id="pkgTabsContainer" class="tabs"></div>
+                <div id="pkgGridContainer" class="pkg-grid"></div>
+            </div>
 
-    function parseJwt (token) {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    }
+            <button class="btn-submit" onclick="handleOrderPurchase()"><i class="fa-solid fa-bolt"></i> បញ្ជាទិញឥឡូវនេះ</button>
+        </div>
+    </div>
 
-    function handleCredentialResponse(response) {
-        const responsePayload = parseJwt(response.credential);
-        currentUser = responsePayload;
-        document.getElementById('userName').innerText = responsePayload.name;
-        document.getElementById('userImg').src = responsePayload.picture;
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('shopSection').style.display = 'block';
+    <!-- 💰 Modal ដាក់លុយ (Deposit) -->
+    <div class="modal" id="depositModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-wallet" style="color:#16a34a;"></i> ដាក់លុយចូលកាបូប</h3>
+                <button class="btn-close" onclick="closeDepositModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>ចំនួនទឹកប្រាក់ ($) ៖</label>
+                <input type="number" id="depositInput" class="form-control" placeholder="ឧទាហរណ៍: 5.00" value="2.00">
+            </div>
+            <button class="btn-submit" onclick="generateDepositQR()"><i class="fa-solid fa-qrcode"></i> បង្កើត KHQR ដាក់លុយ</button>
+        </div>
+    </div>
 
-        const userDocRef = db.collection('users').doc(currentUser.email.toLowerCase());
-        userDocRef.onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                currentUserBalance = data.balance || 0.00;
-                currentApiKey = data.apiKey || "";
-            } else {
-                userDocRef.set({ name: currentUser.name, balance: 0.00, apiKey: "" });
-            }
-            document.getElementById('userBalance').innerText = `$${currentUserBalance.toFixed(2)}`;
-            document.getElementById('apiKeyDisplay').innerText = currentApiKey || "មិនទាន់មាន API Key";
-        });
-    }
+    <!-- 📱 Modal KHQR Scan -->
+    <div class="modal" id="qrModal">
+        <div class="modal-card" style="max-width: 360px; text-align: center;">
+            <div class="modal-header">
+                <h3 style="color:#e11d48;">KHQR PAYMENT</h3>
+                <button class="btn-close" onclick="closeQRModal()">&times;</button>
+            </div>
+            <div class="khqr-box">
+                <div class="khqr-amount" id="qrAmountDisplay">$0.00 <span>USD</span></div>
+                <div style="display:flex; justify-content:center; margin: 10px 0;">
+                    <canvas id="qrCanvas"></canvas>
+                </div>
+                <p style="font-size:12px; color:#64748b; margin-top:8px;">សូមស្កេនទូទាត់តាម Bakong / ABA / ធនាគារនានា</p>
+            </div>
+            <button class="btn-submit" onclick="closeQRModal()" style="background:#475569;">បិទផ្ទាំងនេះ</button>
+        </div>
+    </div>
 
-    function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
-    function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
-    function setDepositAmount(amount) { document.getElementById('customDepositAmount').value = amount; }
-    function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
-    function closeModal() { document.getElementById('qrModal').style.display = 'none'; }
-
-    function selectGame(gameKey, element) {
-        document.querySelectorAll('.game-card').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-        currentActiveKey = gameKey;
-        selectedPackage = null;
-        selectedPrice = 0;
-        
-        const labels = {
-            ff: "៣. ជ្រើសរើសកញ្ចប់ពេជ្រ Free Fire",
-            mlbb: "៣. ជ្រើសរើសកញ្ចប់ Diamonds MLBB",
-            pubg: "៣. ជ្រើសរើសកញ្ចប់ UC PUBG",
-            rov: "៣. ជ្រើសរើសកញ្ចប់ Coupons ROV"
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
+            authDomain: "planning-with-ai-46ea2.firebaseapp.com",
+            projectId: "planning-with-ai-46ea2",
+            storageBucket: "planning-with-ai-46ea2.firebasestorage.app",
+            messagingSenderId: "631178903261",
+            appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
         };
-        document.getElementById('packageSectionLabel').innerText = labels[gameKey];
-        renderPackages();
-    }
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    const gameData = {
-        ff: {
-            tabs: [
-                { name: '💎 ពេជ្ររាយ', id: 'ff_diamonds' },
-                { name: '👑 កាតសមាជិក', id: 'ff_membership' }
-            ],
-            packages: {
-                ff_diamonds: [
-                    { name: '💎 100 ពេជ្រ', price: 0.05 },
-                    { name: '💎 500 ពេជ្រ', price: 0.15 },
-                    { name: '💎 1,000 ពេជ្រ', price: 0.40 },
-                    { name: '💎 5,000 ពេជ្រ', price: 0.80 },
-                    { name: '💎 10,000 ពេជ្រ', price: 1.20 },
-                    { name: '💎 100,000 ពេជ្រ', price: 3.20 }
-                ],
-                ff_membership: [
-                    { name: '📅 កាតប្រចាំសប្តាហ៍', price: 3.50 },
-                    { name: '📆 កាតប្រចាំខែ (1300💎)', price: 5.00 },
-                    { name: '🔫 EVO Gun Pass', price: 4.50 },
-                    { name: '⬆️ Level Up Pass', price: 8.00 }
-                ]
-            }
-        },
-        mlbb: {
-            tabs: [
-                { name: '💎 Diamonds', id: 'ml_diamonds' },
-                { name: '🌟 Weekly Pass', id: 'ml_pass' }
-            ],
-            packages: {
-                ml_diamonds: [
-                    { name: '💎 86 Diamonds', price: 1.50 },
-                    { name: '💎 172 Diamonds', price: 3.00 },
-                    { name: '💎 257 Diamonds', price: 4.50 },
-                    { name: '💎 706 Diamonds', price: 11.50 }
-                ],
-                ml_pass: [
-                    { name: '🌟 Weekly Pass', price: 2.20 }
-                ]
-            }
-        },
-        pubg: {
-            tabs: [{ name: '💵 UC', id: 'pubg_uc' }],
-            packages: {
-                pubg_uc: [
-                    { name: '💵 60 UC', price: 0.99 },
-                    { name: '💵 325 UC', price: 4.99 },
-                    { name: '💵 660 UC', price: 9.99 }
-                ]
-            }
-        },
-        rov: {
-            tabs: [{ name: '🎟️ Coupons', id: 'rov_coupons' }],
-            packages: {
-                rov_coupons: [
-                    { name: '🎟️ 35 Coupons', price: 1.00 },
-                    { name: '🎟️ 175 Coupons', price: 5.00 },
-                    { name: '🎟️ 350 Coupons', price: 10.00 }
-                ]
-            }
+        const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
+        const ACCOUNT_NAME = "YUTH STORE";
+        const TELEGRAM_BOT_TOKEN = "8806433517:AAGCs1y4YDwqSMiXQoJs1Y-n0DOGDtEDbII";
+        const TELEGRAM_CHAT_ID = "8363306657"; 
+
+        let currentUser = null;
+        let currentUserBalance = 0.00;
+        let currentSelectedGame = 'ff';
+        let currentSelectedGameTitle = '';
+        let selectedPackage = null;
+        let selectedPrice = 0;
+
+        function parseJwt (token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
         }
-    };
 
-    function renderPackages() {
-        const data = gameData[currentActiveKey];
-        const container = document.getElementById('packageContainer');
-        container.innerHTML = '';
-        if (data.tabs.length > 1) {
-            const tabsDiv = document.createElement('div');
-            tabsDiv.className = 'tabs';
+        function handleCredentialResponse(response) {
+            const payload = parseJwt(response.credential);
+            currentUser = payload;
+            document.getElementById('userImg').src = payload.picture;
+            document.getElementById('authBox').style.display = 'none';
+            document.getElementById('userBox').style.display = 'flex';
+
+            const userRef = db.collection('users').doc(currentUser.email.toLowerCase());
+            userRef.onSnapshot((doc) => {
+                if (doc.exists) {
+                    currentUserBalance = doc.data().balance || 0.00;
+                } else {
+                    userRef.set({ name: currentUser.name, balance: 0.00, apiKey: "" });
+                    currentUserBalance = 0.00;
+                }
+                document.getElementById('userBalance').innerText = `$${currentUserBalance.toFixed(2)}`;
+            });
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('authBox').style.display = 'block';
+            document.getElementById('userBox').style.display = 'none';
+        }
+
+        const gameCatalog = {
+            ff: {
+                tabs: [{ name: '💎 ពេជ្ររាយ', id: 'ff_diamond' }, { name: '👑 Pass/កាត', id: 'ff_pass' }],
+                packages: {
+                    ff_diamond: [
+                        { name: '100 ពេជ្រ', price: 0.05 },
+                        { name: '500 ពេជ្រ', price: 0.15 },
+                        { name: '1,000 ពេជ្រ', price: 0.40 },
+                        { name: '5,000 ពេជ្រ', price: 0.80 },
+                        { name: '10,000 ពេជ្រ', price: 1.20 }
+                    ],
+                    ff_pass: [
+                        { name: '📅 កាតសប្តាហ៍', price: 3.50 },
+                        { name: '📆 កាតប្រចាំខែ (1300💎)', price: 5.00 },
+                        { name: '🔫 EVO Gun Pass', price: 4.50 },
+                        { name: '⬆️ Level Up Pass', price: 8.00 }
+                    ]
+                }
+            },
+            mlbb: {
+                tabs: [{ name: '💎 Diamonds', id: 'ml_diamonds' }],
+                packages: {
+                    ml_diamonds: [
+                        { name: '86 Diamonds', price: 1.50 },
+                        { name: '172 Diamonds', price: 3.00 },
+                        { name: '257 Diamonds', price: 4.50 },
+                        { name: 'Weekly Diamond Pass', price: 2.20 }
+                    ]
+                }
+            },
+            pubg: {
+                tabs: [{ name: '💵 UC', id: 'pubg_uc' }],
+                packages: {
+                    pubg_uc: [
+                        { name: '60 UC', price: 0.99 },
+                        { name: '325 UC', price: 4.99 },
+                        { name: '660 UC', price: 9.99 }
+                    ]
+                }
+            },
+            rov: {
+                tabs: [{ name: '🎟️ Coupons', id: 'rov_coupons' }],
+                packages: {
+                    rov_coupons: [
+                        { name: '35 Coupons', price: 1.00 },
+                        { name: '175 Coupons', price: 5.00 },
+                        { name: '350 Coupons', price: 10.00 }
+                    ]
+                }
+            }
+        };
+
+        function openOrderModal(gameKey, gameTitle) {
+            currentSelectedGame = gameKey;
+            currentSelectedGameTitle = gameTitle;
+            document.getElementById('modalGameTitle').innerText = gameTitle;
+            renderPackages();
+            document.getElementById('orderModal').style.display = 'flex';
+        }
+        function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
+        function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
+        function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
+        function closeQRModal() { document.getElementById('qrModal').style.display = 'none'; }
+
+        function renderPackages() {
+            const data = gameCatalog[currentSelectedGame];
+            const tabContainer = document.getElementById('pkgTabsContainer');
+            const pkgContainer = document.getElementById('pkgGridContainer');
+            tabContainer.innerHTML = '';
+            pkgContainer.innerHTML = '';
+
             data.tabs.forEach((tab, index) => {
                 const btn = document.createElement('button');
                 btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
                 btn.innerText = tab.name;
-                btn.onclick = () => switchTab(tab.id, btn);
-                tabsDiv.appendChild(btn);
+                btn.onclick = () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    showTabPackages(tab.id);
+                };
+                tabContainer.appendChild(btn);
             });
-            container.appendChild(tabsDiv);
+
+            showTabPackages(data.tabs[0].id);
         }
-        data.tabs.forEach((tab, index) => {
-            const gridDiv = document.createElement('div');
-            gridDiv.className = 'grid';
-            gridDiv.id = tab.id;
-            gridDiv.style.display = index === 0 ? 'grid' : 'none';
-            data.packages[tab.id].forEach(item => {
+
+        function showTabPackages(tabId) {
+            const data = gameCatalog[currentSelectedGame];
+            const pkgContainer = document.getElementById('pkgGridContainer');
+            pkgContainer.innerHTML = '';
+
+            data.packages[tabId].forEach((item, idx) => {
                 const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `<div class="card-title">${item.name}</div><div class="card-price">$${item.price.toFixed(2)}</div>`;
-                card.onclick = () => selectItem(card, item.name, item.price);
-                gridDiv.appendChild(card);
+                card.className = `pkg-card ${idx === 0 ? 'active' : ''}`;
+                if(idx === 0) { selectedPackage = item.name; selectedPrice = item.price; }
+
+                card.innerHTML = `
+                    <div class="pkg-name">${item.name}</div>
+                    <div class="pkg-price">$${item.price.toFixed(2)}</div>
+                `;
+                card.onclick = () => {
+                    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    selectedPackage = item.name;
+                    selectedPrice = item.price;
+                };
+                pkgContainer.appendChild(card);
             });
-            container.appendChild(gridDiv);
-        });
-    }
+        }
 
-    function switchTab(tabId, btnElement) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        btnElement.classList.add('active');
-        document.querySelectorAll('#packageContainer .grid').forEach(grid => grid.style.display = 'none');
-        document.getElementById(tabId).style.display = 'grid';
-    }
-
-    function selectItem(element, packageName, price) {
-        document.querySelectorAll('.card').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-        selectedPackage = packageName;
-        selectedPrice = price;
-    }
-
-    function crc16(data) {
-        let crc = 0xFFFF;
-        for (let i = 0; i < data.length; i++) {
-            crc ^= data.charCodeAt(i) << 8;
-            for (let j = 0; j < 8; j++) {
-                if ((crc & 0x8000) !== 0) {
-                    crc = (crc << 1) ^ 0x1021;
-                } else {
-                    crc = crc << 1;
+        function crc16(data) {
+            let crc = 0xFFFF;
+            for (let i = 0; i < data.length; i++) {
+                crc ^= data.charCodeAt(i) << 8;
+                for (let j = 0; j < 8; j++) {
+                    crc = (crc & 0x8000) !== 0 ? (crc << 1) ^ 0x1021 : crc << 1;
                 }
             }
+            return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
-        crc = crc & 0xFFFF;
-        return crc.toString(16).toUpperCase().padStart(4, '0');
-    }
 
-    function generateKHQRString(bakongId, merchantName, amount) {
-        const formattedAmount = parseFloat(amount).toFixed(2);
-        const accountStr = `00${bakongId.length.toString().padStart(2, '0')}${bakongId}`;
-        const tag29 = `29${accountStr.length.toString().padStart(2, '0')}${accountStr}`;
-        const currencyTag = "5303840";
-        const amountTag = `54${formattedAmount.length.toString().padStart(2, '0')}${formattedAmount}`;
-        
-        const payload = 
-            "000201" +
-            "010212" +
-            tag29 +
-            "52045999" +
-            currencyTag +
-            amountTag +
-            "5802KH" +
-            `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` +
-            "6010Phnom Penh" +
-            "6304";
+        function generateKHQRString(bakongId, merchantName, amount) {
+            const formattedAmount = parseFloat(amount).toFixed(2);
+            const accountStr = `00${bakongId.length.toString().padStart(2, '0')}${bakongId}`;
+            const tag29 = `29${accountStr.length.toString().padStart(2, '0')}${accountStr}`;
+            const currencyTag = "5303840";
+            const amountTag = `54${formattedAmount.length.toString().padStart(2, '0')}${formattedAmount}`;
+            const payload = "000201010212" + tag29 + "52045999" + currencyTag + amountTag + "5802KH" +
+                            `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` + "6010Phnom Penh6304";
+            return payload + crc16(payload);
+        }
 
-        const crc = crc16(payload);
-        return payload + crc;
-    }
+        async function handleOrderPurchase() {
+            const playerId = document.getElementById('orderPlayerId').value.trim();
+            if (!playerId) { alert('សូមបញ្ចូល Player ID / Zone ID!'); return; }
+            if (!selectedPackage) { alert('សូមជ្រើសរើសកញ្ចប់!'); return; }
 
-    async function handlePurchase() {
-        let playerId = document.getElementById('playerId').value;
-        if (!playerId) { alert('សូមបញ្ចូល Player ID!'); return; }
-        if (!selectedPackage) { alert('សូមជ្រើសរើសកញ្ចប់!'); return; }
-
-        if (currentUserBalance >= selectedPrice) {
-            const confirmPay = confirm(`ទិញ ${selectedPackage} តម្លៃ $${selectedPrice.toFixed(2)}?`);
-            if (confirmPay) {
-                const newBalance = currentUserBalance - selectedPrice;
-                await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: newBalance });
-                alert('✅ បានបញ្ជាទិញជោគជ័យ! Admin នឹងបញ្ចូលឱ្យក្នុងពេលឆាប់ៗ!');
-                sendTelegramNotification(playerId, "PAID (Wallet)", selectedPrice);
+            if (currentUser && currentUserBalance >= selectedPrice) {
+                const confirmBuy = confirm(`ទិញ ${selectedPackage} តម្លៃ $${selectedPrice.toFixed(2)}?`);
+                if (confirmBuy) {
+                    const newBal = currentUserBalance - selectedPrice;
+                    await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: newBal });
+                    closeOrderModal();
+                    alert('✅ ការបញ្ជាទិញជោគជ័យ! ទំនិញនឹងចូលគណនីក្នុងរយៈពេល ១-៣ នាទី!');
+                    sendOrderTelegram(playerId, selectedPrice, "PAID (Wallet)");
+                }
+            } else {
+                closeOrderModal();
+                showQR(selectedPrice, `Order ${currentSelectedGameTitle}`);
+                sendOrderTelegram(playerId, selectedPrice, "Pending (KHQR Scan)");
             }
-        } else {
-            document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
-            const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
-            QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
-                if (error) console.error(error);
-            });
-            document.getElementById('qrModal').style.display = 'flex';
-            sendTelegramNotification(playerId, "Pending (KHQR Scan)", selectedPrice);
         }
-    }
 
-    async function confirmDepositProcess() {
-        if (!currentUser) return;
-        const depositAmount = parseFloat(document.getElementById('customDepositAmount').value);
-        if (isNaN(depositAmount) || depositAmount <= 0) { alert("ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ!"); return; }
+        function generateDepositQR() {
+            const amount = parseFloat(document.getElementById('depositInput').value);
+            if (isNaN(amount) || amount <= 0) { alert('ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ!'); return; }
+            closeDepositModal();
+            showQR(amount, "Deposit Balance");
+        }
 
-        closeDepositModal();
-        document.getElementById('displayAmount').innerHTML = `${depositAmount.toFixed(2)} <span>USD</span>`;
-        const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, depositAmount);
-        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 });
-        document.getElementById('qrModal').style.display = 'flex';
+        function showQR(amount, note) {
+            document.getElementById('qrAmountDisplay').innerHTML = `$${amount.toFixed(2)} <span>USD</span>`;
+            const qrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, amount);
+            QRCode.toCanvas(document.getElementById('qrCanvas'), qrString, { width: 220 });
+            document.getElementById('qrModal').style.display = 'flex';
+        }
 
-        sendTelegramNotification("Wallet Deposit", `Topup $${depositAmount.toFixed(2)}`, depositAmount);
-    }
+        async function sendOrderTelegram(playerId, amount, status) {
+            const user = currentUser ? `${currentUser.name} (${currentUser.email})` : 'Guest (មិនបាន Login)';
+            const text = `🔔 **ការបញ្ជាទិញថ្មី (JLASTORE Style)**\n🎮 ហ្គេម: ${currentSelectedGameTitle}\n📦 កញ្ចប់: ${selectedPackage}\n💵 តម្លៃ: $${amount.toFixed(2)}\n🆔 Player ID: \`${playerId}\`\n👤 អតិថិជន: ${user}\n📌 ស្ថានភាព: ${status}`;
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
+            });
+        }
 
-    async function generateApiKey() {
-        if (!currentUser) return;
-        const newKey = 'yt_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-        await db.collection('users').doc(currentUser.email.toLowerCase()).update({ apiKey: newKey });
-        alert('✅ បានបង្កើត API Key ថ្មីដោយជោគជ័យ!');
-    }
-
-    function copyApiKey() {
-        if (!currentApiKey) { alert('សូមបង្កើត Key ជាមុនសិន!'); return; }
-        navigator.clipboard.writeText(currentApiKey).then(() => alert('📋 បាន Copy រួចរាល់!'));
-    }
-
-    function logout() {
-        currentUser = null;
-        document.getElementById('loginSection').style.display = 'block';
-        document.getElementById('shopSection').style.display = 'none';
-    }
-
-    async function sendTelegramNotification(playerId, status, amount) {
-        const userEmail = currentUser ? currentUser.email : "មិនបាន Login";
-        const text = `🔔 **ការបញ្ជាទិញថ្មី**\n🎮 ហ្គេម: ${currentActiveKey.toUpperCase()}\n📦 កញ្ចប់: ${selectedPackage || status}\n💵 តម្លៃ: $${amount}\n🆔 ID: \`${playerId}\`\n📧 User: ${userEmail}`;
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
-        });
-    }
-
-    renderPackages();
-</script>
+        function filterGames() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.poster-card').forEach(card => {
+                const title = card.querySelector('.poster-title').innerText.toLowerCase();
+                card.style.display = title.includes(query) ? 'flex' : 'none';
+            });
+        }
+    </script>
 </body>
 </html>
