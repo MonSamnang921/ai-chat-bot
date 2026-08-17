@@ -15,7 +15,7 @@
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #f1f5f9; color: #1e293b; }
+        body { background-color: #f8fafc; color: #1e293b; }
 
         /* Navbar */
         .navbar {
@@ -57,7 +57,7 @@
         .main-container { max-width: 1240px; margin: 24px auto; padding: 0 16px; }
         .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 19px; font-weight: 800; color: #0f172a; }
 
-        /* Poster Cards Grid (JLASTORE Style) */
+        /* 🖼️ Poster Card Grid (JLASTORE Style) */
         .poster-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -69,7 +69,6 @@
         }
 
         .poster-card {
-            background: #1e293b;
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid #e2e8f0;
@@ -86,18 +85,38 @@
             box-shadow: 0 10px 20px -8px rgba(0,0,0,0.25);
             border-color: #cbd5e1;
         }
-        .poster-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+
+        .poster-art {
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px 10px;
         }
+        .poster-art i { font-size: 55px; margin-bottom: 8px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+        .poster-art-title { font-size: 18px; font-weight: 900; letter-spacing: 1px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+
+        /* 🎨 ស្ទីលផ្ទៃខាងក្រោយ Poster នីមួយៗ */
+        .art-mlbb-khmer { background: linear-gradient(135deg, #0284c7 0%, #1e1b4b 60%, #090d16 100%); color: #38bdf8; }
+        .art-ff-fire { background: linear-gradient(135deg, #f97316 0%, #7c2d12 60%, #180c06 100%); color: #facc15; }
+        .art-ff-v2 { background: linear-gradient(135deg, #475569 0%, #1e293b 60%, #020617 100%); color: #cbd5e1; }
+        .art-mlbb-ru { background: linear-gradient(135deg, #0369a1 0%, #1e3a8a 60%, #020617 100%); color: #60a5fa; }
+        .art-mlbb-sg { background: linear-gradient(135deg, #0ea5e9 0%, #1e293b 60%, #020617 100%); color: #38bdf8; }
+        .art-monthly { background: linear-gradient(135deg, #334155 0%, #0f172a 100%); color: #f8fafc; }
+        .art-less-more { background: linear-gradient(135deg, #1e293b 0%, #000000 100%); color: #94a3b8; }
+        .art-ff-vn { background: linear-gradient(135deg, #dc2626 0%, #450a0a 60%, #0f172a 100%); color: #f87171; }
+        .art-pubg { background: linear-gradient(135deg, #d97706 0%, #334155 60%, #0f172a 100%); color: #fbbf24; }
+        .art-mlbb-ph { background: linear-gradient(135deg, #0284c7 0%, #1e1b4b 100%); color: #93c5fd; }
+        .art-mlbb-id { background: linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%); color: #7dd3fc; }
+        .art-levelup { background: linear-gradient(135deg, #9333ea 0%, #3b0764 60%, #0f172a 100%); color: #facc15; }
+
         .poster-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(15, 23, 42, 0.95) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(15, 23, 42, 0.95) 100%);
         }
         .sold-badge {
             position: absolute;
@@ -283,7 +302,7 @@
         </div>
     </nav>
 
-    <!-- Poster Cards Grid (រូបភាពពិត ១០០%) -->
+    <!-- Poster Cards Grid (ស្ទីល Poster ដូចរូបគំរូ JLASTORE ១០០%) -->
     <div class="main-container">
         <div class="section-header">
             <i class="fa-solid fa-fire" style="color:#e11d48;"></i>
@@ -291,9 +310,12 @@
         </div>
 
         <div class="poster-grid" id="gamesGrid">
-            <!-- 1. MLBB Khmer (រូបភាព Miya Hero ដើម) -->
+            <!-- 1. MLBB Khmer -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [khmer]')">
-                <img src="https://images.hdqwalls.com/download/miya-mobile-legends-bang-bang-4k-2020-5k-wz-720x1280.jpg" class="poster-img" alt="MLBB">
+                <div class="poster-art art-mlbb-khmer">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div class="poster-art-title">MLBB</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">29k+ Sold</div>
                 <div class="poster-info">
@@ -302,9 +324,12 @@
                 </div>
             </div>
 
-            <!-- 2. Free Fire [KH/SG/MY] លឿន (រូបដៃភ្លើង Fire Fist) -->
+            <!-- 2. Free Fire Fast -->
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន')">
-                <img src="https://images.hdqwalls.com/download/garena-free-fire-2020-4k-b9-720x1280.jpg" class="poster-img" alt="Free Fire Fire">
+                <div class="poster-art art-ff-fire">
+                    <i class="fa-solid fa-fire-flame-curved"></i>
+                    <div class="poster-art-title">FREE FIRE</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">90k+ Sold</div>
                 <div class="poster-info">
@@ -313,9 +338,12 @@
                 </div>
             </div>
 
-            <!-- 3. Free Fire V2 (រូបដៃទឹកកក សខ្មៅ) -->
+            <!-- 3. Free Fire V2 -->
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន V2')">
-                <img src="https://images.hdqwalls.com/download/garena-free-fire-2020-4k-b9-720x1280.jpg" class="poster-img" alt="Free Fire V2" style="filter: grayscale(100%) contrast(140%);">
+                <div class="poster-art art-ff-v2">
+                    <i class="fa-solid fa-bolt"></i>
+                    <div class="poster-art-title">FREE FIRE V2</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">3k+ Sold</div>
                 <div class="poster-info">
@@ -326,7 +354,10 @@
 
             <!-- 4. MLBB Russia -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Russia]')">
-                <img src="https://images.hdqwalls.com/download/miya-mobile-legends-bang-bang-4k-2020-5k-wz-720x1280.jpg" class="poster-img" alt="MLBB RU">
+                <div class="poster-art art-mlbb-ru">
+                    <i class="fa-solid fa-crown"></i>
+                    <div class="poster-art-title">MLBB RU</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">322 Sold</div>
                 <div class="poster-info">
@@ -337,7 +368,10 @@
 
             <!-- 5. MLBB Singapore -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Singapore]')">
-                <img src="https://images.hdqwalls.com/download/miya-mobile-legends-bang-bang-4k-2020-5k-wz-720x1280.jpg" class="poster-img" alt="MLBB SG">
+                <div class="poster-art art-mlbb-sg">
+                    <i class="fa-solid fa-shield-heart"></i>
+                    <div class="poster-art-title">MLBB SG</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">185 Sold</div>
                 <div class="poster-info">
@@ -348,7 +382,10 @@
 
             <!-- 6. Monthly Pass 7.25$ -->
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Monthly 7.25$')">
-                <img src="https://images.hdqwalls.com/download/garena-free-fire-rampage-4k-2020-4o-720x1280.jpg" class="poster-img" alt="Monthly Pass" style="filter: grayscale(100%);">
+                <div class="poster-art art-monthly">
+                    <div style="font-size: 32px; font-weight: 900; margin-bottom: 4px;">7.25$</div>
+                    <div style="font-size: 12px; font-weight: 700; opacity: 0.8;">MONTHLY PASS</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">140 Sold</div>
                 <div class="poster-info">
@@ -359,7 +396,10 @@
 
             <!-- 7. Less is More -->
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Less is More')">
-                <img src="https://images.hdqwalls.com/download/garena-free-fire-2020-4k-b9-720x1280.jpg" class="poster-img" alt="Less is More" style="filter: grayscale(100%) contrast(150%);">
+                <div class="poster-art art-less-more">
+                    <i class="fa-solid fa-gem"></i>
+                    <div class="poster-art-title" style="font-size: 15px;">LESS IS MORE</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">171 Sold</div>
                 <div class="poster-info">
@@ -368,9 +408,12 @@
                 </div>
             </div>
 
-            <!-- 8. Free Fire VN (រូប Naruto / ព្រះច័ន្ទក្រហម) -->
+            <!-- 8. Free Fire VN -->
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [VN]')">
-                <img src="https://images.hdqwalls.com/download/itachi-uchiha-red-moon-4k-8j-720x1280.jpg" class="poster-img" alt="Free Fire VN">
+                <div class="poster-art art-ff-vn">
+                    <i class="fa-solid fa-moon"></i>
+                    <div class="poster-art-title">FF VN</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">7k+ Sold</div>
                 <div class="poster-info">
@@ -379,9 +422,12 @@
                 </div>
             </div>
 
-            <!-- 9. PUBG Mobile Global (រូប PUBG មួកដែក Spetsnaz) -->
+            <!-- 9. PUBG Mobile Global -->
             <div class="poster-card" onclick="openOrderModal('pubg', 'Pubg Mobile Global')">
-                <img src="https://images.hdqwalls.com/download/pubg-mobile-4k-2020-5k-9l-720x1280.jpg" class="poster-img" alt="PUBG Global">
+                <div class="poster-art art-pubg">
+                    <i class="fa-solid fa-crosshairs"></i>
+                    <div class="poster-art-title">PUBG</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">940 Sold</div>
                 <div class="poster-info">
@@ -392,7 +438,10 @@
 
             <!-- 10. MLBB Philippines -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Philippines]')">
-                <img src="https://images.hdqwalls.com/download/miya-mobile-legends-bang-bang-4k-2020-5k-wz-720x1280.jpg" class="poster-img" alt="MLBB PH">
+                <div class="poster-art art-mlbb-ph">
+                    <i class="fa-solid fa-dragon"></i>
+                    <div class="poster-art-title">MLBB PH</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">559 Sold</div>
                 <div class="poster-info">
@@ -403,7 +452,10 @@
 
             <!-- 11. MLBB Indonesia -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Indonesia]')">
-                <img src="https://images.hdqwalls.com/download/miya-mobile-legends-bang-bang-4k-2020-5k-wz-720x1280.jpg" class="poster-img" alt="MLBB ID">
+                <div class="poster-art art-mlbb-id">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <div class="poster-art-title">MLBB ID</div>
+                </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">164 Sold</div>
                 <div class="poster-info">
@@ -412,10 +464,13 @@
                 </div>
             </div>
 
-            <!-- 12. Level Up Pass (ផ្ទាំងពណ៌ស្វាយ Free Fire) -->
+            <!-- 12. Level Up Pass -->
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Level Up Pass')">
-                <img src="https://images.hdqwalls.com/download/garena-free-fire-game-2020-4k-7v-720x1280.jpg" class="poster-img" alt="Level Up Pass">
-                <div class="poster-overlay" style="background: linear-gradient(180deg, rgba(147, 51, 234, 0.4) 0%, rgba(15, 23, 42, 0.95) 100%);"></div>
+                <div class="poster-art art-levelup">
+                    <i class="fa-solid fa-angles-up"></i>
+                    <div class="poster-art-title" style="font-size: 15px;">LEVEL UP PASS</div>
+                </div>
+                <div class="poster-overlay"></div>
                 <div class="sold-badge">9k+ Sold</div>
                 <div class="poster-info">
                     <div class="poster-title">Level Up Pass</div>
