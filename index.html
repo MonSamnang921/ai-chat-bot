@@ -7,7 +7,7 @@
     <!-- Library QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <!-- FontAwesome Icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Sign-in -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- Firebase SDK -->
@@ -41,10 +41,17 @@
         label { display: block; margin-bottom: 10px; font-weight: bold; font-size: 14px; }
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; }
 
-        /* 🎮 Grid Game (រូបភាពច្បាស់មិន Error) */
+        /* 🎮 Game Selection Design (គ្មានថ្ងៃខូចរូបភាព) */
         .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .game-card { background: #334155; padding: 12px 4px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 11px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-        .game-img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+        .game-card { background: #334155; padding: 14px 6px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 11px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+        .game-icon-box { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        
+        /* ពណ៌ Gradient សម្រាប់ហ្គេមនីមួយៗ */
+        .bg-ff { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+        .bg-mlbb { background: linear-gradient(135deg, #8a2387, #e94057, #f27121); }
+        .bg-pubg { background: linear-gradient(135deg, #f7971e, #ffd200); color: #000 !important; }
+        .bg-rov { background: linear-gradient(135deg, #00c6ff, #0072ff); }
+
         .game-card:hover, .game-card.active { border-color: #f59e0b; background: #0f172a; color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.3); }
 
         .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px; }
@@ -125,24 +132,24 @@
             </div>
         </div>
 
-        <!-- 🎮 ផ្នែកហ្គេម (រូបភាពពិត ១០០%) -->
+        <!-- 🎮 ផ្នែកជ្រើសរើសហ្គេម (Icon ស្អាត រូបមិនខូច ១០០%) -->
         <div class="form-group">
             <label>១. ជ្រើសរើសហ្គេម</label>
             <div class="game-grid">
                 <div class="game-card active" onclick="selectGame('ff', this)">
-                    <img src="https://cdn2.steamgriddb.com/icon/97804470217ecfe8b78eb2c1e8d91c7a.png" class="game-img" alt="Free Fire">
+                    <div class="game-icon-box bg-ff"><i class="fa-solid fa-fire"></i></div>
                     <span>Free Fire</span>
                 </div>
                 <div class="game-card" onclick="selectGame('mlbb', this)">
-                    <img src="https://cdn2.steamgriddb.com/icon/cae526279f53835f8d0a514ae5b70fc1.png" class="game-img" alt="MLBB">
+                    <div class="game-icon-box bg-mlbb"><i class="fa-solid fa-shield-halved"></i></div>
                     <span>MLBB</span>
                 </div>
                 <div class="game-card" onclick="selectGame('pubg', this)">
-                    <img src="https://cdn2.steamgriddb.com/icon/b7d79b29cb2d075ba703c3ae4f23b7ff.png" class="game-img" alt="PUBG">
+                    <div class="game-icon-box bg-pubg"><i class="fa-solid fa-crosshairs"></i></div>
                     <span>PUBG</span>
                 </div>
                 <div class="game-card" onclick="selectGame('rov', this)">
-                    <img src="https://cdn2.steamgriddb.com/icon/47a276eb553bbfaec9c394c86beee218.png" class="game-img" alt="ROV">
+                    <div class="game-icon-box bg-rov"><i class="fa-solid fa-crown"></i></div>
                     <span>ROV</span>
                 </div>
             </div>
@@ -284,7 +291,6 @@
         });
     }
 
-    /* Modal Controls */
     function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
     function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
     function setDepositAmount(amount) { document.getElementById('customDepositAmount').value = amount; }
@@ -480,8 +486,41 @@
         }
     }
 
+    async function confirmDepositProcess() {
+        if (!currentUser) return;
+        const depositAmount = parseFloat(document.getElementById('customDepositAmount').value);
+        if (isNaN(depositAmount) || depositAmount <= 0) { alert("ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ!"); return; }
+
+        closeDepositModal();
+        document.getElementById('displayAmount').innerHTML = `${depositAmount.toFixed(2)} <span>USD</span>`;
+        const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, depositAmount);
+        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 });
+        document.getElementById('qrModal').style.display = 'flex';
+
+        sendTelegramNotification("Wallet Deposit", `Topup $${depositAmount.toFixed(2)}`, depositAmount);
+    }
+
+    async function generateApiKey() {
+        if (!currentUser) return;
+        const newKey = 'yt_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+        await db.collection('users').doc(currentUser.email.toLowerCase()).update({ apiKey: newKey });
+        alert('✅ បានបង្កើត API Key ថ្មីដោយជោគជ័យ!');
+    }
+
+    function copyApiKey() {
+        if (!currentApiKey) { alert('សូមបង្កើត Key ជាមុនសិន!'); return; }
+        navigator.clipboard.writeText(currentApiKey).then(() => alert('📋 បាន Copy រួចរាល់!'));
+    }
+
+    function logout() {
+        currentUser = null;
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('shopSection').style.display = 'none';
+    }
+
     async function sendTelegramNotification(playerId, status, amount) {
-        const text = `🔔 **ការបញ្ជាទិញថ្មី**\n🎮 ហ្គេម: ${currentActiveKey.toUpperCase()}\n📦 កញ្ចប់: ${selectedPackage}\n💵 តម្លៃ: $${amount}\n🆔 ID: \`${playerId}\`\n📌 ស្ថានភាព: ${status}`;
+        const userEmail = currentUser ? currentUser.email : "មិនបាន Login";
+        const text = `🔔 **ការបញ្ជាទិញថ្មី**\n🎮 ហ្គេម: ${currentActiveKey.toUpperCase()}\n📦 កញ្ចប់: ${selectedPackage || status}\n💵 តម្លៃ: $${amount}\n🆔 ID: \`${playerId}\`\n📧 User: ${userEmail}`;
         await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
