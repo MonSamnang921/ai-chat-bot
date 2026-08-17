@@ -15,7 +15,7 @@
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #f8fafc; color: #1e293b; }
+        body { background-color: #f1f5f9; color: #1e293b; }
 
         /* Navbar */
         .navbar {
@@ -57,7 +57,7 @@
         .main-container { max-width: 1240px; margin: 24px auto; padding: 0 16px; }
         .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 19px; font-weight: 800; color: #0f172a; }
 
-        /* 🖼️ Poster Card Grid (JLASTORE Style) */
+        /* Poster Cards Grid (JLASTORE Design) */
         .poster-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -86,22 +86,18 @@
             box-shadow: 0 10px 20px -8px rgba(0,0,0,0.25);
             border-color: #cbd5e1;
         }
-        .poster-bg {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .poster-bg svg {
+        .poster-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         .poster-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(15, 23, 42, 0.95) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(15, 23, 42, 0.95) 100%);
         }
         .sold-badge {
             position: absolute;
@@ -287,7 +283,7 @@
         </div>
     </nav>
 
-    <!-- Poster Cards Grid (រូបភាព Artwork ពិត ១០០% ដូច JLASTORE) -->
+    <!-- Poster Cards Grid -->
     <div class="main-container">
         <div class="section-header">
             <i class="fa-solid fa-fire" style="color:#e11d48;"></i>
@@ -295,24 +291,9 @@
         </div>
 
         <div class="poster-grid" id="gamesGrid">
-            <!-- 1. MLBB Khmer (Miya Archer Blue Theme) -->
+            <!-- Row 1 -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [khmer]')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="mlbbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#0284c7"/>
-                                <stop offset="50%" stop-color="#1e1b4b"/>
-                                <stop offset="100%" stop-color="#090d16"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="300" height="400" fill="url(#mlbbGrad)"/>
-                        <circle cx="150" cy="140" r="70" fill="#38bdf8" opacity="0.3"/>
-                        <path d="M70 230 Q150 70 230 230" stroke="#7dd3fc" stroke-width="8" fill="none" opacity="0.8"/>
-                        <path d="M150 90 L150 250 M120 180 L150 90 L180 180" stroke="#f0f9ff" stroke-width="5" fill="none"/>
-                        <text x="150" y="270" fill="#e0f2fe" font-size="20" font-weight="900" text-anchor="middle" letter-spacing="2">MOBILE LEGENDS</text>
-                    </svg>
-                </div>
+                <img src="images/mlbb.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3ae.svg'" class="poster-img" alt="MLBB">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">29k+ Sold</div>
                 <div class="poster-info">
@@ -321,23 +302,8 @@
                 </div>
             </div>
 
-            <!-- 2. Free Fire Fast (Fire Fist Gold Theme) -->
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="ffFireGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#ea580c"/>
-                                <stop offset="50%" stop-color="#7c2d12"/>
-                                <stop offset="100%" stop-color="#180c06"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="300" height="400" fill="url(#ffFireGrad)"/>
-                        <polygon points="150,50 190,130 270,140 210,200 230,280 150,230 70,280 90,200 30,140 110,130" fill="#facc15" opacity="0.85"/>
-                        <polygon points="150,90 175,145 230,150 190,190 205,245 150,210 95,245 110,190 70,150 125,145" fill="#ea580c"/>
-                        <text x="150" y="290" fill="#fef08a" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="3">FREE FIRE</text>
-                    </svg>
-                </div>
+                <img src="images/ff_fire.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f525.svg'" class="poster-img" alt="Free Fire Fire">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">90k+ Sold</div>
                 <div class="poster-info">
@@ -346,22 +312,8 @@
                 </div>
             </div>
 
-            <!-- 3. Free Fire V2 (Monochrome Ice Fist Theme) -->
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន V2')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="ffIceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#64748b"/>
-                                <stop offset="50%" stop-color="#1e293b"/>
-                                <stop offset="100%" stop-color="#020617"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="300" height="400" fill="url(#ffIceGrad)"/>
-                        <polygon points="150,60 185,135 260,145 205,200 220,275 150,230 80,275 95,200 40,145 115,135" fill="#f8fafc" opacity="0.75"/>
-                        <text x="150" y="290" fill="#cbd5e1" font-size="22" font-weight="900" text-anchor="middle" letter-spacing="2">FREE FIRE V2</text>
-                    </svg>
-                </div>
+                <img src="images/ff_v2.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2744.svg'" class="poster-img" alt="Free Fire V2" style="filter: grayscale(100%);">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">3k+ Sold</div>
                 <div class="poster-info">
@@ -370,16 +322,8 @@
                 </div>
             </div>
 
-            <!-- 4. MLBB Russia -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Russia]')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="300" height="400" fill="#0369a1"/>
-                        <circle cx="150" cy="150" r="80" fill="#38bdf8" opacity="0.35"/>
-                        <path d="M80 220 Q150 80 220 220" stroke="#e0f2fe" stroke-width="7" fill="none"/>
-                        <text x="150" y="275" fill="#f0f9ff" font-size="18" font-weight="900" text-anchor="middle">MLBB RUSSIA</text>
-                    </svg>
-                </div>
+                <img src="images/mlbb.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3ae.svg'" class="poster-img" alt="MLBB RU">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">322 Sold</div>
                 <div class="poster-info">
@@ -388,16 +332,8 @@
                 </div>
             </div>
 
-            <!-- 5. MLBB Singapore -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Singapore]')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="300" height="400" fill="#0284c7"/>
-                        <circle cx="150" cy="150" r="80" fill="#67e8f9" opacity="0.35"/>
-                        <path d="M80 220 Q150 80 220 220" stroke="#f8fafc" stroke-width="7" fill="none"/>
-                        <text x="150" y="275" fill="#f0f9ff" font-size="18" font-weight="900" text-anchor="middle">MLBB SINGAPORE</text>
-                    </svg>
-                </div>
+                <img src="images/mlbb.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3ae.svg'" class="poster-img" alt="MLBB SG">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">185 Sold</div>
                 <div class="poster-info">
@@ -406,16 +342,8 @@
                 </div>
             </div>
 
-            <!-- 6. Monthly Pass 7.25$ -->
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Monthly 7.25$')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="300" height="400" fill="#334155"/>
-                        <rect x="50" y="110" width="200" height="120" rx="14" fill="#64748b" stroke="#cbd5e1" stroke-width="3"/>
-                        <text x="150" y="165" fill="#f8fafc" font-size="34" font-weight="900" text-anchor="middle">7.25$</text>
-                        <text x="150" y="200" fill="#e2e8f0" font-size="14" font-weight="800" text-anchor="middle">MONTHLY PASS</text>
-                    </svg>
-                </div>
+                <img src="images/monthly.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4b3.svg'" class="poster-img" alt="Monthly Pass" style="filter: grayscale(100%);">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">140 Sold</div>
                 <div class="poster-info">
@@ -424,15 +352,9 @@
                 </div>
             </div>
 
-            <!-- 7. Less is More -->
+            <!-- Row 2 -->
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Less is More')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="300" height="400" fill="#1e293b"/>
-                        <polygon points="150,70 190,150 270,160 210,210 230,290 150,240 70,290 90,210 30,160 110,150" fill="#94a3b8" opacity="0.6"/>
-                        <text x="150" y="280" fill="#f1f5f9" font-size="22" font-weight="900" text-anchor="middle">LESS IS MORE</text>
-                    </svg>
-                </div>
+                <img src="images/ff_v2.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2744.svg'" class="poster-img" alt="Less is More" style="filter: grayscale(100%);">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">171 Sold</div>
                 <div class="poster-info">
@@ -441,23 +363,8 @@
                 </div>
             </div>
 
-            <!-- 8. Free Fire VN (Red Moon Ninja Theme) -->
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [VN]')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="vnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#b91c1c"/>
-                                <stop offset="60%" stop-color="#450a0a"/>
-                                <stop offset="100%" stop-color="#0f172a"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="300" height="400" fill="url(#vnGrad)"/>
-                        <circle cx="150" cy="130" r="65" fill="#ef4444" opacity="0.85"/>
-                        <path d="M120 180 Q150 140 180 180 Q150 220 120 180" fill="#000000"/>
-                        <text x="150" y="275" fill="#fecaca" font-size="22" font-weight="900" text-anchor="middle" letter-spacing="2">FREE FIRE VN</text>
-                    </svg>
-                </div>
+                <img src="images/ff_vn.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f319.svg'" class="poster-img" alt="Free Fire VN">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">7k+ Sold</div>
                 <div class="poster-info">
@@ -466,23 +373,8 @@
                 </div>
             </div>
 
-            <!-- 9. PUBG Mobile Global (Helmet Theme) -->
             <div class="poster-card" onclick="openOrderModal('pubg', 'Pubg Mobile Global')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="pubgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#0284c7"/>
-                                <stop offset="50%" stop-color="#334155"/>
-                                <stop offset="100%" stop-color="#0f172a"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="300" height="400" fill="url(#pubgGrad)"/>
-                        <path d="M90 180 C90 100, 210 100, 210 180 L210 200 L90 200 Z" fill="#1e293b" stroke="#f1f5f9" stroke-width="4"/>
-                        <rect x="110" y="160" width="80" height="25" rx="5" fill="#000000" stroke="#38bdf8" stroke-width="2"/>
-                        <text x="150" y="275" fill="#f8fafc" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="3">PUBG MOBILE</text>
-                    </svg>
-                </div>
+                <img src="images/pubg.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3af.svg'" class="poster-img" alt="PUBG Global">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">940 Sold</div>
                 <div class="poster-info">
@@ -491,16 +383,8 @@
                 </div>
             </div>
 
-            <!-- 10. MLBB Philippines -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Philippines]')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="300" height="400" fill="#0284c7"/>
-                        <circle cx="150" cy="150" r="80" fill="#38bdf8" opacity="0.35"/>
-                        <path d="M80 220 Q150 80 220 220" stroke="#f8fafc" stroke-width="7" fill="none"/>
-                        <text x="150" y="275" fill="#f0f9ff" font-size="18" font-weight="900" text-anchor="middle">MLBB PHILIPPINES</text>
-                    </svg>
-                </div>
+                <img src="images/mlbb.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3ae.svg'" class="poster-img" alt="MLBB PH">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">559 Sold</div>
                 <div class="poster-info">
@@ -509,16 +393,8 @@
                 </div>
             </div>
 
-            <!-- 11. MLBB Indonesia -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Indonesia]')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="300" height="400" fill="#0369a1"/>
-                        <circle cx="150" cy="150" r="80" fill="#67e8f9" opacity="0.35"/>
-                        <path d="M80 220 Q150 80 220 220" stroke="#f8fafc" stroke-width="7" fill="none"/>
-                        <text x="150" y="275" fill="#f0f9ff" font-size="18" font-weight="900" text-anchor="middle">MLBB INDONESIA</text>
-                    </svg>
-                </div>
+                <img src="images/mlbb.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3ae.svg'" class="poster-img" alt="MLBB ID">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">164 Sold</div>
                 <div class="poster-info">
@@ -527,23 +403,8 @@
                 </div>
             </div>
 
-            <!-- 12. Level Up Pass (Purple Level Theme) -->
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Level Up Pass')">
-                <div class="poster-bg">
-                    <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="lvlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#9333ea"/>
-                                <stop offset="50%" stop-color="#581c87"/>
-                                <stop offset="100%" stop-color="#1e1b4b"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="300" height="400" fill="url(#lvlGrad)"/>
-                        <text x="150" y="130" fill="#ffffff" font-size="28" font-weight="900" text-anchor="middle">FREE FIRE</text>
-                        <rect x="40" y="160" width="220" height="70" rx="10" fill="#3b0764" stroke="#c084fc" stroke-width="2"/>
-                        <text x="150" y="205" fill="#facc15" font-size="18" font-weight="900" text-anchor="middle">⚡ LEVEL UP PASS ⚡</text>
-                    </svg>
-                </div>
+                <img src="images/levelup.jpg" onerror="this.src='https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2b50.svg'" class="poster-img" alt="Level Up Pass">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">9k+ Sold</div>
                 <div class="poster-info">
