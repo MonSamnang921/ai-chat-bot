@@ -278,7 +278,7 @@
         }
         .btn-submit:hover { background: #be123c; }
 
-        /* 🔴 KHQR Card Design ដូចក្នុងរូបថត ១០០% 🔴 */
+        /* 🔴 ABA KHQR Card Modal (គិតជា USD) 🔴 */
         .khqr-modal-card {
             background: transparent;
             width: 100%;
@@ -342,7 +342,7 @@
             margin-bottom: 4px;
         }
         .khqr-ticket-amount {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 900;
             color: #0f172a;
             text-align: left;
@@ -351,7 +351,7 @@
             align-items: baseline;
             gap: 6px;
         }
-        .khqr-ticket-amount span { font-size: 14px; font-weight: 700; color: #64748b; }
+        .khqr-ticket-amount span { font-size: 16px; font-weight: 700; color: #64748b; }
         
         .khqr-dashed-line {
             border-top: 2px dashed #cbd5e1;
@@ -426,7 +426,7 @@
             </div>
         </div>
         <div class="nav-right">
-            <button class="btn-lang">EN / KHR</button>
+            <button class="btn-lang">EN / USD</button>
             <div id="authBox">
                 <div id="g_id_onload"
                     data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
@@ -529,13 +529,13 @@
             <!-- 6. Monthly Pass 7.25$ -->
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Monthly 7.25$')">
                 <div class="poster-art art-monthly">
-                    <div style="font-size: 32px; font-weight: 900; margin-bottom: 4px;">7.25$</div>
+                    <div style="font-size: 32px; font-weight: 900; margin-bottom: 4px;">$7.25</div>
                     <div style="font-size: 12px; font-weight: 700; opacity: 0.8;">MONTHLY PASS</div>
                 </div>
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">140 Sold</div>
                 <div class="poster-info">
-                    <div class="poster-title">Monthly 7.25$</div>
+                    <div class="poster-title">Monthly $7.25</div>
                     <span class="tag-pill tag-restock">RESTOCKING</span>
                 </div>
             </div>
@@ -657,14 +657,14 @@
                 <button class="btn-close" onclick="closeDepositModal()">&times;</button>
             </div>
             <div class="form-group">
-                <label>ចំនួនទឹកប្រាក់ ($) ៖</label>
-                <input type="number" id="depositInput" class="form-control" value="2.00">
+                <label>ចំនួនទឹកប្រាក់ ($ USD) ៖</label>
+                <input type="number" id="depositInput" class="form-control" value="2.00" step="0.01">
             </div>
             <button class="btn-submit" onclick="generateDepositQR()"><i class="fa-solid fa-qrcode"></i> បង្កើត KHQR ដាក់លុយ</button>
         </div>
     </div>
 
-    <!-- 🔴 ABA / BAKONG KHQR Modal (ផ្ទាំងដូចរូបថត ១០០% + រាប់ថយក្រោយ ១០ នាទី) 🔴 -->
+    <!-- 🔴 ABA / BAKONG KHQR Modal (គិតជា USD ១០០% + រាប់ថយក្រោយ ១០ នាទី) 🔴 -->
     <div class="modal" id="qrModal">
         <div class="khqr-modal-card">
             <div class="khqr-top-bar">
@@ -676,7 +676,6 @@
             <!-- សំបុត្រ KHQR -->
             <div class="khqr-ticket">
                 <div class="khqr-red-header">
-                    <!-- KHQR Official Curved Logo SVG -->
                     <svg class="khqr-logo-svg" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
                         <text x="50%" y="22" font-size="22" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="4">KHQR</text>
                     </svg>
@@ -685,7 +684,7 @@
                 <div class="khqr-ticket-body" id="khqrActiveView">
                     <div class="khqr-store-name">Yuth Store</div>
                     <div class="khqr-ticket-amount" id="qrAmountDisplay">
-                        8,815 <span>KHR</span>
+                        0.00 <span>USD</span>
                     </div>
 
                     <div class="khqr-dashed-line"></div>
@@ -702,7 +701,7 @@
                     </div>
 
                     <div class="khqr-footer-desc">
-                        Scan with ABA Mobile, or other Mobile Banking App supporting KHQR
+                        Scan with ABA Mobile, or other Mobile Banking App supporting KHQR (USD)
                     </div>
                 </div>
 
@@ -805,7 +804,7 @@
                 tabs: [{ name: '👑 Pass / Promo', id: 'promo_tab' }],
                 packages: {
                     promo_tab: [
-                        { name: 'Monthly Pass 7.25$', price: 7.25 },
+                        { name: 'Monthly Pass $7.25', price: 7.25 },
                         { name: 'Level Up Pass', price: 8.00 },
                         { name: 'Less is More Event', price: 1.20 }
                     ]
@@ -922,7 +921,7 @@
             const formattedAmount = parseFloat(amount).toFixed(2);
             const accountStr = `00${bakongId.length.toString().padStart(2, '0')}${bakongId}`;
             const tag29 = `29${accountStr.length.toString().padStart(2, '0')}${accountStr}`;
-            const currencyTag = "5303840";
+            const currencyTag = "5303840"; // 840 = USD
             const amountTag = `54${formattedAmount.length.toString().padStart(2, '0')}${formattedAmount}`;
             const payload = "000201010212" + tag29 + "52045999" + currencyTag + amountTag + "5802KH" +
                             `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` + "6010Phnom Penh6304";
@@ -961,14 +960,13 @@
             showQR(amount);
         }
 
-        // ⏱️ បង្ហាញផ្ទាំង KHQR និងចាប់ផ្តើមរាប់ថយក្រោយ ១០ នាទី
+        // ⏱️ បង្ហាញផ្ទាំង KHQR គិតជា USD និងរាប់ថយក្រោយ ១០ នាទី
         function showQR(amountUSD) {
             lastGeneratedAmountUSD = amountUSD;
-            const amountKHR = Math.round(amountUSD * 4100); // បម្លែងទៅជាលុយរៀល (KHR) ដូចរូប
             
-            document.getElementById('qrAmountDisplay').innerHTML = `${amountKHR.toLocaleString()} <span>KHR</span> <span style="font-size:12px; color:#94a3b8;">($${amountUSD.toFixed(2)})</span>`;
+            // បង្ហាញទឹកប្រាក់ជាដុល្លារ ($ USD)
+            document.getElementById('qrAmountDisplay').innerHTML = `$${amountUSD.toFixed(2)} <span>USD</span>`;
             
-            // បង្ហាញផ្ទាំង QR ធម្មតា និងបិទផ្ទាំង Expired
             document.getElementById('khqrActiveView').style.display = 'block';
             document.getElementById('khqrExpiredView').style.display = 'none';
 
@@ -992,7 +990,6 @@
 
                 if (remainingSeconds <= 0) {
                     clearInterval(qrTimerInterval);
-                    // ពេលផុតកំណត់ ១០ នាទី -> បិទ QR និងបង្ហាញផ្ទាំងផុតកំណត់
                     document.getElementById('khqrActiveView').style.display = 'none';
                     document.getElementById('khqrExpiredView').style.display = 'block';
                 }
