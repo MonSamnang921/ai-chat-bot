@@ -57,7 +57,7 @@
         .main-container { max-width: 1240px; margin: 24px auto; padding: 0 16px; }
         .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 19px; font-weight: 800; color: #0f172a; }
 
-        /* 🖼️ Poster Card Styling ដូចក្នុងរូបភាព JLASTORE ១០០% */
+        /* Poster Card Grid */
         .poster-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -69,7 +69,7 @@
         }
 
         .poster-card {
-            background: #ffffff;
+            background: #1e293b;
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid #e2e8f0;
@@ -83,7 +83,7 @@
         }
         .poster-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.25);
             border-color: #cbd5e1;
         }
         .poster-img {
@@ -252,7 +252,7 @@
 </head>
 <body>
 
-    <!-- 🌟 Header -->
+    <!-- Header -->
     <nav class="navbar">
         <div class="nav-left">
             <a href="#" class="logo-box">
@@ -282,7 +282,7 @@
         </div>
     </nav>
 
-    <!-- 🎮 Poster Cards Grid (រូបភាព & ទម្រង់ដូចរូបគំរូ JLASTORE) -->
+    <!-- Poster Cards Grid (រូបភាពពិត 100% មិនខូច) -->
     <div class="main-container">
         <div class="section-header">
             <i class="fa-solid fa-gamepad" style="color:#e11d48;"></i>
@@ -292,7 +292,7 @@
         <div class="poster-grid" id="gamesGrid">
             <!-- Row 1 -->
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [khmer]')">
-                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB">
+                <img src="https://cdn2.steamgriddb.com/grid/c08ba535e67041496b86d9a1012fa28f.png" class="poster-img" alt="MLBB">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">29k+ Sold</div>
                 <div class="poster-info">
@@ -302,7 +302,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន')">
-                <img src="https://images.alphacoders.com/131/1317764.jpeg" class="poster-img" alt="Free Fire Fire">
+                <img src="https://cdn2.steamgriddb.com/grid/f8a37e5f32ebf928e2197bb7e2954a7c.png" class="poster-img" alt="Free Fire">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">90k+ Sold</div>
                 <div class="poster-info">
@@ -312,7 +312,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន V2')">
-                <img src="https://images.alphacoders.com/131/1317763.jpeg" class="poster-img" alt="Free Fire V2" style="filter: grayscale(100%);">
+                <img src="https://cdn2.steamgriddb.com/grid/b7538be10e14a8217bb668bc50d24c0d.png" class="poster-img" alt="Free Fire V2" style="filter: grayscale(100%);">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">3k+ Sold</div>
                 <div class="poster-info">
@@ -322,7 +322,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Russia]')">
-                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB RU">
+                <img src="https://cdn2.steamgriddb.com/grid/2e7da92c906da77158dfb69ba30d2fc5.png" class="poster-img" alt="MLBB RU">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">322 Sold</div>
                 <div class="poster-info">
@@ -332,7 +332,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Singapore]')">
-                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB SG">
+                <img src="https://cdn2.steamgriddb.com/grid/58362624458390fc42fca1215443e8bb.png" class="poster-img" alt="MLBB SG">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">185 Sold</div>
                 <div class="poster-info">
@@ -342,7 +342,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Monthly 7.25$')">
-                <img src="https://images.alphacoders.com/131/1317763.jpeg" class="poster-img" alt="Monthly Pass" style="filter: grayscale(100%);">
+                <img src="https://cdn2.steamgriddb.com/grid/a0f1fa4f5f590ffc1da736bebf436c64.png" class="poster-img" alt="Monthly Pass" style="filter: grayscale(100%);">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">140 Sold</div>
                 <div class="poster-info">
@@ -353,7 +353,7 @@
 
             <!-- Row 2 -->
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Less is More')">
-                <img src="https://images.alphacoders.com/131/1317763.jpeg" class="poster-img" alt="Less is More" style="filter: grayscale(100%);">
+                <img src="https://cdn2.steamgriddb.com/grid/e6a57d07936a28723fc5aa96706e23ca.png" class="poster-img" alt="Less is More" style="filter: grayscale(100%);">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">171 Sold</div>
                 <div class="poster-info">
@@ -363,7 +363,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [VN]')">
-                <img src="https://images.alphacoders.com/131/1317767.jpeg" class="poster-img" alt="Free Fire VN">
+                <img src="https://cdn2.steamgriddb.com/grid/6eb87fe0a6f44d9f9cb2bf881a547285.png" class="poster-img" alt="Free Fire VN">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">7k+ Sold</div>
                 <div class="poster-info">
@@ -373,7 +373,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('pubg', 'Pubg Mobile Global')">
-                <img src="https://images.alphacoders.com/909/909185.jpg" class="poster-img" alt="PUBG Global">
+                <img src="https://cdn2.steamgriddb.com/grid/c0819fa0f4e24ef547378d30e5da7eb5.png" class="poster-img" alt="PUBG Global">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">940 Sold</div>
                 <div class="poster-info">
@@ -383,7 +383,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Philippines]')">
-                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB PH">
+                <img src="https://cdn2.steamgriddb.com/grid/1709c00b5bb0203c94d13c7a523a60a7.png" class="poster-img" alt="MLBB PH">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">559 Sold</div>
                 <div class="poster-info">
@@ -393,7 +393,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Indonesia]')">
-                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB ID">
+                <img src="https://cdn2.steamgriddb.com/grid/1d4715da9bf07bb5c11fc342c3886561.png" class="poster-img" alt="MLBB ID">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">164 Sold</div>
                 <div class="poster-info">
@@ -403,7 +403,7 @@
             </div>
 
             <div class="poster-card" onclick="openOrderModal('ff_pass', 'Level Up Pass')">
-                <img src="https://images.alphacoders.com/131/1317766.jpeg" class="poster-img" alt="Level Up Pass">
+                <img src="https://cdn2.steamgriddb.com/grid/ee93ec881ee28c464c8d5d4d393699c2.png" class="poster-img" alt="Level Up Pass">
                 <div class="poster-overlay"></div>
                 <div class="sold-badge">9k+ Sold</div>
                 <div class="poster-info">
@@ -643,8 +643,7 @@
             for (let i = 0; i < data.length; i++) {
                 crc ^= data.charCodeAt(i) << 8;
                 for (let j = 0; j < 8; j++) {
-                    if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
-                    else crc = crc << 1;
+                    crc = (crc & 0x8000) !== 0 ? (crc << 1) ^ 0x1021 : crc << 1;
                 }
             }
             return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
