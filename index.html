@@ -53,7 +53,6 @@
         .user-pill img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
         .wallet-text { font-size: 13px; font-weight: 800; color: #16a34a; }
 
-        /* Banner បង្ហាញឱ្យ Login */
         .auth-alert-banner {
             background: #fff1f2;
             border: 1px solid #fecdd3;
@@ -279,9 +278,137 @@
         }
         .btn-submit:hover { background: #be123c; }
 
-        .khqr-box { text-align: center; padding: 10px 0; }
-        .khqr-amount { font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 10px; }
-        .khqr-amount span { font-size: 13px; color: #64748b; }
+        /* 🔴 KHQR Card Design ដូចក្នុងរូបថត ១០០% 🔴 */
+        .khqr-modal-card {
+            background: transparent;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 20px;
+            position: relative;
+        }
+        .khqr-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #0f172a;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+        .khqr-top-title { font-size: 18px; font-weight: 800; color: #0f172a; }
+        .khqr-timer {
+            font-size: 13px;
+            font-weight: 700;
+            color: #e11d48;
+            background: #ffe4e6;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-close-khqr {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #0284c7;
+            cursor: pointer;
+        }
+
+        .khqr-ticket {
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        .khqr-red-header {
+            background: #e11d48;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .khqr-logo-svg { height: 26px; fill: #ffffff; }
+
+        .khqr-ticket-body {
+            padding: 20px 24px 24px;
+            text-align: center;
+        }
+        .khqr-store-name {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+            text-align: left;
+            margin-bottom: 4px;
+        }
+        .khqr-ticket-amount {
+            font-size: 28px;
+            font-weight: 900;
+            color: #0f172a;
+            text-align: left;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+        .khqr-ticket-amount span { font-size: 14px; font-weight: 700; color: #64748b; }
+        
+        .khqr-dashed-line {
+            border-top: 2px dashed #cbd5e1;
+            margin: 14px 0 18px 0;
+            position: relative;
+        }
+
+        .khqr-canvas-wrap {
+            position: relative;
+            display: inline-block;
+            padding: 6px;
+            background: #ffffff;
+            border-radius: 12px;
+        }
+        #qrCanvas {
+            width: 210px !important;
+            height: 210px !important;
+            display: block;
+        }
+        .khqr-bakong-center-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 38px;
+            height: 38px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            padding: 3px;
+        }
+        .khqr-bakong-center-logo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .khqr-footer-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 14px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* Expired Box */
+        .khqr-expired-view {
+            display: none;
+            padding: 35px 20px;
+            text-align: center;
+        }
+        .khqr-expired-view i { font-size: 50px; color: #e11d48; margin-bottom: 12px; }
+        .khqr-expired-view h4 { font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
+        .khqr-expired-view p { font-size: 12px; color: #64748b; margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -537,21 +664,56 @@
         </div>
     </div>
 
-    <!-- KHQR Modal -->
+    <!-- 🔴 ABA / BAKONG KHQR Modal (ផ្ទាំងដូចរូបថត ១០០% + រាប់ថយក្រោយ ១០ នាទី) 🔴 -->
     <div class="modal" id="qrModal">
-        <div class="modal-card" style="max-width: 350px; text-align: center;">
-            <div class="modal-header">
-                <h3 style="color:#e11d48;">KHQR PAYMENT</h3>
-                <button class="btn-close" onclick="closeQRModal()">&times;</button>
+        <div class="khqr-modal-card">
+            <div class="khqr-top-bar">
+                <div class="khqr-top-title">ABA KHQR</div>
+                <div class="khqr-timer"><i class="fa-regular fa-clock"></i> <span id="countdownText">10:00</span></div>
+                <button class="btn-close-khqr" onclick="closeQRModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="khqr-box">
-                <div class="khqr-amount" id="qrAmountDisplay">$0.00 <span>USD</span></div>
-                <div style="display:flex; justify-content:center; margin: 8px 0;">
-                    <canvas id="qrCanvas"></canvas>
+
+            <!-- សំបុត្រ KHQR -->
+            <div class="khqr-ticket">
+                <div class="khqr-red-header">
+                    <!-- KHQR Official Curved Logo SVG -->
+                    <svg class="khqr-logo-svg" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
+                        <text x="50%" y="22" font-size="22" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="4">KHQR</text>
+                    </svg>
                 </div>
-                <p style="font-size:12px; color:#64748b;">ស្កេនទូទាត់តាម Bakong / ABA App</p>
+
+                <div class="khqr-ticket-body" id="khqrActiveView">
+                    <div class="khqr-store-name">Yuth Store</div>
+                    <div class="khqr-ticket-amount" id="qrAmountDisplay">
+                        8,815 <span>KHR</span>
+                    </div>
+
+                    <div class="khqr-dashed-line"></div>
+
+                    <!-- QR Box with Center Logo -->
+                    <div class="khqr-canvas-wrap">
+                        <canvas id="qrCanvas"></canvas>
+                        <div class="khqr-bakong-center-logo">
+                            <svg viewBox="0 0 100 100" width="24" height="24">
+                                <circle cx="50" cy="50" r="48" fill="#e11d48"/>
+                                <path d="M50 20 L60 38 L80 40 L65 55 L70 75 L50 65 L30 75 L35 55 L20 40 L40 38 Z" fill="#ffffff"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="khqr-footer-desc">
+                        Scan with ABA Mobile, or other Mobile Banking App supporting KHQR
+                    </div>
+                </div>
+
+                <!-- ផ្ទាំងពេលផុតកំណត់ ១០ នាទី (Expired View) -->
+                <div class="khqr-expired-view" id="khqrExpiredView">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <h4>QR Code បានផុតកំណត់ហើយ!</h4>
+                    <p>សូមចុចប៊ូតុងខាងក្រោមដើម្បីបង្កើត QR កូដថ្មីឡើងវិញ។</p>
+                    <button class="btn-submit" onclick="regenerateQR()"><i class="fa-solid fa-arrows-rotate"></i> បង្កើត QR ថ្មីឡើងវិញ</button>
+                </div>
             </div>
-            <button class="btn-submit" onclick="closeQRModal()" style="background:#475569;">បិទផ្ទាំងនេះ</button>
         </div>
     </div>
 
@@ -578,6 +740,11 @@
         let currentSelectedGameTitle = '';
         let selectedPackage = null;
         let selectedPrice = 0;
+
+        // Timer 10 នាទី
+        let qrTimerInterval = null;
+        let remainingSeconds = 600; // 10 នាទី = 600 វិនាទី
+        let lastGeneratedAmountUSD = 0;
 
         function parseJwt (token) {
             var base64Url = token.split('.')[1];
@@ -667,7 +834,6 @@
             }
         };
 
-        // 🔒 បើមិនទាន់ Login ជាមួយ Google ទេ មិនឱ្យបើកផ្ទាំង Order ឡើយ
         function openOrderModal(gameKey, gameTitle) {
             if (!currentUser) {
                 alert('⚠️ សូម Login ជាមួយ Google ជាមុនសិន ទើបអាចបញ្ជាទិញបាន!');
@@ -690,7 +856,10 @@
             document.getElementById('depositModal').style.display = 'flex'; 
         }
         function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
-        function closeQRModal() { document.getElementById('qrModal').style.display = 'none'; }
+        function closeQRModal() { 
+            clearInterval(qrTimerInterval);
+            document.getElementById('qrModal').style.display = 'none'; 
+        }
 
         function renderPackages() {
             const data = gameCatalog[currentSelectedGame];
@@ -792,11 +961,50 @@
             showQR(amount);
         }
 
-        function showQR(amount) {
-            document.getElementById('qrAmountDisplay').innerHTML = `$${amount.toFixed(2)} <span>USD</span>`;
-            const qrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, amount);
-            QRCode.toCanvas(document.getElementById('qrCanvas'), qrString, { width: 220 });
+        // ⏱️ បង្ហាញផ្ទាំង KHQR និងចាប់ផ្តើមរាប់ថយក្រោយ ១០ នាទី
+        function showQR(amountUSD) {
+            lastGeneratedAmountUSD = amountUSD;
+            const amountKHR = Math.round(amountUSD * 4100); // បម្លែងទៅជាលុយរៀល (KHR) ដូចរូប
+            
+            document.getElementById('qrAmountDisplay').innerHTML = `${amountKHR.toLocaleString()} <span>KHR</span> <span style="font-size:12px; color:#94a3b8;">($${amountUSD.toFixed(2)})</span>`;
+            
+            // បង្ហាញផ្ទាំង QR ធម្មតា និងបិទផ្ទាំង Expired
+            document.getElementById('khqrActiveView').style.display = 'block';
+            document.getElementById('khqrExpiredView').style.display = 'none';
+
+            const qrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, amountUSD);
+            QRCode.toCanvas(document.getElementById('qrCanvas'), qrString, { width: 210, margin: 1 });
             document.getElementById('qrModal').style.display = 'flex';
+
+            // ចាប់ផ្តើម Timer ១០ នាទី (600 វិនាទី)
+            startQRCountdown(600);
+        }
+
+        function startQRCountdown(durationSeconds) {
+            clearInterval(qrTimerInterval);
+            remainingSeconds = durationSeconds;
+
+            function updateTimerDisplay() {
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = remainingSeconds % 60;
+                document.getElementById('countdownText').innerText = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (remainingSeconds <= 0) {
+                    clearInterval(qrTimerInterval);
+                    // ពេលផុតកំណត់ ១០ នាទី -> បិទ QR និងបង្ហាញផ្ទាំងផុតកំណត់
+                    document.getElementById('khqrActiveView').style.display = 'none';
+                    document.getElementById('khqrExpiredView').style.display = 'block';
+                }
+                remainingSeconds--;
+            }
+
+            updateTimerDisplay();
+            qrTimerInterval = setInterval(updateTimerDisplay, 1000);
+        }
+
+        function regenerateQR() {
+            showQR(lastGeneratedAmountUSD);
         }
 
         async function sendOrderTelegram(playerId, amount, status) {
