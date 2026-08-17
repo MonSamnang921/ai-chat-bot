@@ -15,112 +15,75 @@
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #f8fafc; color: #1e293b; }
+        body { background-color: #f1f5f9; color: #1e293b; }
 
-        /* Navbar Header */
+        /* Navbar */
         .navbar {
             background: #ffffff;
-            padding: 14px 24px;
+            padding: 12px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
             position: sticky;
             top: 0;
             z-index: 100;
         }
-        .nav-left { display: flex; align-items: center; gap: 20px; flex: 1; max-width: 700px; }
-        .logo-box { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0f172a; font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
-        .logo-box i { font-size: 26px; color: #e11d48; }
+        .nav-left { display: flex; align-items: center; gap: 16px; flex: 1; max-width: 650px; }
+        .logo-box { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #0f172a; font-size: 19px; font-weight: 900; }
+        .logo-box i { font-size: 24px; color: #e11d48; }
 
-        .search-wrap {
-            position: relative;
-            flex: 1;
-            margin: 0 15px;
-        }
+        .search-wrap { position: relative; flex: 1; margin: 0 12px; }
         .search-wrap input {
             width: 100%;
-            padding: 10px 16px 10px 40px;
+            padding: 9px 16px 9px 38px;
             border-radius: 9999px;
             border: 1px solid #e2e8f0;
             background: #f8fafc;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s;
-        }
-        .search-wrap input:focus { border-color: #e11d48; background: #fff; box-shadow: 0 0 0 3px rgba(225,29,72,0.1); }
-        .search-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px; }
-
-        .nav-right { display: flex; align-items: center; gap: 12px; }
-        .btn-lang {
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            background: #fff;
             font-size: 13px;
-            font-weight: 700;
-            color: #475569;
-            cursor: pointer;
+            outline: none;
         }
-        .btn-auth-pink {
-            background: #e11d48;
-            color: #ffffff;
-            border: none;
-            padding: 9px 18px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-auth-pink:hover { background: #be123c; }
+        .search-wrap input:focus { border-color: #e11d48; background: #fff; }
+        .search-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; }
 
-        /* User Profile Pill */
-        .user-pill {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #f1f5f9;
-            padding: 4px 12px 4px 6px;
-            border-radius: 9999px;
-            border: 1px solid #e2e8f0;
-        }
-        .user-pill img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .nav-right { display: flex; align-items: center; gap: 10px; }
+        .btn-lang { padding: 7px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; font-size: 12px; font-weight: 700; color: #475569; cursor: pointer; }
+        
+        .user-pill { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 4px 10px 4px 5px; border-radius: 9999px; border: 1px solid #e2e8f0; }
+        .user-pill img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
         .wallet-text { font-size: 13px; font-weight: 800; color: #16a34a; }
 
         /* Main Container */
-        .main-container { max-width: 1280px; margin: 30px auto; padding: 0 20px; }
-        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 20px; font-weight: 800; color: #0f172a; }
-        .section-header i { color: #e11d48; }
+        .main-container { max-width: 1240px; margin: 24px auto; padding: 0 16px; }
+        .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 19px; font-weight: 800; color: #0f172a; }
 
-        /* Poster Cards Grid (ទម្រង់ដូច Poster JLASTORE) */
+        /* 🖼️ Poster Card Styling ដូចក្នុងរូបភាព JLASTORE ១០០% */
         .poster-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
+            gap: 14px;
         }
         @media (max-width: 640px) {
-            .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .nav-left { gap: 10px; }
+            .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .search-wrap { display: none; }
         }
 
         .poster-card {
             background: #ffffff;
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
             border: 1px solid #e2e8f0;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
             position: relative;
+            aspect-ratio: 3/4;
             display: flex;
             flex-direction: column;
-            aspect-ratio: 3/4;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
         .poster-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px -10px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.15);
             border-color: #cbd5e1;
         }
         .poster-img {
@@ -131,84 +94,77 @@
             top: 0;
             left: 0;
         }
-        .poster-gradient {
+        .poster-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 50%, rgba(15,23,42,0.95) 100%);
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(15, 23, 42, 0.92) 100%);
         }
         .sold-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background: rgba(15, 23, 42, 0.75);
             color: #fbbf24;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 8px;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 7px;
             border-radius: 9999px;
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 2;
         }
         .poster-info {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 14px 12px;
+            padding: 12px 10px;
             color: #ffffff;
+            z-index: 2;
         }
         .poster-title {
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 800;
-            margin-bottom: 6px;
-            line-height: 1.3;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            margin-bottom: 5px;
+            line-height: 1.25;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
         .tag-pill {
             display: inline-block;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 9999px;
-            text-transform: uppercase;
         }
         .tag-event { background: #065f46; color: #34d399; }
         .tag-hot { background: #991b1b; color: #fca5a5; }
+        .tag-restock { background: #475569; color: #cbd5e1; }
 
-        /* Floating Telegram Support Button */
+        /* Floating Telegram Support */
         .fab-telegram {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 54px;
-            height: 54px;
+            bottom: 24px;
+            right: 24px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: #0088cc;
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
-            box-shadow: 0 10px 25px rgba(0,136,204,0.4);
+            font-size: 24px;
+            box-shadow: 0 8px 20px rgba(0,136,204,0.35);
             text-decoration: none;
-            z-index: 999;
-            transition: transform 0.2s;
+            z-index: 99;
         }
-        .fab-telegram:hover { transform: scale(1.1); }
 
-        /* Pop-up Modals */
+        /* Order Modal */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(5px);
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -217,11 +173,10 @@
         .modal-card {
             background: #ffffff;
             width: 100%;
-            max-width: 480px;
-            border-radius: 18px;
-            padding: 24px;
+            max-width: 460px;
+            border-radius: 16px;
+            padding: 22px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            position: relative;
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -229,30 +184,29 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 14px;
+            padding-bottom: 12px;
         }
-        .modal-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; }
+        .modal-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
         .btn-close { background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; }
 
-        .form-group { margin-bottom: 16px; }
+        .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; }
         .form-control {
             width: 100%;
-            padding: 12px 14px;
-            border-radius: 10px;
+            padding: 11px 13px;
+            border-radius: 8px;
             border: 1px solid #cbd5e1;
             font-size: 14px;
             outline: none;
         }
         .form-control:focus { border-color: #e11d48; }
 
-        /* Package Tabs & Grid */
-        .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
         .tab-btn {
             flex: 1;
-            padding: 9px;
+            padding: 8px;
             background: #f1f5f9;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
@@ -263,44 +217,42 @@
         }
         .tab-btn.active { background: #e11d48; color: #fff; border-color: #e11d48; }
 
-        .pkg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .pkg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .pkg-card {
             background: #f8fafc;
             border: 1.5px solid #e2e8f0;
-            padding: 12px;
-            border-radius: 10px;
+            padding: 11px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.15s;
         }
         .pkg-card:hover, .pkg-card.active { border-color: #e11d48; background: #fff1f2; }
-        .pkg-name { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+        .pkg-name { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 3px; }
         .pkg-price { font-size: 14px; font-weight: 800; color: #e11d48; }
 
         .btn-submit {
             width: 100%;
-            padding: 14px;
+            padding: 13px;
             background: #e11d48;
             color: #ffffff;
             font-size: 15px;
             font-weight: 800;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 14px;
-            transition: 0.2s;
+            margin-top: 12px;
         }
         .btn-submit:hover { background: #be123c; }
 
-        /* KHQR Pop Card */
         .khqr-box { text-align: center; padding: 10px 0; }
-        .khqr-amount { font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 12px; }
-        .khqr-amount span { font-size: 14px; color: #64748b; }
+        .khqr-amount { font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 10px; }
+        .khqr-amount span { font-size: 13px; color: #64748b; }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 Navbar -->
+    <!-- 🌟 Header -->
     <nav class="navbar">
         <div class="nav-left">
             <a href="#" class="logo-box">
@@ -309,11 +261,11 @@
             </a>
             <div class="search-wrap">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="ស្វែងរកហ្គេម ឬសេវាកម្ម..." id="searchInput" onkeyup="filterGames()">
+                <input type="text" placeholder="Search games..." id="searchInput" onkeyup="filterGames()">
             </div>
         </div>
         <div class="nav-right">
-            <button class="btn-lang"><i class="fa-solid fa-globe"></i> EN / KHR</button>
+            <button class="btn-lang">EN / KHR</button>
             <div id="authBox">
                 <div id="g_id_onload"
                     data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
@@ -324,118 +276,168 @@
             <div id="userBox" style="display: none;" class="user-pill">
                 <img id="userImg" src="" alt="Profile">
                 <span class="wallet-text" id="userBalance">$0.00</span>
-                <button onclick="openDepositModal()" style="border:none; background:#e11d48; color:#fff; border-radius:50%; width:20px; height:20px; font-weight:bold; cursor:pointer;" title="បញ្ចូលលុយ">+</button>
-                <button onclick="logout()" style="border:none; background:transparent; color:#94a3b8; cursor:pointer; font-size:12px;" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <button onclick="openDepositModal()" style="border:none; background:#e11d48; color:#fff; border-radius:50%; width:18px; height:18px; font-weight:bold; cursor:pointer;" title="Deposit">+</button>
+                <button onclick="logout()" style="border:none; background:transparent; color:#94a3b8; cursor:pointer; font-size:11px;"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </div>
     </nav>
 
-    <!-- 🎮 Main Body Content -->
+    <!-- 🎮 Poster Cards Grid (រូបភាព & ទម្រង់ដូចរូបគំរូ JLASTORE) -->
     <div class="main-container">
         <div class="section-header">
-            <i class="fa-solid fa-fire"></i>
-            <span>All Games & Services (ហ្គេមទាំងអស់)</span>
+            <i class="fa-solid fa-gamepad" style="color:#e11d48;"></i>
+            <span>All Games</span>
         </div>
 
-        <!-- 🖼️ Posters Grid ដូច JLASTORE -->
         <div class="poster-grid" id="gamesGrid">
-            <!-- Free Fire KH -->
-            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន')">
-                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="Free Fire">
-                <div class="poster-gradient"></div>
-                <div class="sold-badge">90k+ Sold</div>
-                <div class="poster-info">
-                    <div class="poster-title">Free Fire [KH/SG/MY] លឿន</div>
-                    <span class="tag-pill tag-event">Event ✨</span>
-                </div>
-            </div>
-
-            <!-- Free Fire V2 -->
-            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន V2')">
-                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="Free Fire V2">
-                <div class="poster-gradient"></div>
-                <div class="sold-badge">3k+ Sold</div>
-                <div class="poster-info">
-                    <div class="poster-title">Free Fire [KH/SG/MY] លឿន V2</div>
-                    <span class="tag-pill tag-hot">Hot 🔥</span>
-                </div>
-            </div>
-
-            <!-- MLBB Khmer -->
-            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Khmer]')">
-                <img src="https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="MLBB">
-                <div class="poster-gradient"></div>
+            <!-- Row 1 -->
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [khmer]')">
+                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB">
+                <div class="poster-overlay"></div>
                 <div class="sold-badge">29k+ Sold</div>
                 <div class="poster-info">
-                    <div class="poster-title">Mobile Legends [Khmer]</div>
+                    <div class="poster-title">Mobile Legends [khmer]</div>
                     <span class="tag-pill tag-event">Event ✨</span>
                 </div>
             </div>
 
-            <!-- MLBB Singapore -->
+            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន')">
+                <img src="https://images.alphacoders.com/131/1317764.jpeg" class="poster-img" alt="Free Fire Fire">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">90k+ Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Free Fire [KH/SG/MY]<br>លឿន</div>
+                    <span class="tag-pill tag-event">Event</span>
+                </div>
+            </div>
+
+            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [KH/SG/MY] លឿន V2')">
+                <img src="https://images.alphacoders.com/131/1317763.jpeg" class="poster-img" alt="Free Fire V2" style="filter: grayscale(100%);">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">3k+ Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Free Fire [KH/SG/MY]<br>លឿន V2</div>
+                    <span class="tag-pill tag-restock">RESTOCKING</span>
+                </div>
+            </div>
+
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Russia]')">
+                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB RU">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">322 Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Mobile Legends [Russia]</div>
+                    <span class="tag-pill tag-event">Event</span>
+                </div>
+            </div>
+
             <div class="poster-card" onclick="openOrderModal('mlbb', 'Mobile Legends [Singapore]')">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="MLBB SG">
-                <div class="poster-gradient"></div>
+                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB SG">
+                <div class="poster-overlay"></div>
                 <div class="sold-badge">185 Sold</div>
                 <div class="poster-info">
                     <div class="poster-title">Mobile Legends [Singapore]</div>
-                    <span class="tag-pill tag-event">Event ✨</span>
+                    <span class="tag-pill tag-event">Event</span>
                 </div>
             </div>
 
-            <!-- PUBG Mobile Global -->
-            <div class="poster-card" onclick="openOrderModal('pubg', 'PUBG Mobile Global')">
-                <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="PUBG">
-                <div class="poster-gradient"></div>
+            <div class="poster-card" onclick="openOrderModal('ff_pass', 'Monthly 7.25$')">
+                <img src="https://images.alphacoders.com/131/1317763.jpeg" class="poster-img" alt="Monthly Pass" style="filter: grayscale(100%);">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">140 Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Monthly 7.25$</div>
+                    <span class="tag-pill tag-restock">RESTOCKING</span>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="poster-card" onclick="openOrderModal('ff_pass', 'Less is More')">
+                <img src="https://images.alphacoders.com/131/1317763.jpeg" class="poster-img" alt="Less is More" style="filter: grayscale(100%);">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">171 Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Less is More</div>
+                    <span class="tag-pill tag-restock">RESTOCKING</span>
+                </div>
+            </div>
+
+            <div class="poster-card" onclick="openOrderModal('ff', 'Free Fire [VN]')">
+                <img src="https://images.alphacoders.com/131/1317767.jpeg" class="poster-img" alt="Free Fire VN">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">7k+ Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Free Fire [VN]</div>
+                    <span class="tag-pill tag-hot">Hot</span>
+                </div>
+            </div>
+
+            <div class="poster-card" onclick="openOrderModal('pubg', 'Pubg Mobile Global')">
+                <img src="https://images.alphacoders.com/909/909185.jpg" class="poster-img" alt="PUBG Global">
+                <div class="poster-overlay"></div>
                 <div class="sold-badge">940 Sold</div>
                 <div class="poster-info">
-                    <div class="poster-title">PUBG Mobile Global</div>
+                    <div class="poster-title">Pubg Mobile Global</div>
                     <span class="tag-pill tag-hot">Hot ⚡</span>
                 </div>
             </div>
 
-            <!-- ROV Coupons -->
-            <div class="poster-card" onclick="openOrderModal('rov', 'Arena of Valor (ROV)')">
-                <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" class="poster-img" alt="ROV">
-                <div class="poster-gradient"></div>
-                <div class="sold-badge">1.2k Sold</div>
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Philippines]')">
+                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB PH">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">559 Sold</div>
                 <div class="poster-info">
-                    <div class="poster-title">Arena of Valor (ROV)</div>
-                    <span class="tag-pill tag-hot">Hot 🔥</span>
+                    <div class="poster-title">MLBB [Philippines]</div>
+                    <span class="tag-pill tag-hot">Hot ⚡</span>
+                </div>
+            </div>
+
+            <div class="poster-card" onclick="openOrderModal('mlbb', 'MLBB [Indonesia]')">
+                <img src="https://images.alphacoders.com/131/1317765.jpeg" class="poster-img" alt="MLBB ID">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">164 Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">MLBB [Indonesia]</div>
+                    <span class="tag-pill tag-hot">Hot ⚡</span>
+                </div>
+            </div>
+
+            <div class="poster-card" onclick="openOrderModal('ff_pass', 'Level Up Pass')">
+                <img src="https://images.alphacoders.com/131/1317766.jpeg" class="poster-img" alt="Level Up Pass">
+                <div class="poster-overlay"></div>
+                <div class="sold-badge">9k+ Sold</div>
+                <div class="poster-info">
+                    <div class="poster-title">Level Up Pass</div>
+                    <span class="tag-pill tag-hot">Hot</span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Floating Telegram Support -->
-    <a href="https://t.me/MeiKhmer" target="_blank" class="fab-telegram" title="ទាក់ទង Admin">
-        <i class="fa-brands fa-telegram"></i>
-    </a>
+    <a href="https://t.me/MeiKhmer" target="_blank" class="fab-telegram"><i class="fa-brands fa-telegram"></i></a>
 
-    <!-- 🛒 Modal បញ្ជាទិញហ្គេម -->
+    <!-- Order Modal -->
     <div class="modal" id="orderModal">
         <div class="modal-card">
             <div class="modal-header">
                 <h3 id="modalGameTitle">បញ្ចូលពេជ្រ</h3>
                 <button class="btn-close" onclick="closeOrderModal()">&times;</button>
             </div>
-
             <div class="form-group">
                 <label>១. បញ្ចូល Player ID / Zone ID</label>
-                <input type="text" id="orderPlayerId" class="form-control" placeholder="ឧទាហរណ៍: 12345678 (Zone: 1234)">
+                <input type="text" id="orderPlayerId" class="form-control" placeholder="បញ្ចូល ID អ្នកលេង">
             </div>
-
             <div class="form-group">
-                <label>២. ជ្រើសរើសកញ្ចប់ពេជ្រ</label>
+                <label>២. ជ្រើសរើសកញ្ចប់</label>
                 <div id="pkgTabsContainer" class="tabs"></div>
                 <div id="pkgGridContainer" class="pkg-grid"></div>
             </div>
-
             <button class="btn-submit" onclick="handleOrderPurchase()"><i class="fa-solid fa-bolt"></i> បញ្ជាទិញឥឡូវនេះ</button>
         </div>
     </div>
 
-    <!-- 💰 Modal ដាក់លុយ (Deposit) -->
+    <!-- Deposit Modal -->
     <div class="modal" id="depositModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -444,25 +446,25 @@
             </div>
             <div class="form-group">
                 <label>ចំនួនទឹកប្រាក់ ($) ៖</label>
-                <input type="number" id="depositInput" class="form-control" placeholder="ឧទាហរណ៍: 5.00" value="2.00">
+                <input type="number" id="depositInput" class="form-control" value="2.00">
             </div>
             <button class="btn-submit" onclick="generateDepositQR()"><i class="fa-solid fa-qrcode"></i> បង្កើត KHQR ដាក់លុយ</button>
         </div>
     </div>
 
-    <!-- 📱 Modal KHQR Scan -->
+    <!-- KHQR Modal -->
     <div class="modal" id="qrModal">
-        <div class="modal-card" style="max-width: 360px; text-align: center;">
+        <div class="modal-card" style="max-width: 350px; text-align: center;">
             <div class="modal-header">
                 <h3 style="color:#e11d48;">KHQR PAYMENT</h3>
                 <button class="btn-close" onclick="closeQRModal()">&times;</button>
             </div>
             <div class="khqr-box">
                 <div class="khqr-amount" id="qrAmountDisplay">$0.00 <span>USD</span></div>
-                <div style="display:flex; justify-content:center; margin: 10px 0;">
+                <div style="display:flex; justify-content:center; margin: 8px 0;">
                     <canvas id="qrCanvas"></canvas>
                 </div>
-                <p style="font-size:12px; color:#64748b; margin-top:8px;">សូមស្កេនទូទាត់តាម Bakong / ABA / ធនាគារនានា</p>
+                <p style="font-size:12px; color:#64748b;">ស្កេនទូទាត់តាម Bakong / ABA App</p>
             </div>
             <button class="btn-submit" onclick="closeQRModal()" style="background:#475569;">បិទផ្ទាំងនេះ</button>
         </div>
@@ -538,10 +540,20 @@
                         { name: '10,000 ពេជ្រ', price: 1.20 }
                     ],
                     ff_pass: [
-                        { name: '📅 កាតសប្តាហ៍', price: 3.50 },
-                        { name: '📆 កាតប្រចាំខែ (1300💎)', price: 5.00 },
-                        { name: '🔫 EVO Gun Pass', price: 4.50 },
-                        { name: '⬆️ Level Up Pass', price: 8.00 }
+                        { name: 'កាតសប្តាហ៍', price: 3.50 },
+                        { name: 'កាតប្រចាំខែ (1300💎)', price: 5.00 },
+                        { name: 'EVO Gun Pass', price: 4.50 },
+                        { name: 'Level Up Pass', price: 8.00 }
+                    ]
+                }
+            },
+            ff_pass: {
+                tabs: [{ name: '👑 Pass / Promo', id: 'promo_tab' }],
+                packages: {
+                    promo_tab: [
+                        { name: 'Monthly Pass 7.25$', price: 7.25 },
+                        { name: 'Level Up Pass', price: 8.00 },
+                        { name: 'Less is More Event', price: 1.20 }
                     ]
                 }
             },
@@ -565,21 +577,11 @@
                         { name: '660 UC', price: 9.99 }
                     ]
                 }
-            },
-            rov: {
-                tabs: [{ name: '🎟️ Coupons', id: 'rov_coupons' }],
-                packages: {
-                    rov_coupons: [
-                        { name: '35 Coupons', price: 1.00 },
-                        { name: '175 Coupons', price: 5.00 },
-                        { name: '350 Coupons', price: 10.00 }
-                    ]
-                }
             }
         };
 
         function openOrderModal(gameKey, gameTitle) {
-            currentSelectedGame = gameKey;
+            currentSelectedGame = gameCatalog[gameKey] ? gameKey : 'ff';
             currentSelectedGameTitle = gameTitle;
             document.getElementById('modalGameTitle').innerText = gameTitle;
             renderPackages();
@@ -641,7 +643,8 @@
             for (let i = 0; i < data.length; i++) {
                 crc ^= data.charCodeAt(i) << 8;
                 for (let j = 0; j < 8; j++) {
-                    crc = (crc & 0x8000) !== 0 ? (crc << 1) ^ 0x1021 : crc << 1;
+                    if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
+                    else crc = crc << 1;
                 }
             }
             return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
@@ -660,7 +663,7 @@
 
         async function handleOrderPurchase() {
             const playerId = document.getElementById('orderPlayerId').value.trim();
-            if (!playerId) { alert('សូមបញ្ចូល Player ID / Zone ID!'); return; }
+            if (!playerId) { alert('សូមបញ្ចូល Player ID!'); return; }
             if (!selectedPackage) { alert('សូមជ្រើសរើសកញ្ចប់!'); return; }
 
             if (currentUser && currentUserBalance >= selectedPrice) {
@@ -674,7 +677,7 @@
                 }
             } else {
                 closeOrderModal();
-                showQR(selectedPrice, `Order ${currentSelectedGameTitle}`);
+                showQR(selectedPrice);
                 sendOrderTelegram(playerId, selectedPrice, "Pending (KHQR Scan)");
             }
         }
@@ -683,10 +686,10 @@
             const amount = parseFloat(document.getElementById('depositInput').value);
             if (isNaN(amount) || amount <= 0) { alert('ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ!'); return; }
             closeDepositModal();
-            showQR(amount, "Deposit Balance");
+            showQR(amount);
         }
 
-        function showQR(amount, note) {
+        function showQR(amount) {
             document.getElementById('qrAmountDisplay').innerHTML = `$${amount.toFixed(2)} <span>USD</span>`;
             const qrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, amount);
             QRCode.toCanvas(document.getElementById('qrCanvas'), qrString, { width: 220 });
@@ -694,8 +697,8 @@
         }
 
         async function sendOrderTelegram(playerId, amount, status) {
-            const user = currentUser ? `${currentUser.name} (${currentUser.email})` : 'Guest (មិនបាន Login)';
-            const text = `🔔 **ការបញ្ជាទិញថ្មី (JLASTORE Style)**\n🎮 ហ្គេម: ${currentSelectedGameTitle}\n📦 កញ្ចប់: ${selectedPackage}\n💵 តម្លៃ: $${amount.toFixed(2)}\n🆔 Player ID: \`${playerId}\`\n👤 អតិថិជន: ${user}\n📌 ស្ថានភាព: ${status}`;
+            const user = currentUser ? `${currentUser.name} (${currentUser.email})` : 'Guest';
+            const text = `🔔 **ការបញ្ជាទិញថ្មី**\n🎮 ហ្គេម: ${currentSelectedGameTitle}\n📦 កញ្ចប់: ${selectedPackage}\n💵 តម្លៃ: $${amount.toFixed(2)}\n🆔 Player ID: \`${playerId}\`\n👤 អតិថិជន: ${user}\n📌 ស្ថានភាព: ${status}`;
             await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
