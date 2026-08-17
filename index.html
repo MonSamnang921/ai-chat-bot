@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - បញ្ចូលហ្គេម & អាខោន</title>
+    <title>YUTH STORE - បញ្ចូលពេជ្រហ្គេម</title>
     <!-- Library QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <!-- FontAwesome Icon -->
@@ -17,7 +17,7 @@
     <style>
         * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif, Arial; }
         body { background-color: #0b1120; color: #ffffff; display: flex; justify-content: center; padding: 20px; position: relative; }
-        .container { width: 100%; max-width: 540px; background: #1e293b; padding: 24px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 1px solid #334155; }
+        .container { width: 100%; max-width: 500px; background: #1e293b; padding: 24px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 1px solid #334155; }
         h2 { text-align: center; color: #f59e0b; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px; }
         
         .login-box { text-align: center; padding: 30px 10px; }
@@ -41,36 +41,21 @@
         label { display: block; margin-bottom: 10px; font-weight: bold; font-size: 14px; }
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; }
 
-        /* 🔘 Category Switcher */
-        .category-switcher { display: flex; gap: 8px; margin-bottom: 20px; background: #0f172a; padding: 6px; border-radius: 12px; border: 1px solid #334155; }
-        .cat-btn { flex: 1; padding: 10px 4px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; background: transparent; color: #94a3b8; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .cat-btn.active { background: #f59e0b; color: #000; box-shadow: 0 2px 10px rgba(245,158,11,0.3); }
-
         /* 🎮 Grid Game */
         .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         .game-card { background: #334155; padding: 12px 4px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 11px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
         .game-img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         .game-card:hover, .game-card.active { border-color: #f59e0b; background: #0f172a; color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.3); }
 
-        /* 🛍️ Grid Service Selector (សេវាផ្សេងៗ) */
-        .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .service-card { background: #334155; padding: 12px 6px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; font-size: 12px; font-weight: bold; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
-        .service-img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        .service-card:hover, .service-card.active { border-color: #f59e0b; background: #0f172a; color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.3); }
-
-        /* Tabs */
         .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px; }
         .tab-btn { flex: 1; padding: 10px 8px; background: #334155; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; white-space: nowrap; }
         .tab-btn.active { background: #f59e0b; color: #000; }
-
-        /* Grid Packages */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .card { background: #334155; padding: 14px 10px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 100px; }
-        .card:hover, .card.active { border-color: #38bdf8; background: #0f172a; }
-        .card-img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; margin-bottom: 6px; }
-        .card-title { font-weight: bold; font-size: 12px; color: #ffffff; line-height: 1.3; }
+        .card { background: #334155; padding: 14px 10px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85px; }
+        .card:hover, .card.active { border-color: #f59e0b; background: #0f172a; }
+        .card-title { font-weight: bold; font-size: 13px; color: #ffffff; line-height: 1.3; }
         .card-price { color: #f59e0b; font-weight: bold; font-size: 15px; margin-top: 6px; }
-
+        
         .btn { width: 100%; padding: 14px; background: #f59e0b; color: #000; font-weight: bold; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .btn:hover { background: #d97706; }
         
@@ -90,8 +75,6 @@
         .api-key-text { background: #0f172a; color: #fbbf24; border: 1px solid #334155; padding: 10px 12px; border-radius: 8px; font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace; }
         .btn-copy { background: #0284c7; color: #ffffff; border: none; padding: 0 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
         .btn-gen { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; border: none; width: 100%; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        
-        .account-result-box { background: #0f172a; border: 1px solid #22c55e; padding: 14px; border-radius: 10px; margin: 15px 0; word-break: break-all; font-family: monospace; font-size: 13px; color: #4ade80; line-height: 1.6; }
 
         .khqr-card { background: #ffffff; color: #000000; border-radius: 16px; width: 320px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
         .khqr-header { background: #e11d48; padding: 12px 0; text-align: center; }
@@ -110,7 +93,7 @@
 <body>
 
 <div class="container">
-    <h2>YUTH STORE - បញ្ចូលហ្គេម & អាខោន</h2>
+    <h2>YUTH STORE - បញ្ចូលពេជ្រហ្គេម</h2>
 
     <div id="loginSection" class="login-box">
         <i class="fa-solid fa-user-lock"></i>
@@ -143,106 +126,46 @@
             </div>
         </div>
 
-        <!-- 🔘 Category Switcher -->
-        <div class="category-switcher">
-            <button class="cat-btn active" id="btnCatGame" onclick="switchCategory('game')">
-                <i class="fa-solid fa-gamepad"></i> បញ្ចូលហ្គេម (Top Up)
-            </button>
-            <button class="cat-btn" id="btnCatDigital" onclick="switchCategory('digital')">
-                <i class="fa-solid fa-crown"></i> អាខោន & សេវាឌីជីថល
-            </button>
-        </div>
-
-        <!-- 🎮 ផ្នែកហ្គេម (Game Section) -->
-        <div id="gameSelectorSection">
-            <div class="form-group">
-                <label>១. ជ្រើសរើសហ្គេម</label>
-                <div class="game-grid">
-                    <div class="game-card active" onclick="selectGameItem('ff', this)">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" class="game-img" alt="Free Fire">
-                        <span>Free Fire</span>
-                    </div>
-                    <div class="game-card" onclick="selectGameItem('mlbb', this)">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" class="game-img" alt="MLBB">
-                        <span>MLBB</span>
-                    </div>
-                    <div class="game-card" onclick="selectGameItem('pubg', this)">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/PUBG_Mobile_Logo.svg/1200px-PUBG_Mobile_Logo.svg.png" class="game-img" alt="PUBG">
-                        <span>PUBG</span>
-                    </div>
-                    <div class="game-card" onclick="selectGameItem('rov', this)">
-                        <img src="https://play-lh.googleusercontent.com/zW-n0p0g8w9vYnQG7v_f8b4g2yC8-qZ8w2xY7v9w" class="game-img" alt="ROV" onerror="this.src='https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png'">
-                        <span>ROV</span>
-                    </div>
+        <!-- 🎮 ផ្នែកហ្គេម -->
+        <div class="form-group">
+            <label>១. ជ្រើសរើសហ្គេម</label>
+            <div class="game-grid">
+                <div class="game-card active" onclick="selectGame('ff', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" class="game-img" alt="Free Fire">
+                    <span>Free Fire</span>
                 </div>
-            </div>
-
-            <!-- បញ្ចូល Player ID -->
-            <div class="form-group">
-                <label for="playerId">២. បញ្ចូល Player ID</label>
-                <input type="text" id="playerId" placeholder="បញ្ចូល ID អ្នកលេង (ឧទាហរណ៍: 123456789)">
+                <div class="game-card" onclick="selectGame('mlbb', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" class="game-img" alt="MLBB">
+                    <span>MLBB</span>
+                </div>
+                <div class="game-card" onclick="selectGame('pubg', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/PUBG_Mobile_Logo.svg/1200px-PUBG_Mobile_Logo.svg.png" class="game-img" alt="PUBG">
+                    <span>PUBG</span>
+                </div>
+                <div class="game-card" onclick="selectGame('rov', this)">
+                    <img src="https://play-lh.googleusercontent.com/zW-n0p0g8w9vYnQG7v_f8b4g2yC8-qZ8w2xY7v9w" class="game-img" alt="ROV" onerror="this.src='https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png'">
+                    <span>ROV</span>
+                </div>
             </div>
         </div>
 
-        <!-- 🛍️ ផ្នែកសេវាឌីជីថល (Digital Accounts Section) -->
-        <div id="digitalSelectorSection" style="display: none;">
-            <div class="form-group">
-                <label>១. ជ្រើសរើសសេវាកម្ម</label>
-                <div class="service-grid">
-                    <div class="service-card active" onclick="selectDigitalItem('capcut', this)">
-                        <img src="https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" class="service-img" alt="CapCut">
-                        <span>CapCut Pro</span>
-                    </div>
-                    <div class="service-card" onclick="selectDigitalItem('ai_tools', this)">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png" class="service-img" alt="Gemini">
-                        <span>Gemini / AI</span>
-                    </div>
-                    <div class="service-card" onclick="selectDigitalItem('netflix', this)">
-                        <img src="https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png" class="service-img" alt="Netflix">
-                        <span>Netflix</span>
-                    </div>
-                    <div class="service-card" onclick="selectDigitalItem('vpn', this)">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/NordVPN_logo.svg/1200px-NordVPN_logo.svg.png" class="service-img" alt="VPN">
-                        <span>VPN Services</span>
-                    </div>
-                    <div class="service-card" onclick="selectDigitalItem('ms_office', this)">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_logo_%282019%E2%80%93present%29.svg.png" class="service-img" alt="Office">
-                        <span>Office / Win</span>
-                    </div>
-                    <div class="service-card" onclick="selectDigitalItem('facebook', this)">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" class="service-img" alt="Facebook">
-                        <span>FB Accounts</span>
-                    </div>
-                </div>
-            </div>
+        <!-- បញ្ចូល Player ID -->
+        <div class="form-group">
+            <label for="playerId">២. បញ្ចូល Player ID</label>
+            <input type="text" id="playerId" placeholder="បញ្ចូល ID អ្នកលេង (ឧទាហរណ៍: 123456789)">
         </div>
 
         <!-- ជ្រើសរើសកញ្ចប់ -->
         <div class="form-group">
-            <label id="packageSectionLabel">៣. ជ្រើសរើសកញ្ចប់ពេជ្រ Free Fire</label>
+            <label id="packageSectionLabel">៣. ជ្រើសរើសកញ្ចប់ពេជ្រ</label>
             <div id="packageContainer"></div>
         </div>
 
-        <button class="btn" onclick="handlePurchase()"><i class="fa-solid fa-cart-shopping"></i> ទូទាត់ប្រាក់ឥឡូវនេះ</button>
+        <button class="btn" onclick="handlePurchase()"><i class="fa-solid fa-cart-shopping"></i> ទិញឥឡូវនេះ</button>
 
         <a href="https://t.me/MeiKhmer" target="_blank" class="contact-admin-btn">
             <i class="fa-brands fa-telegram" style="font-size:20px;"></i> ទាក់ទង Admin តាម Telegram (@MeiKhmer)
         </a>
-    </div>
-</div>
-
-<!-- Modal បង្ហាញ Account ពេលកាត់លុយកាបូបជោគជ័យ -->
-<div class="modal" id="accountResultModal">
-    <div class="modal-content">
-        <div class="modal-title" style="color:#22c55e;"><i class="fa-solid fa-circle-check"></i> ការទិញបានជោគជ័យ!</div>
-        <p style="font-size:13px; color:#94a3b8; margin:0;">នេះជាព័ត៌មានគណនី / Code / Key របស់អ្នក៖</p>
-        
-        <div class="account-result-box" id="accountResultText">
-            Account Info
-        </div>
-
-        <button class="btn" onclick="copyAccountInfo()" style="background:#0284c7; color:#fff; font-size:15px; padding:11px;"><i class="fa-solid fa-copy"></i> ចម្លងព័ត៌មាន (Copy)</button>
-        <button class="btn-close-modal" onclick="closeAccountResultModal()">រួចរាល់</button>
     </div>
 </div>
 
@@ -275,7 +198,6 @@
 <div class="modal" id="settingsModal">
     <div class="modal-content">
         <div class="modal-title" style="color:#38bdf8;"><i class="fa-solid fa-gear"></i> ការកំណត់គណនី និង Reseller API</div>
-        
         <div style="margin-bottom: 15px;">
             <label style="font-size: 13px; color: #94a3b8;">🔑 កូដសម្ងាត់ API Key របស់អ្នក៖</label>
             <div class="api-input-wrap" style="margin-top:6px;">
@@ -284,12 +206,6 @@
             </div>
             <button class="btn-gen" onclick="generateApiKey()"><i class="fa-solid fa-arrows-rotate"></i> បង្កើត / ផ្លាស់ប្តូរ API Key ថ្មី</button>
         </div>
-
-        <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; font-size:12px; color:#cbd5e1; line-height:1.5;">
-            📌 <b>របៀបប្រើប្រាស់៖</b><br>
-            យក API Key នេះទៅភ្ជាប់ជាមួយ Telegram Bot របស់អ្នក ដើម្បីកាត់លុយ និងបញ្ជាទិញដោយស្វ័យប្រវត្តិ។
-        </div>
-
         <button class="btn-close-modal" onclick="closeSettingsModal()">បិទ</button>
     </div>
 </div>
@@ -300,26 +216,13 @@
         <div class="khqr-header">
             <h1 class="khqr-header-title">KHQR</h1>
         </div>
-
         <div class="khqr-body">
             <div class="khqr-merchant">YUTH STORE</div>
             <div class="khqr-amount" id="displayAmount">0.00 <span>USD</span></div>
-
             <div class="khqr-divider"></div>
-
             <div class="khqr-qr-box">
                 <canvas id="qrcodeCanvas"></canvas>
             </div>
-
-            <!-- សារព្រមានច្បាស់ៗ៖ ត្រូវតែបាញ់លុយ រួចទាក់ទង Admin ពិនិត្យទើបបាន Account -->
-            <div class="loader-box">
-                ⚠️ <b>ការជូនដំណឹងសំខាន់៖</b><br>
-                សូមស្កេនបាញ់ប្រាក់ឱ្យបានត្រឹមត្រូវ។ បន្ទាប់ពីបាញ់រួច សូមផ្ញើវិក្កយបត្រ (Receipt) ទៅកាន់ Admin តាម Telegram ដើម្បីផ្ទៀងផ្ទាត់ និងទទួលយក Account ភ្លាមៗ!
-            </div>
-
-            <a href="https://t.me/MeiKhmer" target="_blank" class="contact-admin-btn" style="margin-top: 12px; padding: 10px; font-size: 14px;">
-                <i class="fa-brands fa-telegram"></i> ផ្ញើវិក្កយបត្រទៅ Admin (@MeiKhmer)
-            </a>
             <button class="btn-close-modal" onclick="closeModal()" style="background:#e2e8f0; color:#334155; margin-top:8px;">បិទផ្ទាំងនេះ</button>
         </div>
     </div>
@@ -347,11 +250,9 @@
     let currentUserBalance = 0.00;
     let currentApiKey = "";
     
-    let currentMainCategory = 'game';
     let currentActiveKey = 'ff';
     let selectedPackage = null;
     let selectedPrice = 0;
-    let generatedAccountData = "";
 
     function parseJwt (token) {
         var base64Url = token.split('.')[1];
@@ -365,10 +266,8 @@
     function handleCredentialResponse(response) {
         const responsePayload = parseJwt(response.credential);
         currentUser = responsePayload;
-
         document.getElementById('userName').innerText = responsePayload.name;
         document.getElementById('userImg').src = responsePayload.picture;
-
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('shopSection').style.display = 'block';
 
@@ -380,88 +279,30 @@
                 currentApiKey = data.apiKey || "";
             } else {
                 userDocRef.set({ name: currentUser.name, balance: 0.00, apiKey: "" });
-                currentUserBalance = 0.00;
-                currentApiKey = "";
             }
             document.getElementById('userBalance').innerText = `$${currentUserBalance.toFixed(2)}`;
-            document.getElementById('apiKeyDisplay').innerText = currentApiKey || "មិនទាន់មាន API Key នៅឡើយទេ";
+            document.getElementById('apiKeyDisplay').innerText = currentApiKey || "មិនទាន់មាន API Key";
         });
     }
 
+    /* Modal Controls */
     function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
     function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
     function setDepositAmount(amount) { document.getElementById('customDepositAmount').value = amount; }
-
     function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
     function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
+    function closeModal() { document.getElementById('qrModal').style.display = 'none'; }
 
-    function closeAccountResultModal() { document.getElementById('accountResultModal').style.display = 'none'; }
-    function copyAccountInfo() {
-        navigator.clipboard.writeText(generatedAccountData).then(() => {
-            alert('📋 បាន Copy ព័ត៌មានរួចរាល់!');
-        });
-    }
-
-    function switchCategory(cat) {
-        currentMainCategory = cat;
-        selectedPackage = null;
-        selectedPrice = 0;
-
-        if (cat === 'game') {
-            document.getElementById('btnCatGame').classList.add('active');
-            document.getElementById('btnCatDigital').classList.remove('active');
-            document.getElementById('gameSelectorSection').style.display = 'block';
-            document.getElementById('digitalSelectorSection').style.display = 'none';
-            document.getElementById('packageSectionLabel').innerText = "៣. ជ្រើសរើសកញ្ចប់ពេជ្រ Free Fire";
-            currentActiveKey = 'ff';
-            
-            document.querySelectorAll('.game-card').forEach((el, idx) => {
-                if(idx === 0) el.classList.add('active'); else el.classList.remove('active');
-            });
-        } else {
-            document.getElementById('btnCatDigital').classList.add('active');
-            document.getElementById('btnCatGame').classList.remove('active');
-            document.getElementById('gameSelectorSection').style.display = 'none';
-            document.getElementById('digitalSelectorSection').style.display = 'block';
-            document.getElementById('packageSectionLabel').innerText = "២. ជ្រើសរើសកញ្ចប់សេវាកម្ម";
-            currentActiveKey = 'capcut';
-            
-            document.querySelectorAll('.service-card').forEach((el, idx) => {
-                if(idx === 0) el.classList.add('active'); else el.classList.remove('active');
-            });
-        }
-
-        renderPackages();
-    }
-
-    function selectGameItem(gameKey, element) {
+    function selectGame(gameKey, element) {
         document.querySelectorAll('.game-card').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
         currentActiveKey = gameKey;
         selectedPackage = null;
         selectedPrice = 0;
-        
-        const labels = {
-            ff: "៣. ជ្រើសរើសកញ្ចប់ពេជ្រ Free Fire",
-            mlbb: "៣. ជ្រើសរើសកញ្ចប់ Diamonds MLBB",
-            pubg: "៣. ជ្រើសរើសកញ្ចប់ UC PUBG",
-            rov: "៣. ជ្រើសរើសកញ្ចប់ Coupons ROV"
-        };
-        document.getElementById('packageSectionLabel').innerText = labels[gameKey];
         renderPackages();
     }
 
-    function selectDigitalItem(serviceKey, element) {
-        document.querySelectorAll('.service-card').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-        currentActiveKey = serviceKey;
-        selectedPackage = null;
-        selectedPrice = 0;
-        document.getElementById('packageSectionLabel').innerText = "២. ជ្រើសរើសកញ្ចប់សេវាកម្ម";
-        renderPackages();
-    }
-
-    const fullStoreData = {
+    const gameData = {
         ff: {
             tabs: [
                 { name: '💎 ពេជ្ររាយ', id: 'ff_diamonds' },
@@ -469,18 +310,18 @@
             ],
             packages: {
                 ff_diamonds: [
-                    { name: '💎 100 ពេជ្រ', price: 0.05, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" },
-                    { name: '💎 500 ពេជ្រ', price: 0.15, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" },
-                    { name: '💎 1,000 ពេជ្រ', price: 0.40, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" },
-                    { name: '💎 5,000 ពេជ្រ', price: 0.80, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" },
-                    { name: '💎 10,000 ពេជ្រ', price: 1.20, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" },
-                    { name: '💎 100,000 ពេជ្រ', price: 3.20, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" }
+                    { name: '💎 100 ពេជ្រ', price: 0.05 },
+                    { name: '💎 500 ពេជ្រ', price: 0.15 },
+                    { name: '💎 1,000 ពេជ្រ', price: 0.40 },
+                    { name: '💎 5,000 ពេជ្រ', price: 0.80 },
+                    { name: '💎 10,000 ពេជ្រ', price: 1.20 },
+                    { name: '💎 100,000 ពេជ្រ', price: 3.20 }
                 ],
                 ff_membership: [
-                    { name: '📅 កាតប្រចាំសប្តាហ៍', price: 3.50, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" },
-                    { name: '📆 កាតប្រចាំខែ (100💎/ថ្ងៃ សរុប 1300💎)', price: 5.00, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" },
-                    { name: '🔫 EVO Gun Pass', price: 4.50, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" },
-                    { name: '⬆️ Level Up Pass', price: 8.00, img: "https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Garena_Free_Fire_Logo.svg/1200px-Garena_Free_Fire_Logo.svg.png" }
+                    { name: '📅 កាតប្រចាំសប្តាហ៍', price: 3.50 },
+                    { name: '📆 កាតប្រចាំខែ (1300💎)', price: 5.00 },
+                    { name: '🔫 EVO Gun Pass', price: 4.50 },
+                    { name: '⬆️ Level Up Pass', price: 8.00 }
                 ]
             }
         },
@@ -491,14 +332,13 @@
             ],
             packages: {
                 ml_diamonds: [
-                    { name: '💎 86 Diamonds', price: 1.50, img: "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" },
-                    { name: '💎 172 Diamonds', price: 3.00, img: "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" },
-                    { name: '💎 257 Diamonds', price: 4.50, img: "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" },
-                    { name: '💎 706 Diamonds', price: 11.50, img: "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" }
+                    { name: '💎 86 Diamonds', price: 1.50 },
+                    { name: '💎 172 Diamonds', price: 3.00 },
+                    { name: '💎 257 Diamonds', price: 4.50 },
+                    { name: '💎 706 Diamonds', price: 11.50 }
                 ],
                 ml_pass: [
-                    { name: '🌟 Weekly Diamond Pass (1X)', price: 2.20, img: "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" },
-                    { name: '🌟 Weekly Diamond Pass (2X)', price: 4.30, img: "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Mobile_Legends_Bang_Bang_logo.png/250px-Mobile_Legends_Bang_Bang_logo.png" }
+                    { name: '🌟 Weekly Pass', price: 2.20 }
                 ]
             }
         },
@@ -506,9 +346,9 @@
             tabs: [{ name: '💵 UC', id: 'pubg_uc' }],
             packages: {
                 pubg_uc: [
-                    { name: '💵 60 UC', price: 0.99, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/PUBG_Mobile_Logo.svg/1200px-PUBG_Mobile_Logo.svg.png" },
-                    { name: '💵 325 UC', price: 4.99, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/PUBG_Mobile_Logo.svg/1200px-PUBG_Mobile_Logo.svg.png" },
-                    { name: '💵 660 UC', price: 9.99, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/PUBG_Mobile_Logo.svg/1200px-PUBG_Mobile_Logo.svg.png" }
+                    { name: '💵 60 UC', price: 0.99 },
+                    { name: '💵 325 UC', price: 4.99 },
+                    { name: '💵 660 UC', price: 9.99 }
                 ]
             }
         },
@@ -516,83 +356,18 @@
             tabs: [{ name: '🎟️ Coupons', id: 'rov_coupons' }],
             packages: {
                 rov_coupons: [
-                    { name: '🎟️ 35 Coupons', price: 1.00, img: "https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png" },
-                    { name: '🎟️ 175 Coupons', price: 5.00, img: "https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png" }
-                ]
-            }
-        },
-        capcut: {
-            tabs: [{ name: 'CapCut Pro', id: 'capcut_tab' }],
-            packages: {
-                capcut_tab: [
-                    { name: "Capcut Pro (7 ថ្ងៃ)", price: 1.25, img: "https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" },
-                    { name: "Capcut Pro (1 ខែ)", price: 3.29, img: "https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" },
-                    { name: "Capcut Pro (6 ខែ)", price: 13.00, img: "https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" },
-                    { name: "Capcut Pro (1 ឆ្នាំ)", price: 24.00, img: "https://assets.stickpng.com/images/62bf1c9c7f66a2f7c006579c.png" }
-                ]
-            }
-        },
-        ai_tools: {
-            tabs: [{ name: 'AI Tools', id: 'ai_tab' }],
-            packages: {
-                ai_tab: [
-                    { name: "ChatGPT Plus (1 ខែ)", price: 6.85, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png" },
-                    { name: "Gemini Pro (18 ខែ)", price: 2.52, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png" },
-                    { name: "Claude API $100 (10 ថ្ងៃ)", price: 8.25, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Anthropic_logo.svg/1200px-Anthropic_logo.svg.png" },
-                    { name: "edX Premium (12 ខែ)", price: 5.40, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/EdX.svg/1200px-EdX.svg.png" }
-                ]
-            }
-        },
-        netflix: {
-            tabs: [{ name: 'Entertainment', id: 'netflix_tab' }],
-            packages: {
-                netflix_tab: [
-                    { name: "Netflix Premium 4K (1 ខែ)", price: 3.50, img: "https://assets.stickpng.com/images/580b57fcd9996e24bc43c529.png" },
-                    { name: "HBO MAX Standard (1 ខែ)", price: 4.60, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/HBO_Max_Logo.svg/1200px-HBO_Max_Logo.svg.png" },
-                    { name: "Spotify Premium (2 ខែ)", price: 3.70, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png" },
-                    { name: "Amazon Prime Video (6 ខែ)", price: 5.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Prime_Video.png/1200px-Prime_Video.png" }
-                ]
-            }
-        },
-        vpn: {
-            tabs: [{ name: 'VPN Services', id: 'vpn_tab' }],
-            packages: {
-                vpn_tab: [
-                    { name: "Proton VPN Plus (1 ខែ)", price: 6.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/ProtonVPN_logo.svg/1200px-ProtonVPN_logo.svg.png" },
-                    { name: "NordVPN Premium (3 ខែ)", price: 5.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/NordVPN_logo.svg/1200px-NordVPN_logo.svg.png" },
-                    { name: "NordVPN Premium (1 ឆ្នាំ)", price: 15.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/NordVPN_logo.svg/1200px-NordVPN_logo.svg.png" }
-                ]
-            }
-        },
-        ms_office: {
-            tabs: [{ name: 'Microsoft / Windows', id: 'ms_tab' }],
-            packages: {
-                ms_tab: [
-                    { name: "Microsoft 365 Family (6 ខែ)", price: 6.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_logo_%282019%E2%80%93present%29.svg.png" },
-                    { name: "Microsoft Office 365 (1 ឆ្នាំ)", price: 4.30, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg/1200px-Microsoft_Office_logo_%282019%E2%80%93present%29.svg.png" },
-                    { name: "Windows 10 Pro Retail (2 ឆ្នាំ)", price: 5.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Windows_logo_-_2012_%28dark_blue%29.svg/1024px-Windows_logo_-_2012_%28dark_blue%29.svg.png" },
-                    { name: "Windows 11 Pro Retail (2 ឆ្នាំ)", price: 5.65, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Windows_logo_-_2021.svg/1024px-Windows_logo_-_2021.svg.png" }
-                ]
-            }
-        },
-        facebook: {
-            tabs: [{ name: 'Facebook Accounts', id: 'fb_tab' }],
-            packages: {
-                fb_tab: [
-                    { name: "FB Clone Active (អាយុ 1 ខែ)", price: 0.30, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" },
-                    { name: "FB 2FA + Cookie (អាយុ 6 ខែ)", price: 1.20, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" },
-                    { name: "FB Profile Pro (អាយុ 1 ឆ្នាំ)", price: 2.50, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" },
-                    { name: "FB ចាស់ឆ្នាំ / Ads BM (អាយុ 2-5 ឆ្នាំ)", price: 5.00, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" }
+                    { name: '🎟️ 35 Coupons', price: 1.00 },
+                    { name: '🎟️ 175 Coupons', price: 5.00 },
+                    { name: '🎟️ 350 Coupons', price: 10.00 }
                 ]
             }
         }
     };
 
     function renderPackages() {
-        const data = fullStoreData[currentActiveKey];
+        const data = gameData[currentActiveKey];
         const container = document.getElementById('packageContainer');
         container.innerHTML = '';
-
         if (data.tabs.length > 1) {
             const tabsDiv = document.createElement('div');
             tabsDiv.className = 'tabs';
@@ -605,30 +380,18 @@
             });
             container.appendChild(tabsDiv);
         }
-
         data.tabs.forEach((tab, index) => {
             const gridDiv = document.createElement('div');
             gridDiv.className = 'grid';
             gridDiv.id = tab.id;
             gridDiv.style.display = index === 0 ? 'grid' : 'none';
-
-            data.packages[tab.id].forEach((item, itemIdx) => {
+            data.packages[tab.id].forEach(item => {
                 const card = document.createElement('div');
-                card.className = `card ${itemIdx === 0 && index === 0 ? 'active' : ''}`;
-                if(itemIdx === 0 && index === 0) {
-                    selectedPackage = item.name;
-                    selectedPrice = item.price;
-                }
-
-                card.innerHTML = `
-                    <img src="${item.img}" class="card-img" alt="${item.name}">
-                    <div class="card-title">${item.name}</div>
-                    <div class="card-price">$${item.price.toFixed(2)}</div>
-                `;
+                card.className = 'card';
+                card.innerHTML = `<div class="card-title">${item.name}</div><div class="card-price">$${item.price.toFixed(2)}</div>`;
                 card.onclick = () => selectItem(card, item.name, item.price);
                 gridDiv.appendChild(card);
             });
-
             container.appendChild(gridDiv);
         });
     }
@@ -636,15 +399,8 @@
     function switchTab(tabId, btnElement) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         btnElement.classList.add('active');
-
-        document.querySelectorAll('#packageContainer .grid').forEach(grid => {
-            grid.style.display = 'none';
-        });
+        document.querySelectorAll('#packageContainer .grid').forEach(grid => grid.style.display = 'none');
         document.getElementById(tabId).style.display = 'grid';
-
-        document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
-        selectedPackage = null;
-        selectedPrice = 0;
     }
 
     function selectItem(element, packageName, price) {
@@ -654,195 +410,35 @@
         selectedPrice = price;
     }
 
-    function crc16(data) {
-        let crc = 0xFFFF;
-        for (let i = 0; i < data.length; i++) {
-            crc ^= data.charCodeAt(i) << 8;
-            for (let j = 0; j < 8; j++) {
-                if ((crc & 0x8000) !== 0) {
-                    crc = (crc << 1) ^ 0x1021;
-                } else {
-                    crc = crc << 1;
-                }
-            }
-        }
-        crc = crc & 0xFFFF;
-        return crc.toString(16).toUpperCase().padStart(4, '0');
-    }
-
-    function generateKHQRString(bakongId, merchantName, amount) {
-        const formattedAmount = parseFloat(amount).toFixed(2);
-        const accountStr = `00${bakongId.length.toString().padStart(2, '0')}${bakongId}`;
-        const tag29 = `29${accountStr.length.toString().padStart(2, '0')}${accountStr}`;
-        const currencyTag = "5303840";
-        const amountTag = `54${formattedAmount.length.toString().padStart(2, '0')}${formattedAmount}`;
-        
-        const payload = 
-            "000201" +
-            "010212" +
-            tag29 +
-            "52045999" +
-            currencyTag +
-            amountTag +
-            "5802KH" +
-            `59${merchantName.length.toString().padStart(2, '0')}${merchantName}` +
-            "6010Phnom Penh" +
-            "6304";
-
-        const crc = crc16(payload);
-        return payload + crc;
-    }
-
     async function handlePurchase() {
         let playerId = document.getElementById('playerId').value;
+        if (!playerId) { alert('សូមបញ្ចូល Player ID!'); return; }
+        if (!selectedPackage) { alert('សូមជ្រើសរើសកញ្ចប់!'); return; }
 
-        if (currentMainCategory === 'game' && !playerId) {
-            alert('សូមបញ្ចូល Player ID សម្រាប់ហ្គេម!');
-            return;
-        }
-        if (!selectedPackage) {
-            alert('សូមជ្រើសរើសកញ្ចប់ទំនិញ!');
-            return;
-        }
-
-        // ១. បើភ្ញៀវមានលុយគ្រប់គ្រាន់ក្នុងកាបូប -> កាត់លុយ Wallet ភ្លាម និងប្រគល់ Account ភ្លាម
         if (currentUserBalance >= selectedPrice) {
-            const confirmPay = confirm(`អ្នកមានសមតុល្យ $${currentUserBalance.toFixed(2)}។ តើអ្នកចង់កាត់ $${selectedPrice.toFixed(2)} ដើម្បីទិញ [${selectedPackage}] ដែរឬទេ?`);
+            const confirmPay = confirm(`ទិញ ${selectedPackage} តម្លៃ $${selectedPrice.toFixed(2)}?`);
             if (confirmPay) {
                 const newBalance = currentUserBalance - selectedPrice;
                 await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: newBalance });
-                
-                if (currentMainCategory === 'game') {
-                    alert('✅ ការទូទាត់ជោគជ័យ! ពេជ្រ/ទំនិញ នឹងចូល Account របស់អ្នកក្នុងរយៈពេល 1-3 នាទី!');
-                    sendTelegramNotification(playerId, "PAID (Game Wallet)", selectedPrice);
-                } else {
-                    deliverAccountToUser("PAID (Wallet)");
-                }
+                alert('✅ បានបញ្ជាទិញជោគជ័យ! Admin នឹងបញ្ចូលឱ្យក្នុងពេលឆាប់ៗ!');
+                sendTelegramNotification(playerId, "PAID", selectedPrice);
             }
-        } 
-        // ២. បើភ្ញៀវខ្វះលុយ -> បង្ហាញ KHQR ឱ្យស្កេនបាញ់ប្រាក់ (អត់មានចេញ Account ឱ្យទេ លុះត្រាតែទាក់ទង Admin ពិនិត្យសិន)
-        else {
-            document.getElementById('displayAmount').innerHTML = `${selectedPrice.toFixed(2)} <span>USD</span>`;
-
-            const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, selectedPrice);
-            QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
-                if (error) console.error(error);
-            });
-
-            document.getElementById('qrModal').style.display = 'flex';
-            
-            // ផ្ញើសារប្រាប់ Admin ថាមានអ្នកបើក QR បម្រុងនឹងបាញ់លុយ
-            sendTelegramNotification(playerId || "KHQR Pending", "Pending (Scan KHQR)", selectedPrice);
+        } else {
+            alert('សមតុល្យមិនគ្រប់គ្រាន់!');
+            openDepositModal();
         }
     }
 
-    function deliverAccountToUser(statusText) {
-        const randomKey = "ACC-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-        generatedAccountData = `[ព័ត៌មានអាខោន / KEY]\nសេវាកម្ម: ${selectedPackage}\nKey/Account Info:\n${randomKey}\n\n👉 សូមទាក់ទង Admin តាម Telegram (@MeiKhmer) ដើម្បី Activate ឬទទួលជំនួយ!`;
-
-        document.getElementById('accountResultText').innerText = generatedAccountData;
-        document.getElementById('accountResultModal').style.display = 'flex';
-
-        sendTelegramNotification(randomKey, statusText, selectedPrice, generatedAccountData);
-    }
-
-    async function confirmDepositProcess() {
-        if (!currentUser) return;
-        const depositAmount = parseFloat(document.getElementById('customDepositAmount').value);
-
-        if (isNaN(depositAmount) || depositAmount <= 0) {
-            alert("សូមជ្រើសរើស ឬបញ្ចូលចំនួនទឹកប្រាក់ឱ្យបានត្រឹមត្រូវ!");
-            return;
-        }
-
-        closeDepositModal();
-
-        document.getElementById('displayAmount').innerHTML = `${depositAmount.toFixed(2)} <span>USD</span>`;
-
-        const emvKhqrString = generateKHQRString(BAKONG_ACCOUNT_ID, ACCOUNT_NAME, depositAmount);
-        QRCode.toCanvas(document.getElementById('qrcodeCanvas'), emvKhqrString, { width: 230 }, function (error) {
-            if (error) console.error(error);
+    async function sendTelegramNotification(playerId, status, amount) {
+        const text = `🔔 Order: ${selectedPackage} | តម្លៃ: $${amount} | ID: ${playerId}`;
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
         });
-
-        document.getElementById('qrModal').style.display = 'flex';
-
-        const text = `💰 **មានសំណើសាកលុយចូលកាបូប (Deposit)!**\n\n` +
-                     `👤 អតិថិជន: ${currentUser.name}\n` +
-                     `📧 Email: \`${currentUser.email.toLowerCase()}\`\n` +
-                     `💵 ចំនួនទឹកប្រាក់: $${depositAmount.toFixed(2)}`;
-
-        try {
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
-            });
-        } catch (err) {
-            console.error("Telegram error:", err);
-        }
-    }
-
-    async function generateApiKey() {
-        if (!currentUser) return;
-        const newKey = 'yt_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-        await db.collection('users').doc(currentUser.email.toLowerCase()).update({ apiKey: newKey });
-        alert('✅ បានបង្កើត API Key ថ្មីដោយជោគជ័យ!');
-    }
-
-    function copyApiKey() {
-        if (!currentApiKey) {
-            alert('សូមចុច "បង្កើត API Key ថ្មី" ជាមុនសិន!');
-            return;
-        }
-        navigator.clipboard.writeText(currentApiKey).then(() => {
-            alert('📋 បាន Copy API Key ទៅក្នុង Clipboard រួចរាល់!');
-        });
-    }
-
-    function logout() {
-        currentUser = null;
-        document.getElementById('loginSection').style.display = 'block';
-        document.getElementById('shopSection').style.display = 'none';
-    }
-
-    async function sendTelegramNotification(playerId, status, amount, accInfo = "") {
-        const userEmail = currentUser ? currentUser.email : "មិនបាន Login";
-        const userName = currentUser ? currentUser.name : "N/A";
-        let targetLabel = currentMainCategory === 'game' ? "🆔 Player ID" : "🔑 License/Key";
-
-        let text = `🔔 **មានការបញ្ជាទិញថ្មី!**\n\n` +
-                   `👤 អតិថិជន: ${userName} (${userEmail})\n` +
-                   `🎮 សេវាកម្ម: ${currentActiveKey.toUpperCase()}\n` +
-                   `${targetLabel}: \`${playerId}\`\n` +
-                   `📦 កញ្ចប់: ${selectedPackage}\n` +
-                   `💵 តម្លៃ: $${amount.toFixed(2)}\n` +
-                   `📌 ស្ថានភាព: ${status}`;
-
-        if (accInfo) {
-            text += `\n\n🎁 **ព័ត៌មានដែលបានប្រគល់ជូនភ្ញៀវ៖**\n\`${accInfo}\``;
-        }
-
-        try {
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: text,
-                    parse_mode: 'Markdown'
-                })
-            });
-        } catch (err) {
-            console.error("Telegram error:", err);
-        }
-    }
-
-    function closeModal() {
-        document.getElementById('qrModal').style.display = 'none';
     }
 
     renderPackages();
 </script>
-
 </body>
 </html>
