@@ -1,8 +1,8 @@
-// ១. អនុគមន៍គណនា CRC16 តាមស្តង់ដារបាគង (CCITT-FALSE)
+// ១. អនុគមន៍គណនា CRC16 CCITT (0x1021) ស្តង់ដារបាគងផ្លូវការ
 function crc16(data) {
     let crc = 0xFFFF;
     for (let i = 0; i < data.length; i++) {
-        crc ^= data.charCodeAt(i) << 8;
+        crc ^= (data.charCodeAt(i) << 8);
         for (let j = 0; j < 8; j++) {
             if ((crc & 0x8000) !== 0) {
                 crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
@@ -14,31 +14,33 @@ function crc16(data) {
     return crc.toString(16).toUpperCase().padStart(4, '0');
 }
 
-// ២. អនុគមន៍បង្កើត EMVCo KHQR បាគង
+// ២. អនុគមន៍បង្កើត EMVCo KHQR សម្រាប់គណនី Bakong Individual
 function generateBakongKHQR(bakongId, merchantName, amountUSD) {
     const formattedAmount = parseFloat(amountUSD).toFixed(2);
     const formatTag = (id, val) => id + val.length.toString().padStart(2, '0') + val;
 
-    // Tag 29: Merchant Account (Bakong ID)
-    const sub00 = formatTag("00", bakongId);
-    const tag29 = formatTag("29", sub00);
+    // Sub-tags សម្រាប់ Merchant Account Information (Tag 29)
+    // 00 = Global Unique ID (bakong@bkrt), 01 = Bakong ID (mon_samnang@bkrt)
+    const sub00 = formatTag("00", "bakong@bkrt");
+    const sub01 = formatTag("01", bakongId);
+    const tag29 = formatTag("29", sub00 + sub01);
 
-    const tag00 = formatTag("00", "01");               // Format Version
+    const tag00 = formatTag("00", "01");               // Payload Format
     const tag01 = formatTag("01", "12");               // Dynamic QR
-    const tag52 = formatTag("52", "5999");             // Category
-    const tag53 = formatTag("53", "840");              // 840 = USD
-    const tag54 = formatTag("54", formattedAmount);    // ចំនួនទឹកប្រាក់
-    const tag58 = formatTag("58", "KH");               // ប្រទេស
+    const tag52 = formatTag("52", "5999");             // Merchant Category
+    const tag53 = formatTag("53", "840");              // Currency (840 = USD)
+    const tag54 = formatTag("54", formattedAmount);    // ចំនួនទឹកប្រាក់ ($)
+    const tag58 = formatTag("58", "KH");               // ប្រទេសកម្ពុជា
     const tag59 = formatTag("59", merchantName);       // ឈ្មោះអ្នកទទួល
     const tag60 = formatTag("60", "Phnom Penh");       // ទីក្រុង
 
+    // ផ្គុំ string មុនពេលបូក CRC16 Checksum
     const rawData = tag00 + tag01 + tag29 + tag52 + tag53 + tag54 + tag58 + tag59 + tag60 + "6304";
     return rawData + crc16(rawData);
 }
 
-// ៣. បង្ហាញ QR Code លើផ្ទាំង Canvas
+// ៣. បង្ហាញ QR Code លើ Canvas
 function showQR(amountUSD) {
-    // ព័ត៌មានតាម Bakong App របស់អ្នកផ្ទាល់
     const BAKONG_ID = "mon_samnang@bkrt"; 
     const MERCHANT = "SAMNANG MON";
 
@@ -46,10 +48,11 @@ function showQR(amountUSD) {
 
     document.getElementById('qrAmountDisplay').innerText = parseFloat(amountUSD).toFixed(2);
 
+    // គូរ QR Code ទៅលើ Canvas
     QRCode.toCanvas(document.getElementById('qrCanvas'), khqrPayload, {
         width: 220,
         margin: 1,
-        errorCorrectionLevel: 'M'
+        errorCorrectionLevel: 'L'
     }, function (error) {
         if (error) console.error("QR Error:", error);
     });
