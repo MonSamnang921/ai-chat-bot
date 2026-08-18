@@ -1,23 +1,45 @@
-function showQR(amountUSD) {
-    const BAKONG_ID = "samnang_mon@bkrt"; // ដាក់ Bakong ID របស់អ្នក
-    const MERCHANT = "YUTH STORE";          // ឈ្មោះហាង
-
-    // បង្កើត String តាមស្តង់ដារបាគង
-    const khqrString = generateBakongKHQR(BAKONG_ID, MERCHANT, amountUSD);
-
-    document.getElementById('qrAmountDisplay').innerText = parseFloat(amountUSD).toFixed(2);
-
-    // បង្កើត QR Code លើផ្ទាំង Canvas
-    QRCode.toCanvas(document.getElementById('qrCanvas'), khqrString, {
-        width: 210,
-        margin: 1,
-        color: {
-            dark: '#000000',
-            light: '#ffffff'
+// ១. អនុគមន៍គណនា CRC16 តាមស្ដង់ដារបាគង (CCITT-FALSE 0x1021)
+function crc16(data) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < data.length; i++) {
+        crc ^= data.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+            if ((crc & 0x8000) !== 0) {
+                crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+            } else {
+                crc = (crc << 1) & 0xFFFF;
+            }
         }
-    }, function (error) {
-        if (error) console.error(error);
-    });
+    }
+    return crc.toString(16).toUpperCase().padStart(4, '0');
+}
 
-    document.getElementById('qrModal').style.display = 'flex';
+// ២. អនុគមន៍បង្កើត EMVCo KHQR ត្រឹមត្រូវតាមស្ដង់ដារ ABA / Bakong
+function generateBakongKHQR(bakongId, merchantName, amountUSD) {
+    const formattedAmount = parseFloat(amountUSD).toFixed(2);
+    
+    // Format Tag Helper
+    const formatTag = (id, val) => id + val.length.toString().padStart(2, '0') + val;
+
+    // Sub-tags សម្រាប់ Tag 29 (Merchant Account Information)
+    const sub00 = formatTag("00", "bakong@bkrt"); // Global Unique Identifier
+    const sub01 = formatTag("01", bakongId);       // Bakong Account ID របស់អ្នក
+    const tag29 = formatTag("29", sub00 + sub01);
+
+    // រៀបចំបណ្តា Tags សំខាន់ៗ
+    const tag00 = formatTag("00", "01");               // Payload Format Indicator
+    const tag01 = formatTag("01", "12");               // Point of Initiation (Dynamic QR = 12)
+    const tag52 = formatTag("52", "5999");             // Merchant Category Code
+    const tag53 = formatTag("53", "840");              // Currency (840 = USD)
+    const tag54 = formatTag("54", formattedAmount);    // Transaction Amount
+    const tag58 = formatTag("58", "KH");               // Country Code
+    const tag59 = formatTag("59", merchantName);       // Merchant Name
+    const tag60 = formatTag("60", "Phnom Penh");       // Merchant City
+
+    // ផ្គុំខ្សែអក្សរចូលគ្នា
+    const rawData = tag00 + tag01 + tag29 + tag52 + tag53 + tag54 + tag58 + tag59 + tag60 + "6304";
+    
+    // បូកលេខត្រួតពិនិត្យ CRC16 នៅខាងចុង
+    const checksum = crc16(rawData);
+    return rawData + checksum;
 }
