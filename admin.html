@@ -3,66 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - Admin Panel</title>
+    <title>YUTH STORE - Admin Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', sans-serif; }
         body { background-color: #0f172a; color: #f8fafc; padding: 24px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; border-bottom: 1px solid #334155; padding-bottom: 16px; }
+        .header h1 { font-size: 22px; font-weight: 900; color: #e11d48; display: flex; align-items: center; gap: 10px; }
+        .nav-links a { color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 700; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .stat-online { background: #064e3b; color: #34d399; }
+        .stat-users { background: #1e3a8a; color: #60a5fa; }
+        .stat-discount { background: #831843; color: #f472b6; }
+        .stat-val { font-size: 24px; font-weight: 900; }
+        .stat-lbl { font-size: 12px; color: #94a3b8; font-weight: 700; }
+
+        /* Layout Grid */
         .admin-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 1024px) { .admin-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 850px) { .admin-layout { grid-template-columns: 1fr; } }
+
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; outline: none; }
-        .btn-submit { padding: 10px 20px; background: #e11d48; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; }
-        .chat-container { display: flex; height: 400px; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
-        .chat-clients-list { width: 160px; background: #0f172a; border-right: 1px solid #334155; overflow-y: auto; }
-        .chat-client-item { padding: 12px; font-size: 12px; font-weight: 700; cursor: pointer; border-bottom: 1px solid #1e293b; }
+        .card h2 { font-size: 16px; font-weight: 800; margin-bottom: 14px; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #94a3b8; }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        .btn-save {
+            padding: 10px 20px;
+            background: #e11d48;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* 💬 Chat Box Admin */
+        .chat-container { display: flex; height: 350px; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
+        .chat-clients-list { width: 140px; background: #0f172a; border-right: 1px solid #334155; overflow-y: auto; }
+        .chat-client-item { padding: 10px; font-size: 12px; font-weight: 700; cursor: pointer; border-bottom: 1px solid #1e293b; }
         .chat-client-item.active { background: #1e293b; color: #38bdf8; }
-        .chat-conversation { flex: 1; display: flex; flex-direction: column; }
-        .admin-chat-msgs { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .admin-bubble { padding: 6px 10px; border-radius: 10px; max-width: 80%; }
-        .admin-bubble.guest { align-self: flex-start; background: #334155; }
-        .admin-bubble.admin { align-self: flex-end; background: #e11d48; }
-        .admin-chat-input { display: flex; padding: 10px; background: #0f172a; border-top: 1px solid #334155; gap: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
-        .btn-table { padding: 5px 10px; background: #0284c7; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+        .chat-conversation { flex: 1; display: flex; flex-direction: column; background: #1e293b; }
+        .admin-chat-msgs { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+        .admin-bubble { padding: 6px 10px; border-radius: 8px; max-width: 80%; }
+        .admin-bubble.guest { align-self: flex-start; background: #334155; color: #fff; }
+        .admin-bubble.admin { align-self: flex-end; background: #0284c7; color: #fff; }
+        .admin-chat-input { display: flex; padding: 8px; background: #0f172a; border-top: 1px solid #334155; gap: 6px; }
+        .admin-chat-input input { flex: 1; padding: 7px 10px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: #fff; font-size: 12px; outline: none; }
+        .admin-chat-input button { background: #0284c7; color: #fff; border: none; padding: 0 12px; border-radius: 6px; cursor: pointer; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12.5px; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #334155; }
+        th { color: #94a3b8; font-weight: 800; }
+        .btn-action { background: #0284c7; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="header"><h1>YUTH STORE - Admin Management</h1><div>Online Client: <span id="onlineCount">1</span></div></div>
+        <div class="header">
+            <h1><i class="fa-solid fa-gauge-high"></i> ADMIN DASHBOARD</h1>
+            <div class="nav-links">
+                <a href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> មើលទំព័រភ្ញៀវ</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon stat-online"><i class="fa-solid fa-users"></i></div>
+                <div>
+                    <div class="stat-val" id="adminOnlineCount">0</div>
+                    <div class="stat-lbl">អ្នកចូលទស្សនា Live Online</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-users"><i class="fa-solid fa-user-check"></i></div>
+                <div>
+                    <div class="stat-val" id="adminTotalUsers">0</div>
+                    <div class="stat-lbl">សរុបគណនីភ្ញៀវទាំងអស់</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-discount"><i class="fa-solid fa-percent"></i></div>
+                <div>
+                    <div class="stat-val" id="adminCurrentDiscount">0%</div>
+                    <div class="stat-lbl">ភាគរយ Discount កំពុងដំណើរការ</div>
+                </div>
+            </div>
+        </div>
+
         <div class="admin-layout">
             <div class="card">
-                <h2><i class="fa-solid fa-tags"></i> បញ្ចុះតម្លៃទូទាំងវេបសាយ (%)</h2>
-                <input type="number" id="discountInput" class="form-control" placeholder="ភាគរយបញ្ចុះតម្លៃ" style="margin-bottom:12px;">
-                <button class="btn-submit" onclick="setDiscount()">រក្សាទុក</button>
-            </div>
-            <div class="card">
-                <h2><i class="fa-solid fa-comments"></i> Live Chat Panel</h2>
+                <h2><i class="fa-solid fa-comments"></i> ជជែកជាមួយភ្ញៀវ (Live Support)</h2>
                 <div class="chat-container">
-                    <div class="chat-clients-list" id="chatClientsList"></div>
+                    <div class="chat-clients-list" id="chatClientsList">
+                        <div style="padding:10px; color:#64748b; font-size:11px;">គ្មានភ្ញៀវ...</div>
+                    </div>
                     <div class="chat-conversation">
-                        <div class="admin-chat-msgs" id="adminChatMessagesBox"></div>
+                        <div class="admin-chat-msgs" id="adminChatMessagesBox">
+                            <div style="text-align:center; color:#64748b; margin-top:40px;">សូមជ្រើសរើសភ្ញៀវដើម្បីជជែក</div>
+                        </div>
                         <div class="admin-chat-input">
-                            <input type="text" id="adminMsgInput" class="form-control" placeholder="ឆ្លើយតប..." onkeypress="if(event.key==='Enter') sendAdminReply()">
-                            <button class="btn-submit" onclick="sendAdminReply()">ផ្ញើ</button>
+                            <input type="text" id="adminMsgInput" placeholder="ឆ្លើយតបទៅភ្ញៀវ..." onkeypress="if(event.key==='Enter') sendAdminReply()">
+                            <button onclick="sendAdminReply()"><i class="fa-solid fa-paper-plane"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-tags"></i> បញ្ចុះតម្លៃទូទាំងវេបសាយ (Global Discount)</h2>
+                <div class="form-group">
+                    <label>ភាគរយបញ្ចុះតម្លៃ (% Discount):</label>
+                    <input type="number" id="discountPercentInput" class="form-control" placeholder="ឧទាហរណ៍: 20 (ស្មើ 20%)" min="0" max="90" value="0">
+                </div>
+                <button class="btn-save" onclick="updateDiscount()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកភាគរយ Discount</button>
+            </div>
         </div>
+
         <div class="card">
-            <h2><i class="fa-solid fa-wallet"></i> គ្រប់គ្រងលុយកាបូបភ្ញៀវ</h2>
+            <h2><i class="fa-solid fa-wallet"></i> គ្រប់គ្រងសមតុល្យកាបូបភ្ញៀវ (User Balance Management)</h2>
             <table>
-                <thead><tr><th>Email</th><th>ឈ្មោះ</th><th>សមតុល្យ</th><th>សកម្មភាព</th></tr></thead>
-                <tbody id="userListBody"></tbody>
+                <thead>
+                    <tr>
+                        <th>Email ភ្ញៀវ</th>
+                        <th>ឈ្មោះ</th>
+                        <th>ទឹកប្រាក់ ($)</th>
+                        <th>សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="userListBody">
+                    <tr><td colspan="4" style="text-align:center; color:#64748b;">កំពុងទាញទិន្នន័យ...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
@@ -72,51 +184,120 @@
             messagingSenderId: "631178903261",
             appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
         };
-        firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
-        let activeSelectedChatId = null; let messagesListenUnsubscribe = null;
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        db.collection('online_presence').onSnapshot(snap => document.getElementById('onlineCount').innerText = snap.size || 1);
-        db.collection('settings').doc('discount').onSnapshot(doc => { if (doc.exists) document.getElementById('discountInput').value = doc.data().percent || 0; });
-        async function setDiscount() { let p = parseInt(document.getElementById('discountInput').value) || 0; await db.collection('settings').doc('discount').set({ percent: p }); alert('ជោគជ័យ!'); }
+        let activeSelectedChatId = null;
 
+        // 🟢 រាប់ចំនួនអ្នក Online
+        db.collection('online_presence').onSnapshot((snapshot) => {
+            const count = snapshot.size || 0;
+            document.getElementById('adminOnlineCount').innerText = count;
+        });
+
+        // 🏷️ តាមដាន Discount
+        db.collection('settings').doc('discount').onSnapshot((doc) => {
+            if (doc.exists) {
+                const p = doc.data().percent || 0;
+                document.getElementById('discountPercentInput').value = p;
+                document.getElementById('adminCurrentDiscount').innerText = `${p}%`;
+            }
+        });
+
+        async function updateDiscount() {
+            const percent = parseFloat(document.getElementById('discountPercentInput').value) || 0;
+            if (percent < 0 || percent > 90) { alert('ភាគរយត្រូវនៅចន្លោះពី 0 ដល់ 90%!'); return; }
+            await db.collection('settings').doc('discount').set({ percent: percent });
+            alert(`✅ បានដាក់ប្រូម៉ូសិនបញ្ចុះតម្លៃ ${percent}% ជោគជ័យ!`);
+        }
+
+        // 👥 បង្ហាញបញ្ជីភ្ញៀវ
         db.collection('users').onSnapshot((snapshot) => {
-            const tbody = document.getElementById('userListBody'); tbody.innerHTML = '';
+            document.getElementById('adminTotalUsers').innerText = snapshot.size;
+            const tbody = document.getElementById('userListBody');
+            tbody.innerHTML = '';
             snapshot.forEach((doc) => {
-                let d = doc.data();
-                tbody.innerHTML += `<tr><td>${doc.id}</td><td>${d.name || 'User'}</td><td style="color:#4ade80;">$${(d.balance || 0).toFixed(2)}</td><td><button class="btn-table" onclick="adjustBalance('${doc.id}', ${d.balance || 0})">កែប្រែលុយ</button></td></tr>`;
+                const data = doc.data();
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${doc.id}</b></td>
+                    <td>${data.name || 'User'}</td>
+                    <td><span style="color:#4ade80; font-weight:800;">$${(data.balance || 0).toFixed(2)}</span></td>
+                    <td>
+                        <button class="btn-action" onclick="adjustBalance('${doc.id}', ${data.balance || 0})"><i class="fa-solid fa-plus-minus"></i> កែប្រែទឹកប្រាក់</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
         });
 
         async function adjustBalance(email, currentBal) {
-            let amt = parseFloat(prompt(`បញ្ចូលលុយបូក/ដក សម្រាប់ ${email}:`, '0'));
-            if (!isNaN(amt) && amt !== 0) await db.collection('users').doc(email).update({ balance: currentBal + amt });
+            const newBalStr = prompt(`បញ្ចូលទឹកប្រាក់ថ្មីសម្រាប់ (${email}) ៖`, currentBal.toFixed(2));
+            if (newBalStr !== null) {
+                const newBal = parseFloat(newBalStr);
+                if (!isNaN(newBal) && newBal >= 0) {
+                    await db.collection('users').doc(email).update({ balance: newBal });
+                    alert(`✅ បានកែសម្រួលលុយ ${email} ទៅជា $${newBal.toFixed(2)}!`);
+                } else {
+                    alert('ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ!');
+                }
+            }
         }
 
+        // 💬 តាមដានបញ្ជីភ្ញៀវដែលផ្ញើសារចូល
         db.collection('chats').orderBy('lastUpdated', 'desc').onSnapshot((snapshot) => {
-            const list = document.getElementById('chatClientsList'); list.innerHTML = '';
+            const list = document.getElementById('chatClientsList');
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = '<div style="padding:10px; color:#64748b; font-size:11px;">គ្មានសារ...</div>';
+                return;
+            }
             snapshot.forEach((doc) => {
-                let d = doc.data();
-                let item = document.createElement('div'); item.className = `chat-client-item ${activeSelectedChatId === doc.id ? 'active' : ''}`;
-                item.innerText = d.clientName || 'Guest'; item.onclick = () => selectChatClient(doc.id); list.appendChild(item);
+                const data = doc.data();
+                const item = document.createElement('div');
+                item.className = `chat-client-item ${activeSelectedChatId === doc.id ? 'active' : ''}`;
+                item.innerText = data.clientName || data.clientEmail || 'Guest';
+                item.onclick = () => selectChatClient(doc.id);
+                list.appendChild(item);
             });
         });
 
         function selectChatClient(chatId) {
-            activeSelectedChatId = chatId; if (messagesListenUnsubscribe) messagesListenUnsubscribe();
-            messagesListenUnsubscribe = db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
-                const box = document.getElementById('adminChatMessagesBox'); box.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let m = doc.data(); box.innerHTML += `<div class="admin-bubble ${m.sender === 'admin' ? 'admin' : 'guest'}">${m.text}</div>`;
+            activeSelectedChatId = chatId;
+            document.querySelectorAll('.chat-client-item').forEach(i => i.classList.remove('active'));
+
+            db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
+                const box = document.getElementById('adminChatMessagesBox');
+                box.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const msg = doc.data();
+                    const bubble = document.createElement('div');
+                    bubble.className = `admin-bubble ${msg.sender === 'admin' ? 'admin' : 'guest'}`;
+                    bubble.innerHTML = `<b>${msg.senderName || msg.sender}:</b> ${msg.text}`;
+                    box.appendChild(bubble);
                 });
                 box.scrollTop = box.scrollHeight;
             });
         }
 
         async function sendAdminReply() {
-            const input = document.getElementById('adminMsgInput'); let text = input.value.trim(); if (!text || !activeSelectedChatId) return;
-            await db.collection('chats').doc(activeSelectedChatId).collection('messages').add({ text: text, sender: 'admin', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            await db.collection('chats').doc(activeSelectedChatId).update({ lastMessage: 'Admin: ' + text, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() });
-            input.value = '';
+            if (!activeSelectedChatId) { alert('សូមជ្រើសរើសភ្ញៀវជាមុនសិន!'); return; }
+            const text = document.getElementById('adminMsgInput').value.trim();
+            if (!text) return;
+
+            await db.collection('chats').doc(activeSelectedChatId).collection('messages').add({
+                text: text,
+                sender: 'admin',
+                senderName: 'Admin',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            await db.collection('chats').doc(activeSelectedChatId).set({
+                lastMessage: text,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            document.getElementById('adminMsgInput').value = '';
         }
     </script>
 </body>
