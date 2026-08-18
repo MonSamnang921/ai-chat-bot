@@ -8,17 +8,18 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', sans-serif; }
         body { background-color: #0f172a; color: #f8fafc; padding: 24px; }
         .container { max-width: 1200px; margin: 0 auto; }
         .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 16px; margin-bottom: 20px; }
         .admin-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 1024px) { .admin-layout { grid-template-columns: 1fr; } }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; }
         .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; outline: none; }
         .btn-submit { padding: 10px 20px; background: #e11d48; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; }
         
-        /* Chat Box */
         .chat-container { display: flex; height: 420px; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
         .chat-clients-list { width: 160px; background: #0f172a; border-right: 1px solid #334155; overflow-y: auto; }
         .chat-client-item { padding: 12px; font-size: 12px; font-weight: 700; cursor: pointer; border-bottom: 1px solid #1e293b; }
