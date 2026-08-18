@@ -14,24 +14,23 @@ function crc16(data) {
     return crc.toString(16).toUpperCase().padStart(4, '0');
 }
 
-// ២. អនុគមន៍បង្កើត EMVCo KHQR ត្រឹមត្រូវតាមស្ដង់ដារ ABA / Bakong
+// ២. អនុគមន៍បង្កើត EMVCo KHQR បាគង
 function generateBakongKHQR(bakongId, merchantName, amountUSD) {
     const formattedAmount = parseFloat(amountUSD).toFixed(2);
     const formatTag = (id, val) => id + val.length.toString().padStart(2, '0') + val;
 
-    // Sub-tags សម្រាប់ Tag 29
-    const sub00 = formatTag("00", "bakong@bkrt");
-    const sub01 = formatTag("01", bakongId);
-    const tag29 = formatTag("29", sub00 + sub01);
+    // Tag 29: Merchant Account (Bakong ID)
+    const sub00 = formatTag("00", bakongId);
+    const tag29 = formatTag("29", sub00);
 
-    const tag00 = formatTag("00", "01");
-    const tag01 = formatTag("01", "12");
-    const tag52 = formatTag("52", "5999");
-    const tag53 = formatTag("53", "840");
-    const tag54 = formatTag("54", formattedAmount);
-    const tag58 = formatTag("58", "KH");
-    const tag59 = formatTag("59", merchantName);
-    const tag60 = formatTag("60", "Phnom Penh");
+    const tag00 = formatTag("00", "01");               // Format Version
+    const tag01 = formatTag("01", "12");               // Dynamic QR
+    const tag52 = formatTag("52", "5999");             // Category
+    const tag53 = formatTag("53", "840");              // 840 = USD
+    const tag54 = formatTag("54", formattedAmount);    // ចំនួនទឹកប្រាក់
+    const tag58 = formatTag("58", "KH");               // ប្រទេស
+    const tag59 = formatTag("59", merchantName);       // ឈ្មោះអ្នកទទួល
+    const tag60 = formatTag("60", "Phnom Penh");       // ទីក្រុង
 
     const rawData = tag00 + tag01 + tag29 + tag52 + tag53 + tag54 + tag58 + tag59 + tag60 + "6304";
     return rawData + crc16(rawData);
@@ -39,9 +38,9 @@ function generateBakongKHQR(bakongId, merchantName, amountUSD) {
 
 // ៣. បង្ហាញ QR Code លើផ្ទាំង Canvas
 function showQR(amountUSD) {
-    // ដាក់ Bakong ID របស់អ្នក (ឧទាហរណ៍៖ samnang_mon@bkrt ឬ @abaa)
-    const BAKONG_ID = "samnang_mon@bkrt"; 
-    const MERCHANT = "YUTH STORE";
+    // ព័ត៌មានតាម Bakong App របស់អ្នកផ្ទាល់
+    const BAKONG_ID = "mon_samnang@bkrt"; 
+    const MERCHANT = "SAMNANG MON";
 
     const khqrPayload = generateBakongKHQR(BAKONG_ID, MERCHANT, amountUSD);
 
