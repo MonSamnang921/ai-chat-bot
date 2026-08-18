@@ -13,68 +13,168 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', sans-serif; }
         body { background-color: #0f172a; color: #f8fafc; padding: 24px; }
         .container { max-width: 1200px; margin: 0 auto; }
+        
         .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 16px; margin-bottom: 20px; }
+        .header h1 { font-size: 22px; font-weight: 900; color: #e11d48; display: flex; align-items: center; gap: 10px; }
+        .nav-links a { color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 700; }
+
+        /* 📊 Stats Cards បង្ហាញជាលេខធំៗ */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-users { background: #1e3a8a; color: #60a5fa; }
+        .stat-online { background: #064e3b; color: #34d399; }
+        .stat-discount { background: #831843; color: #f472b6; }
+        
+        .stat-val { font-size: 28px; font-weight: 900; color: #ffffff; line-height: 1.2; }
+        .stat-lbl { font-size: 13px; color: #94a3b8; font-weight: 700; margin-top: 4px; }
+
+        /* Layout Grid */
         .admin-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 1024px) { .admin-layout { grid-template-columns: 1fr; } }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; }
-        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; outline: none; }
+
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .card h2 { font-size: 16px; font-weight: 800; margin-bottom: 14px; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+
+        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; outline: none; font-size: 14px; }
         .btn-submit { padding: 10px 20px; background: #e11d48; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; }
+        .btn-submit:hover { background: #be123c; }
+
+        /* 💬 Chat Box Admin */
+        .chat-container { display: flex; height: 420px; border: 1px solid #334155; border-radius: 12px; overflow: hidden; background: #0f172a; }
+        .chat-clients-list { width: 180px; background: #0f172a; border-right: 1px solid #334155; overflow-y: auto; }
+        .chat-client-item { padding: 12px; font-size: 12px; font-weight: 700; cursor: pointer; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
+        .chat-client-item:hover, .chat-client-item.active { background: #1e293b; color: #38bdf8; }
         
-        .chat-container { display: flex; height: 420px; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
-        .chat-clients-list { width: 160px; background: #0f172a; border-right: 1px solid #334155; overflow-y: auto; }
-        .chat-client-item { padding: 12px; font-size: 12px; font-weight: 700; cursor: pointer; border-bottom: 1px solid #1e293b; }
-        .chat-client-item.active { background: #1e293b; color: #38bdf8; }
-        .chat-conversation { flex: 1; display: flex; flex-direction: column; }
+        .chat-conversation { flex: 1; display: flex; flex-direction: column; background: #1e293b; }
         .admin-chat-msgs { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #0f172a; }
-        .admin-bubble { padding: 8px 12px; border-radius: 10px; max-width: 80%; font-size: 12.5px; }
-        .admin-bubble.guest { align-self: flex-start; background: #334155; }
-        .admin-bubble.admin { align-self: flex-end; background: #e11d48; }
+        .admin-bubble { padding: 8px 12px; border-radius: 10px; max-width: 80%; font-size: 12.5px; word-break: break-word; }
+        .admin-bubble.guest { align-self: flex-start; background: #334155; color: #fff; }
+        .admin-bubble.admin { align-self: flex-end; background: #e11d48; color: #fff; }
         .admin-bubble img { max-width: 100%; border-radius: 6px; display: block; margin-top: 4px; }
         .admin-bubble video { max-width: 100%; border-radius: 6px; display: block; margin-top: 4px; }
         .admin-bubble audio { max-width: 100%; display: block; margin-top: 4px; }
         
         .admin-chat-input { display: flex; padding: 10px; background: #1e293b; border-top: 1px solid #334155; gap: 6px; align-items: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
-        .btn-table { padding: 5px 10px; background: #0284c7; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
-        .chat-btn-icon { background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 4px; }
+        .chat-btn-icon { background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 6px; }
+        .chat-btn-icon:hover { color: #38bdf8; }
         .chat-btn-icon.recording { color: #e11d48; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid #334155; }
+        th { color: #94a3b8; font-weight: 800; }
+        .user-money { color: #4ade80; font-weight: 900; }
+        .btn-table { padding: 6px 12px; background: #0284c7; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; }
+        .btn-table:hover { background: #0369a1; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="header"><h1>YUTH STORE - Admin Control</h1><div>Online Client: <span id="onlineCount">1</span></div></div>
+        <div class="header">
+            <h1><i class="fa-solid fa-gauge-high"></i> YUTH STORE - ADMIN DASHBOARD</h1>
+            <div class="nav-links">
+                <a href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> ទៅកាន់ទំព័រមុខ</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon stat-users"><i class="fa-solid fa-users"></i></div>
+                <div>
+                    <div class="stat-val" id="totalUsersCount">0</div>
+                    <div class="stat-lbl">ចំនួនអ្នកចុះឈ្មោះសរុប (Registered)</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon stat-online"><i class="fa-solid fa-signal"></i></div>
+                <div>
+                    <div class="stat-val" id="onlineVisitorsCount">0</div>
+                    <div class="stat-lbl">មនុស្សកំពុងចូល (Live Online)</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon stat-discount"><i class="fa-solid fa-percent"></i></div>
+                <div>
+                    <div class="stat-val" id="currentDiscountBadge">0%</div>
+                    <div class="stat-lbl">ប្រូម៉ូសិនបញ្ចុះតម្លៃបច្ចុប្បន្ន</div>
+                </div>
+            </div>
+        </div>
+
         <div class="admin-layout">
             <div class="card">
-                <h2><i class="fa-solid fa-tags"></i> បញ្ចុះតម្លៃទូទាំងវេបសាយ (%)</h2>
-                <input type="number" id="discountInput" class="form-control" placeholder="ភាគរយបញ្ចុះតម្លៃ" style="margin-bottom:12px;">
-                <button class="btn-submit" onclick="setDiscount()">រក្សាទុក</button>
+                <h2><i class="fa-solid fa-tags"></i> បញ្ចុះតម្លៃទូទាំងវេបសាយ (Global Discount %)</h2>
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size:13px; color:#94a3b8; margin-bottom:6px;">កំណត់ភាគរយបញ្ចុះតម្លៃ (ឧទាហរណ៍៖ 10 = 10%) ៖</label>
+                    <input type="number" id="discountInput" class="form-control" placeholder="0" min="0" max="90">
+                </div>
+                <button class="btn-submit" onclick="setDiscount()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកភាគរយ</button>
             </div>
+
             <div class="card">
-                <h2><i class="fa-solid fa-comments"></i> Live Chat Panel (អក្សរ, រូបភាព, វីដេអូ, សំឡេង)</h2>
+                <h2><i class="fa-solid fa-comments"></i> ផ្ទាំង Live Chat ជាមួយភ្ញៀវ</h2>
                 <div class="chat-container">
-                    <div class="chat-clients-list" id="chatClientsList"></div>
+                    <div class="chat-clients-list" id="chatClientsList">
+                        <div style="padding:15px; color:#64748b; font-size:11px;">គ្មានការសន្ទនា...</div>
+                    </div>
                     <div class="chat-conversation">
-                        <div class="admin-chat-msgs" id="adminChatMessagesBox"></div>
+                        <div class="admin-chat-msgs" id="adminChatMessagesBox">
+                            <div style="text-align:center; color:#64748b; margin-top:140px;">សូមជ្រើសរើសភ្ញៀវដើម្បីជជែក</div>
+                        </div>
                         <div class="admin-chat-input">
-                            <button class="chat-btn-icon" onclick="document.getElementById('adminFileInput').click()"><i class="fa-solid fa-paperclip"></i></button>
+                            <button class="chat-btn-icon" onclick="document.getElementById('adminFileInput').click()" title="ផ្ញើរូបភាព/វីដេអូ"><i class="fa-solid fa-paperclip"></i></button>
                             <input type="file" id="adminFileInput" accept="image/*,video/*" style="display:none;" onchange="uploadAdminFile(this)">
-                            <button class="chat-btn-icon" id="adminVoiceBtn" onclick="toggleAdminVoiceRecording()"><i class="fa-solid fa-microphone"></i></button>
+                            
+                            <button class="chat-btn-icon" id="adminVoiceBtn" onclick="toggleAdminVoiceRecording()" title="ថតសំឡេង"><i class="fa-solid fa-microphone"></i></button>
+                            
                             <input type="text" id="adminMsgInput" class="form-control" placeholder="ឆ្លើយតប..." onkeypress="if(event.key==='Enter') sendAdminReplyText()">
-                            <button class="btn-submit" onclick="sendAdminReplyText()">ផ្ញើ</button>
+                            <button class="btn-submit" style="padding: 8px 16px;" onclick="sendAdminReplyText()"><i class="fa-solid fa-paper-plane"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="card" style="margin-top:20px;">
-            <h2><i class="fa-solid fa-wallet"></i> គ្រប់គ្រងលុយកាបូបភ្ញៀវ</h2>
+
+        <div class="card" style="margin-top: 20px;">
+            <h2><i class="fa-solid fa-address-book"></i> បញ្ជីអ្នកចុះឈ្មោះចូលទាំងអស់ និងកែប្រែទឹកប្រាក់ (Users List)</h2>
             <table>
-                <thead><tr><th>Email</th><th>ឈ្មោះ</th><th>សមតុល្យ</th><th>សកម្មភាព</th></tr></thead>
-                <tbody id="userListBody"></tbody>
+                <thead>
+                    <tr>
+                        <th>អ៊ីមែល (Google Account)</th>
+                        <th>ឈ្មោះ</th>
+                        <th>ទឹកប្រាក់កាបូប ($ USD)</th>
+                        <th>សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="userListBody">
+                    <tr><td colspan="4" style="text-align:center; color:#64748b;">កំពុងទាញទិន្នន័យអ្នកចុះឈ្មោះ...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
@@ -84,78 +184,170 @@
             messagingSenderId: "631178903261",
             appId: "1:631178903261:web:0aa1ff1a68c633fdd0a534"
         };
-        firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); const storage = firebase.storage();
-        let activeSelectedChatId = null, messagesListenUnsubscribe = null, mediaRecorder, audioChunks = [], isRecording = false;
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-        db.collection('online_presence').onSnapshot(snap => document.getElementById('onlineCount').innerText = snap.size || 1);
-        db.collection('settings').doc('discount').onSnapshot(doc => { if (doc.exists) document.getElementById('discountInput').value = doc.data().percent || 0; });
-        async function setDiscount() { let p = parseInt(document.getElementById('discountInput').value) || 0; await db.collection('settings').doc('discount').set({ percent: p }); alert('ជោគជ័យ!'); }
+        let activeSelectedChatId = null;
+        let messagesListenUnsubscribe = null;
+        let mediaRecorder, audioChunks = [], isRecording = false;
 
+        // 🟢 ១. រាប់ចំនួនមនុស្សចូលមើល Live Online ជាក់ស្តែង
+        db.collection('online_presence').onSnapshot((snap) => {
+            document.getElementById('onlineVisitorsCount').innerText = snap.size || 0;
+        });
+
+        // 👥 ២. រាប់ចំនួនអ្នកចុះឈ្មោះសរុប និងបង្ហាញតារាង User
         db.collection('users').onSnapshot((snapshot) => {
-            const tbody = document.getElementById('userListBody'); tbody.innerHTML = '';
+            // បង្ហាញចំនួនលេខអ្នកចុះឈ្មោះសរុបលើ Card
+            document.getElementById('totalUsersCount').innerText = snapshot.size;
+
+            const tbody = document.getElementById('userListBody');
+            tbody.innerHTML = '';
+
+            if (snapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">មិនទាន់មានអ្នកចុះឈ្មោះចូលនៅឡើយទេ។</td></tr>';
+                return;
+            }
+
             snapshot.forEach((doc) => {
-                let d = doc.data();
-                tbody.innerHTML += `<tr><td>${doc.id}</td><td>${d.name || 'User'}</td><td style="color:#4ade80;">$${(d.balance || 0).toFixed(2)}</td><td><button class="btn-table" onclick="adjustBalance('${doc.id}', ${d.balance || 0})">កែប្រែលុយ</button></td></tr>`;
+                const data = doc.data();
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${doc.id}</b></td>
+                    <td>${data.name || 'User'}</td>
+                    <td><span class="user-money">$${(data.balance || 0).toFixed(2)}</span></td>
+                    <td>
+                        <button class="btn-table" onclick="adjustBalance('${doc.id}', ${data.balance || 0})">
+                            <i class="fa-solid fa-plus-minus"></i> កែប្រែទឹកប្រាក់
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
         });
-        async function adjustBalance(email, currentBal) { let amt = parseFloat(prompt(`បញ្ចូលលុយបូក/ដក សម្រាប់ ${email}:`, '0')); if (!isNaN(amt) && amt !== 0) await db.collection('users').doc(email).update({ balance: currentBal + amt }); }
 
+        // 💵 កែប្រែទឹកប្រាក់អ្នកប្រើប្រាស់
+        async function adjustBalance(email, currentBal) {
+            const amtStr = prompt(`បញ្ចូលចំនួនទឹកប្រាក់ដែលត្រូវបូក ឬដក សម្រាប់ (${email}) ៖\n(ឧទាហរណ៍៖ 5 ដើម្បីថែម $5, ឬ -5 ដើម្បីកាត់ $5)`, "0");
+            if (amtStr === null) return;
+            const amt = parseFloat(amtStr);
+            if (isNaN(amt) || amt === 0) { alert('ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ!'); return; }
+
+            const newBalance = currentBal + amt;
+            await db.collection('users').doc(email).update({ balance: newBalance });
+            alert(`✅ បានកែប្រែទឹកប្រាក់ ${email} ទៅជា $${newBalance.toFixed(2)}!`);
+        }
+
+        // 🏷️ ៣. តាមដាន និងរក្សាទុកភាគរយបញ្ចុះតម្លៃ
+        db.collection('settings').doc('discount').onSnapshot((doc) => {
+            if (doc.exists) {
+                const p = doc.data().percent || 0;
+                document.getElementById('discountInput').value = p;
+                document.getElementById('currentDiscountBadge').innerText = `${p}%`;
+            }
+        });
+
+        async function setDiscount() {
+            const p = parseInt(document.getElementById('discountInput').value) || 0;
+            if (p < 0 || p > 90) { alert('ភាគរយត្រូវនៅចន្លោះពី 0 ដល់ 90%!'); return; }
+            await db.collection('settings').doc('discount').set({ percent: p });
+            alert(`✅ បានកំណត់ការបញ្ចុះតម្លៃ ${p}% ជោគជ័យ!`);
+        }
+
+        // 💬 ៤. ប្រព័ន្ធ Live Chat សម្រាប់អេតមីន
         db.collection('chats').orderBy('lastUpdated', 'desc').onSnapshot((snapshot) => {
-            const list = document.getElementById('chatClientsList'); list.innerHTML = '';
+            const list = document.getElementById('chatClientsList');
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = '<div style="padding:15px; color:#64748b; font-size:11px;">គ្មានការសន្ទនា...</div>';
+                return;
+            }
             snapshot.forEach((doc) => {
-                let d = doc.data(); let item = document.createElement('div'); item.className = `chat-client-item ${activeSelectedChatId === doc.id ? 'active' : ''}`;
-                item.innerText = d.clientName || 'Guest'; item.onclick = () => selectChatClient(doc.id); list.appendChild(item);
+                const data = doc.data();
+                const item = document.createElement('div');
+                item.className = `chat-client-item ${activeSelectedChatId === doc.id ? 'active' : ''}`;
+                item.innerText = data.clientName || data.clientEmail || 'Guest';
+                item.onclick = () => selectChatClient(doc.id);
+                list.appendChild(item);
             });
         });
 
         function selectChatClient(chatId) {
-            activeSelectedChatId = chatId; if (messagesListenUnsubscribe) messagesListenUnsubscribe();
-            messagesListenUnsubscribe = db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
-                const box = document.getElementById('adminChatMessagesBox'); box.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let m = doc.data(); let cls = m.sender === 'admin' ? 'admin' : 'guest';
-                    let mediaHtml = '';
-                    if(m.type === 'image') mediaHtml = `<img src="${m.fileUrl}" onclick="window.open('${m.fileUrl}')">`;
-                    else if(m.type === 'video') mediaHtml = `<video src="${m.fileUrl}" controls></video>`;
-                    else if(m.type === 'audio') mediaHtml = `<audio src="${m.fileUrl}" controls></audio>`;
-                    box.innerHTML += `<div class="admin-bubble ${cls}">${m.text ? `<div>${m.text}</div>` : ''}${mediaHtml}</div>`;
+            activeSelectedChatId = chatId;
+            document.querySelectorAll('.chat-client-item').forEach(i => i.classList.remove('active'));
+
+            if (messagesListenUnsubscribe) messagesListenUnsubscribe();
+
+            messagesListenUnsubscribe = db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
+                    const box = document.getElementById('adminChatMessagesBox');
+                    box.innerHTML = '';
+                    snapshot.forEach((doc) => {
+                        const m = doc.data();
+                        const cls = m.sender === 'admin' ? 'admin' : 'guest';
+                        let mediaHtml = '';
+                        if (m.type === 'image') mediaHtml = `<img src="${m.fileUrl}" onclick="window.open('${m.fileUrl}')">`;
+                        else if (m.type === 'video') mediaHtml = `<video src="${m.fileUrl}" controls></video>`;
+                        else if (m.type === 'audio') mediaHtml = `<audio src="${m.fileUrl}" controls></audio>`;
+
+                        box.innerHTML += `<div class="admin-bubble ${cls}">${m.text ? `<div>${m.text}</div>` : ''}${mediaHtml}</div>`;
+                    });
+                    box.scrollTop = box.scrollHeight;
                 });
-                box.scrollTop = box.scrollHeight;
-            });
         }
 
         async function sendAdminReplyData(msgData) {
             if (!activeSelectedChatId) return;
-            await db.collection('chats').doc(activeSelectedChatId).collection('messages').add({ ...msgData, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            await db.collection('chats').doc(activeSelectedChatId).update({ lastMessage: msgData.text || `[Admin ផ្ញើឯកសារ ${msgData.type}]`, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() });
+            await db.collection('chats').doc(activeSelectedChatId).collection('messages').add({
+                ...msgData,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            await db.collection('chats').doc(activeSelectedChatId).update({
+                lastMessage: msgData.text || `[Admin ផ្ញើឯកសារ ${msgData.type}]`,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            });
         }
 
         function sendAdminReplyText() {
-            let input = document.getElementById('adminMsgInput'), txt = input.value.trim(); if (!txt) return;
-            sendAdminReplyData({ text: txt, sender: 'admin', type: 'text' }); input.value = '';
+            const input = document.getElementById('adminMsgInput');
+            const txt = input.value.trim();
+            if (!txt) return;
+            sendAdminReplyData({ text: txt, sender: 'admin', type: 'text' });
+            input.value = '';
         }
 
         async function uploadAdminFile(el) {
-            let file = el.files[0]; if(!file || !activeSelectedChatId) return;
-            let type = file.type.startsWith('image/') ? 'image' : 'video';
-            let snap = await storage.ref(`chats/${Date.now()}_${file.name}`).put(file);
-            let url = await snap.ref.getDownloadURL(); sendAdminReplyData({ fileUrl: url, type: type, sender: 'admin' }); el.value = '';
+            const file = el.files[0];
+            if (!file || !activeSelectedChatId) return;
+            const type = file.type.startsWith('image/') ? 'image' : 'video';
+            const snap = await storage.ref(`chats/${Date.now()}_${file.name}`).put(file);
+            const url = await snap.ref.getDownloadURL();
+            sendAdminReplyData({ fileUrl: url, type: type, sender: 'admin' });
+            el.value = '';
         }
 
         async function toggleAdminVoiceRecording() {
-            let btn = document.getElementById('adminVoiceBtn'); if(!activeSelectedChatId) return;
+            const btn = document.getElementById('adminVoiceBtn');
+            if (!activeSelectedChatId) { alert('សូមជ្រើសរើសភ្ញៀវជាមុនសិន!'); return; }
             if (!isRecording) {
-                let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
                 mediaRecorder.onstop = async () => {
-                    let blob = new Blob(audioChunks, { type: 'audio/mp3' }); audioChunks = [];
-                    let snap = await storage.ref(`chats/voice_${Date.now()}.mp3`).put(blob);
-                    let url = await snap.ref.getDownloadURL(); sendAdminReplyData({ fileUrl: url, type: 'audio', sender: 'admin' });
+                    const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    audioChunks = [];
+                    const snap = await storage.ref(`chats/voice_${Date.now()}.mp3`).put(blob);
+                    const url = await snap.ref.getDownloadURL();
+                    sendAdminReplyData({ fileUrl: url, type: 'audio', sender: 'admin' });
                 };
-                mediaRecorder.start(); isRecording = true; btn.classList.add('recording');
+                mediaRecorder.start();
+                isRecording = true;
+                btn.classList.add('recording');
             } else {
-                mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording');
+                mediaRecorder.stop();
+                isRecording = false;
+                btn.classList.remove('recording');
             }
         }
     </script>
