@@ -1,10 +1,23 @@
-const path = require('path');
-const express = require('express');
-const app = express();
+function showQR(amountUSD) {
+    const BAKONG_ID = "samnang_mon@bkrt"; // ដាក់ Bakong ID របស់អ្នក
+    const MERCHANT = "YUTH STORE";          // ឈ្មោះហាង
 
-// ជំនួស app.use(express.static('public')) ដោយ៖
-app.use(express.static(__dirname));
+    // បង្កើត String តាមស្តង់ដារបាគង
+    const khqrString = generateBakongKHQR(BAKONG_ID, MERCHANT, amountUSD);
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+    document.getElementById('qrAmountDisplay').innerText = parseFloat(amountUSD).toFixed(2);
+
+    // បង្កើត QR Code លើផ្ទាំង Canvas
+    QRCode.toCanvas(document.getElementById('qrCanvas'), khqrString, {
+        width: 210,
+        margin: 1,
+        color: {
+            dark: '#000000',
+            light: '#ffffff'
+        }
+    }, function (error) {
+        if (error) console.error(error);
+    });
+
+    document.getElementById('qrModal').style.display = 'flex';
+}
