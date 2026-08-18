@@ -1,68 +1,61 @@
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
-
-let BakongKHQR, khqrData, IndividualInfo;
-try {
-    const bakong = require('bakong-khqr');
-    BakongKHQR = bakong.BakongKHQR;
-    khqrData = bakong.khqrData;
-    IndividualInfo = bakong.IndividualInfo;
-} catch (e) {
-    console.error("Warning: bakong-khqr package not loaded yet.", e.message);
+// ១. អនុគមន៍គណនា CRC16 CCITT (0x1021) ស្តង់ដារបាគងផ្លូវការ
+function crc16(data) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < data.length; i++) {
+        crc ^= (data.charCodeAt(i) << 8);
+        for (let j = 0; j < 8; j++) {
+            if ((crc & 0x8000) !== 0) {
+                crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+            } else {
+                crc = (crc << 1) & 0xFFFF;
+            }
+        }
+    }
+    return crc.toString(16).toUpperCase().padStart(4, '0');
 }
 
-const app = express();
+// ២. អនុគមន៍បង្កើត EMVCo KHQR សម្រាប់គណនី Bakong Individual
+function generateBakongKHQR(bakongId, merchantName, amountUSD) {
+    const formattedAmount = parseFloat(amountUSD).toFixed(2);
+    const formatTag = (id, val) => id + val.length.toString().padStart(2, '0') + val;
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(__dirname));
+    // Sub-tags សម្រាប់ Merchant Account Information (Tag 29)
+    // 00 = Global Unique ID (bakong@bkrt), 01 = Bakong ID (mon_samnang@bkrt)
+    const sub00 = formatTag("00", "bakong@bkrt");
+    const sub01 = formatTag("01", bakongId);
+    const tag29 = formatTag("29", sub00 + sub01);
 
-// API បង្កើត KHQR Code
-app.post('/api/generate-khqr', (req, res) => {
-    try {
-        const { amount } = req.body;
+    const tag00 = formatTag("00", "01");               // Payload Format
+    const tag01 = formatTag("01", "12");               // Dynamic QR
+    const tag52 = formatTag("52", "5999");             // Merchant Category
+    const tag53 = formatTag("53", "840");              // Currency (840 = USD)
+    const tag54 = formatTag("54", formattedAmount);    // ចំនួនទឹកប្រាក់ ($)
+    const tag58 = formatTag("58", "KH");               // ប្រទេសកម្ពុជា
+    const tag59 = formatTag("59", merchantName);       // ឈ្មោះអ្នកទទួល
+    const tag60 = formatTag("60", "Phnom Penh");       // ទីក្រុង
 
-        if (!BakongKHQR) {
-            return res.status(500).json({ success: false, error: "Bakong SDK Not Loaded" });
-        }
+    // ផ្គុំ string មុនពេលបូក CRC16 Checksum
+    const rawData = tag00 + tag01 + tag29 + tag52 + tag53 + tag54 + tag58 + tag59 + tag60 + "6304";
+    return rawData + crc16(rawData);
+}
 
-        const optionalData = {
-            currency: khqrData.currency.usd,
-            amount: parseFloat(amount || 0.99),
-            mobileNumber: "855973777105",
-            storeLabel: "FF Topup",
-            terminalLabel: "Web"
-        };
+// ៣. បង្ហាញ QR Code លើ Canvas
+function showQR(amountUSD) {
+    const BAKONG_ID = "mon_samnang@bkrt"; 
+    const MERCHANT = "YUTH STORE";
 
-        const individualInfo = new IndividualInfo(
-            "samnang_mon@bkrt",
-            "SAMNANG MON",
-            "Phnom Penh",
-            optionalData
-        );
+    const khqrPayload = generateBakongKHQR(BAKONG_ID, MERCHANT, amountUSD);
 
-        const khqr = new BakongKHQR();
-        const response = khqr.generateIndividual(individualInfo);
+    document.getElementById('qrAmountDisplay').innerText = parseFloat(amountUSD).toFixed(2);
 
-        if (response && response.status && response.status.code === 0) {
-            return res.json({ success: true, qrString: response.data.qr });
-        } else {
-            return res.status(500).json({ success: false, error: "Cannot generate QR" });
-        }
-    } catch (err) {
-        console.error("Error generating KHQR:", err);
-        return res.status(500).json({ success: false, error: err.message });
-    }
-});
+    // គូរ QR Code ទៅលើ Canvas
+    QRCode.toCanvas(document.getElementById('qrCanvas'), khqrPayload, {
+        width: 220,
+        margin: 1,
+        errorCorrectionLevel: 'L'
+    }, function (error) {
+        if (error) console.error("QR Error:", error);
+    });
 
-// Route ទំព័រដើម
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// កំណត់ Port សម្រាប់ Render
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
-});
+    document.getElementById('qrModal').style.display = 'flex';
+}
