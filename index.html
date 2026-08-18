@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YUTH STORE - Game Top-Up</title>
+    <title>YUTH STORE - Game Top-Up & Live Chat</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -95,7 +95,8 @@
         }
 
         .section-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-        
+
+        /* ⚡ Quick Top-Up Bar */
         .quick-scroll {
             display: flex;
             gap: 14px;
@@ -131,6 +132,27 @@
         .quick-item:hover .quick-circle { transform: scale(1.08); border-color: #e11d48; }
         .quick-name { font-size: 11px; font-weight: 700; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
 
+        /* 📢 Events Banner */
+        .events-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 28px; }
+        @media (max-width: 640px) { .events-grid { grid-template-columns: 1fr; } }
+        .event-banner {
+            border-radius: 14px;
+            padding: 20px;
+            color: #fff;
+            font-weight: 800;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 110px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .event-banner:hover { transform: translateY(-2px); }
+        .event-anniv { background: linear-gradient(135deg, #4c1d95, #c026d3); }
+        .event-discount { background: linear-gradient(135deg, #dc2626, #f97316); }
+
+        /* 🎮 Posters Grid */
         .poster-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -218,14 +240,24 @@
             line-height: 1.25;
             text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
-        .tag-pill { display: inline-block; font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 9999px; }
+        .tag-pill {
+            display: inline-block;
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 9999px;
+        }
+        .tag-event { background: #065f46; color: #34d399; }
+        .tag-hot { background: #991b1b; color: #fca5a5; }
+        .tag-restock { background: #475569; color: #cbd5e1; }
         .tag-auto { background: #0284c7; color: #bae6fd; }
 
-        /* Floating Chat Button */
+        /* Floating Button */
         .floating-actions { position: fixed; bottom: 24px; right: 24px; z-index: 99; }
-        .fab-btn { width: 52px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.25); cursor: pointer; border: none; background: #0284c7; }
+        .fab-btn { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.25); cursor: pointer; border: none; background: #0284c7; transition: transform 0.2s; }
+        .fab-btn:hover { transform: scale(1.1); }
 
-        /* 💬 Chat Widget */
+        /* 💬 Live Chat Widget */
         .chat-widget {
             display: none;
             position: fixed;
@@ -248,7 +280,6 @@
         .chat-bubble.guest { align-self: flex-end; background: #0284c7; color: #fff; border-bottom-right-radius: 2px; }
         .chat-bubble.admin { align-self: flex-start; background: #e2e8f0; color: #0f172a; border-bottom-left-radius: 2px; }
         
-        /* Media Elements inside Chat */
         .chat-bubble img { max-width: 100%; border-radius: 8px; margin-top: 4px; display: block; }
         .chat-bubble video { max-width: 100%; border-radius: 8px; margin-top: 4px; display: block; }
         .chat-bubble audio { max-width: 100%; margin-top: 4px; display: block; }
@@ -262,53 +293,146 @@
 
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
-        .modal-card { background: #ffffff; width: 100%; max-width: 460px; border-radius: 16px; padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .modal-card { background: #ffffff; width: 100%; max-width: 460px; border-radius: 16px; padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; }
+        .modal-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
+        .btn-close { background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px; }
         .form-control { width: 100%; padding: 11px 13px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; }
+        .form-control:focus { border-color: #e11d48; }
+
         .tabs { display: flex; gap: 8px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px; }
         .tab-btn { flex: 1; padding: 8px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-weight: 700; color: #475569; cursor: pointer; white-space: nowrap; }
         .tab-btn.active { background: #e11d48; color: #fff; border-color: #e11d48; }
+
         .pkg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .pkg-card { background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 11px; border-radius: 8px; text-align: center; cursor: pointer; position: relative; }
-        .pkg-card.active { border-color: #e11d48; background: #fff1f2; }
+        .pkg-card:hover, .pkg-card.active { border-color: #e11d48; background: #fff1f2; }
+        .pkg-badge-discount { position: absolute; top: -6px; right: -6px; background: #e11d48; color: #ffffff; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 6px; }
+        .pkg-name { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 3px; }
+        .pkg-old-price { font-size: 11px; color: #94a3b8; text-decoration: line-through; margin-right: 4px; }
         .pkg-price { font-size: 14px; font-weight: 800; color: #e11d48; }
+
         .btn-submit { width: 100%; padding: 13px; background: #e11d48; color: #ffffff; font-size: 15px; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; margin-top: 12px; }
-        
-        #qrCanvas { width: 210px !important; height: 210px !important; display: block; margin: 0 auto; }
+        .btn-submit:hover { background: #be123c; }
+
+        /* KHQR Elements */
+        .khqr-modal-card { background: transparent; width: 100%; max-width: 380px; border-radius: 20px; position: relative; }
+        .khqr-top-bar { display: flex; align-items: center; justify-content: space-between; color: #0f172a; margin-bottom: 12px; padding: 0 4px; }
+        .khqr-top-title { font-size: 18px; font-weight: 800; }
+        .khqr-timer { font-size: 13px; font-weight: 700; color: #e11d48; background: #ffe4e6; padding: 4px 10px; border-radius: 20px; }
+        .btn-close-khqr { background: none; border: none; font-size: 24px; color: #0284c7; cursor: pointer; }
+        .khqr-ticket { background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .khqr-red-header { background: #e11d48; padding: 14px 20px; display: flex; align-items: center; justify-content: center; }
+        .khqr-logo-svg { height: 26px; fill: #ffffff; }
+        .khqr-ticket-body { padding: 20px 24px; text-align: center; }
+        .khqr-store-name { font-size: 13px; color: #64748b; font-weight: 600; text-align: left; margin-bottom: 4px; }
+        .khqr-ticket-amount { font-size: 30px; font-weight: 900; color: #0f172a; text-align: left; margin-bottom: 14px; }
+        .khqr-canvas-wrap { position: relative; display: inline-block; padding: 6px; background: #ffffff; border-radius: 12px; }
+        #qrCanvas { width: 210px !important; height: 210px !important; display: block; }
+        .khqr-expired-view { display: none; padding: 35px 20px; text-align: center; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <div class="nav-left">
-            <a href="#" class="logo-box"><i class="fa-solid fa-gem"></i> <span>YUTHSTORE</span></a>
+            <a href="#" class="logo-box">
+                <i class="fa-solid fa-gem"></i>
+                <span>YUTHSTORE</span>
+            </a>
             <div class="search-wrap">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" placeholder="ស្វែងរកហ្គេម..." id="searchInput" onkeyup="filterGames()">
             </div>
         </div>
         <div class="nav-right">
-            <div class="online-tag"><div class="online-dot"></div><span id="liveOnlineCount">1</span> Online</div>
+            <div class="online-tag">
+                <div class="online-dot"></div>
+                <span id="liveOnlineCount">1</span> Online
+            </div>
             <div id="authBox">
-                <div id="g_id_onload" data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+                <div id="g_id_onload"
+                    data-client_id="781995105719-0no5v9433h4ce49gatkua0gposrc3e51.apps.googleusercontent.com"
+                    data-callback="handleCredentialResponse">
+                </div>
                 <div class="g_id_signin" data-type="standard" data-size="medium" data-shape="pill"></div>
             </div>
             <div id="userBox" style="display: none;" class="user-pill">
                 <img id="userImg" src="" alt="Profile">
                 <span class="wallet-text" id="userBalance">$0.00</span>
-                <button onclick="openDepositModal()" style="border:none; background:#e11d48; color:#fff; border-radius:50%; width:18px; height:18px; font-weight:bold; cursor:pointer;">+</button>
-                <button onclick="logout()" style="border:none; background:transparent; color:#94a3b8; cursor:pointer;"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <button onclick="openDepositModal()" style="border:none; background:#e11d48; color:#fff; border-radius:50%; width:18px; height:18px; font-weight:bold; cursor:pointer;" title="Deposit">+</button>
+                <button onclick="logout()" style="border:none; background:transparent; color:#94a3b8; cursor:pointer; font-size:11px;"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </div>
     </nav>
 
     <div class="main-container">
-        <div class="auth-alert-banner" id="loginAlertBanner"><span><i class="fa-solid fa-circle-info"></i> សូមចុច <b>Sign in with Google</b> ខាងលើដើម្បី Login មុននឹងទិញ!</span></div>
-        <div class="discount-live-bar" id="liveDiscountBanner" style="display: none;"><span><i class="fa-solid fa-fire"></i> ប្រូម៉ូសិនពិសេស៖ បញ្ចុះតម្លៃ <span id="txtDiscountPercent">0</span>% លើគ្រប់ហ្គេមទាំងអស់!</span></div>
+        <div class="auth-alert-banner" id="loginAlertBanner">
+            <span><i class="fa-solid fa-circle-info"></i> សូមចុច <b>Sign in with Google</b> ខាងលើដើម្បីចុះឈ្មោះ/Login មុននឹងបញ្ជាទិញពេជ្រហ្គេម!</span>
+        </div>
+
+        <div class="discount-live-bar" id="liveDiscountBanner" style="display: none;">
+            <span><i class="fa-solid fa-fire"></i> មហាសង្ក្រាន្តប្រូម៉ូសិនពិសេស៖ បញ្ចុះតម្លៃ <span id="txtDiscountPercent">0</span>% លើគ្រប់ហ្គេមទាំងអស់!</span>
+            <span style="font-size:11px; background:rgba(0,0,0,0.2); padding:3px 8px; border-radius:6px;">PROMO APPLIED</span>
+        </div>
+
         <div class="section-title"><i class="fa-solid fa-bolt" style="color:#f59e0b;"></i> Quick Top-Up</div>
-        <div class="quick-scroll" id="quickScrollList"></div>
+        <div class="quick-scroll">
+            <div class="quick-item" onclick="openOrderModal('mlbb', 'Mobile Legends')">
+                <div class="quick-circle c-blue"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="quick-name">MLBB</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('ff', 'Free Fire')">
+                <div class="quick-circle c-orange"><i class="fa-solid fa-fire"></i></div>
+                <div class="quick-name">Free Fire</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('pubg', 'PUBG Mobile')">
+                <div class="quick-circle c-dark"><i class="fa-solid fa-crosshairs"></i></div>
+                <div class="quick-name">PUBG</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('roblox', 'Roblox')">
+                <div class="quick-circle c-red"><i class="fa-solid fa-cube"></i></div>
+                <div class="quick-name">Roblox</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('valorant', 'Valorant')">
+                <div class="quick-circle c-red"><i class="fa-solid fa-crosshairs"></i></div>
+                <div class="quick-name">Valorant</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('hok', 'Honor of Kings')">
+                <div class="quick-circle c-orange"><i class="fa-solid fa-crown"></i></div>
+                <div class="quick-name">HOK</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('pool_8', '8 Ball Pool')">
+                <div class="quick-circle c-blue"><i class="fa-solid fa-circle-dot"></i></div>
+                <div class="quick-name">8 Ball</div>
+            </div>
+            <div class="quick-item" onclick="openOrderModal('clash', 'Clash Royale')">
+                <div class="quick-circle c-green"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="quick-name">Clash</div>
+            </div>
+        </div>
+
+        <div class="section-title"><i class="fa-solid fa-bullhorn" style="color:#e11d48;"></i> Events & Promo</div>
+        <div class="events-grid">
+            <div class="event-banner event-anniv" onclick="openOrderModal('ff', 'Free Fire')">
+                <div>
+                    <span style="background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px; font-size:11px;">ANNIVERSARY EVENT</span>
+                    <h3 style="margin-top:6px; font-size:18px;">Free Fire Mega Promo</h3>
+                </div>
+                <div style="font-size:12px; opacity:0.9;">បញ្ចុះតម្លៃពិសេសលើគ្រប់កញ្ចប់ពេជ្រ</div>
+            </div>
+            <div class="event-banner event-discount" onclick="openOrderModal('mlbb', 'Mobile Legends')">
+                <div>
+                    <span style="background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:6px; font-size:11px;">DISCOUNT SPECIAL</span>
+                    <h3 style="margin-top:6px; font-size:18px;">Mobile Legends Weekly Pass</h3>
+                </div>
+                <div style="font-size:12px; opacity:0.9;">ទទួលបានការបញ្ចុះតម្លៃរហូតដល់ 30%</div>
+            </div>
+        </div>
+
         <div class="section-title"><i class="fa-solid fa-fire" style="color:#e11d48;"></i> All Games</div>
         <div class="poster-grid" id="gamesGridContainer"></div>
     </div>
@@ -318,13 +442,16 @@
     </div>
 
     <div class="chat-widget" id="chatWidget">
-        <div class="chat-header"><span><i class="fa-solid fa-headset"></i> Live Chat Support</span><button onclick="toggleChatWidget()" style="background:none; border:none; color:#fff; font-size:16px; cursor:pointer;">&times;</button></div>
+        <div class="chat-header">
+            <span><i class="fa-solid fa-headset"></i> Live Chat Support</span>
+            <button onclick="toggleChatWidget()" style="background:none; border:none; color:#fff; font-size:16px; cursor:pointer;">&times;</button>
+        </div>
         <div class="chat-messages" id="chatMessagesBox"></div>
         <div class="chat-input-area">
-            <button class="chat-btn-icon" onclick="document.getElementById('chatFileInput').click()"><i class="fa-solid fa-paperclip"></i></button>
+            <button class="chat-btn-icon" onclick="document.getElementById('chatFileInput').click()" title="ផ្ញើរូបភាព ឬវីដេអូ"><i class="fa-solid fa-paperclip"></i></button>
             <input type="file" id="chatFileInput" accept="image/*,video/*" style="display:none;" onchange="uploadChatFile(this)">
             
-            <button class="chat-btn-icon" id="voiceRecordBtn" onclick="toggleVoiceRecording()"><i class="fa-solid fa-microphone"></i></button>
+            <button class="chat-btn-icon" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="និយាយជាសំឡេង"><i class="fa-solid fa-microphone"></i></button>
             
             <input type="text" id="chatInputText" placeholder="វាយសាររបស់អ្នក..." onkeypress="if(event.key==='Enter') sendGuestTextMessage()">
             <button class="chat-send-btn" onclick="sendGuestTextMessage()"><i class="fa-solid fa-paper-plane"></i></button>
@@ -333,30 +460,64 @@
 
     <div class="modal" id="orderModal">
         <div class="modal-card">
-            <div class="modal-header"><h3 id="modalGameTitle">បញ្ចូលពេជ្រហ្គេម</h3><button style="background:none; border:none; font-size:20px;" onclick="closeOrderModal()">&times;</button></div>
-            <div class="form-group"><label id="lblInputId">១. បញ្ចូល Player ID</label><input type="text" id="orderPlayerId" class="form-control"></div>
-            <div class="form-group"><label>២. ជ្រើសរើសកញ្ចប់</label><div id="pkgTabsContainer" class="tabs"></div><div id="pkgGridContainer" class="pkg-grid"></div></div>
+            <div class="modal-header">
+                <h3 id="modalGameTitle">បញ្ចូលពេជ្រហ្គេម</h3>
+                <button class="btn-close" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label id="lblInputId">១. បញ្ចូល Player ID</label>
+                <input type="text" id="orderPlayerId" class="form-control" placeholder="បញ្ចូល ID អ្នកលេង">
+            </div>
+            <div class="form-group">
+                <label>២. ជ្រើសរើសកញ្ចប់</label>
+                <div id="pkgTabsContainer" class="tabs"></div>
+                <div id="pkgGridContainer" class="pkg-grid"></div>
+            </div>
             <button class="btn-submit" onclick="handleOrderPurchase()"><i class="fa-solid fa-bolt"></i> បញ្ជាទិញឥឡូវនេះ</button>
         </div>
     </div>
 
     <div class="modal" id="depositModal">
         <div class="modal-card">
-            <div class="modal-header"><h3>ដាក់លុយចូលកាបូប</h3><button style="background:none; border:none; font-size:20px;" onclick="closeDepositModal()">&times;</button></div>
-            <div class="form-group"><label>ចំនួនទឹកប្រាក់ ($ USD) ៖</label><input type="number" id="depositInput" class="form-control" value="2.00" step="0.01"></div>
-            <button class="btn-submit" onclick="generateDepositQR()">បង្កើត QR ដាក់លុយ</button>
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-wallet" style="color:#16a34a;"></i> ដាក់លុយចូលកាបូប</h3>
+                <button class="btn-close" onclick="closeDepositModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>ចំនួនទឹកប្រាក់ ($ USD) ៖</label>
+                <input type="number" id="depositInput" class="form-control" value="2.00" step="0.01">
+            </div>
+            <button class="btn-submit" onclick="generateDepositQR()"><i class="fa-solid fa-qrcode"></i> បង្កើត KHQR ដាក់លុយ</button>
         </div>
     </div>
 
     <div class="modal" id="qrModal">
         <div class="khqr-modal-card">
-            <div class="khqr-top-bar"><div class="khqr-top-title">ABA KHQR</div><div class="khqr-timer"><span id="countdownText">10:00</span></div><button style="background:none; border:none; font-size:20px;" onclick="closeQRModal()">&times;</button></div>
-            <div class="khqr-ticket"><div class="khqr-red-header"></div><div class="khqr-ticket-body" id="khqrActiveView"><div class="khqr-store-name">Yuth Store</div><div class="khqr-ticket-amount" id="qrAmountDisplay">$0.00</div><div class="khqr-dashed-line"></div><div class="khqr-canvas-wrap"><canvas id="qrCanvas"></canvas></div></div><div class="khqr-expired-view" id="khqrExpiredView"><h4>QR ផុតកំណត់</h4><button class="btn-submit" onclick="regenerateQR()">បង្កើតថ្មី</button></div></div>
+            <div class="khqr-top-bar">
+                <div class="khqr-top-title">ABA KHQR</div>
+                <div class="khqr-timer"><i class="fa-regular fa-clock"></i> <span id="countdownText">10:00</span></div>
+                <button class="btn-close-khqr" onclick="closeQRModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="khqr-ticket">
+                <div class="khqr-red-header">
+                    <svg class="khqr-logo-svg" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
+                        <text x="50%" y="22" font-size="22" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="4">KHQR</text>
+                    </svg>
+                </div>
+                <div class="khqr-ticket-body" id="khqrActiveView">
+                    <div class="khqr-store-name">Yuth Store</div>
+                    <div class="khqr-ticket-amount" id="qrAmountDisplay">$0.00 <span>USD</span></div>
+                    <div class="khqr-canvas-wrap"><canvas id="qrCanvas"></canvas></div>
+                </div>
+                <div class="khqr-expired-view" id="khqrExpiredView">
+                    <h4>QR Code បានផុតកំណត់ហើយ!</h4>
+                    <button class="btn-submit" onclick="regenerateQR()">បង្កើត QR ថ្មីឡើងវិញ</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // *** បញ្ចូល Firebase Config របស់អ្នក (Firestore + Storage ត្រូវបើកដំណើរការ) ***
         const firebaseConfig = {
             apiKey: "AIzaSyDS3kWriQ5w4I7h00r0y_e3ZizMoVgt_Ys",
             authDomain: "planning-with-ai-46ea2.firebaseapp.com",
@@ -369,7 +530,10 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        let currentUser = null, currentUserBalance = 0.00, currentSelectedGame = 'ff', discountPercentage = 0, selectedPackage = null, selectedPrice = 0, qrTimerInterval = null, remainingSeconds = 600, lastGeneratedAmountUSD = 0;
+        const BAKONG_ACCOUNT_ID = "samnang_mon@bkrt"; 
+        const ACCOUNT_NAME = "YUTH STORE";
+
+        let currentUser = null, currentUserBalance = 0.00, currentSelectedGame = 'ff', currentSelectedGameTitle = '', discountPercentage = 0, selectedPackage = null, selectedPrice = 0, qrTimerInterval = null, remainingSeconds = 600, lastGeneratedAmountUSD = 0;
         let mediaRecorder, audioChunks = [], isRecording = false;
 
         let sessionId = localStorage.getItem('guest_session_id') || ('sess_' + Math.random().toString(36).substr(2, 9));
@@ -383,73 +547,166 @@
             discountPercentage = doc.exists ? (doc.data().percent || 0) : 0;
             document.getElementById('liveDiscountBanner').style.display = discountPercentage > 0 ? 'flex' : 'none';
             document.getElementById('txtDiscountPercent').innerText = discountPercentage;
+            if (document.getElementById('orderModal').style.display === 'flex') { renderPackages(); }
         });
 
+        // 🎮 តារាងហ្គេមទាំងអស់ពេញលេញ ២៧ មុខ (តាមរូបភាព Screenshot ជាក់ស្តែង)
         const gameCatalog = {
-            ff: { title: "Free Fire", color: "c-orange", icon: "fa-fire", tabs: [{ name: '💎 ពេជ្រ', id: 'ff_d' }], packages: { ff_d: [{ name: '100 ពេជ្រ', price: 0.50 }, { name: '500 ពេជ្រ', price: 2.00 }] } },
-            mlbb: { title: "Mobile Legends", color: "c-blue", icon: "fa-shield-halved", tabs: [{ name: '💎 Diamonds', id: 'ml_d' }], packages: { ml_d: [{ name: '86 Diamonds', price: 1.50 }] } }
+            mlbb: { title: "Mobile Legends [khmer]", color: "c-blue", icon: "fa-shield-halved", sold: "29k+", tag: "Event ✨", tabs: [{ name: '💎 Diamonds', id: 'ml_diamonds' }, { name: '🌟 Weekly Pass', id: 'ml_pass' }], packages: { ml_diamonds: [{ name: '86 Diamonds', price: 1.50 }, { name: '172 Diamonds', price: 3.00 }, { name: '257 Diamonds', price: 4.50 }, { name: '706 Diamonds', price: 11.50 }], ml_pass: [{ name: 'Weekly Diamond Pass', price: 2.20 }] } },
+            ff: { title: "Free Fire លឿន", color: "c-orange", icon: "fa-fire", sold: "90k+", tag: "Event", tabs: [{ name: '💎 ពេជ្ររាយ', id: 'ff_diamond' }, { name: '👑 Pass/កាត', id: 'ff_pass' }], packages: { ff_diamond: [{ name: '100 ពេជ្រ', price: 0.50 }, { name: '300 ពេជ្រ', price: 1.00 }, { name: '500 ពេជ្រ', price: 2.00 }, { name: '800 ពេជ្រ', price: 5.00 }, { name: '1,000 ពេជ្រ', price: 8.00 }, { name: '10,000 ពេជ្រ', price: 16.00 }], ff_pass: [{ name: 'កាតសប្តាហ៍', price: 3.50 }, { name: 'កាតប្រចាំខែ (1300💎)', price: 5.00 }, { name: 'Level Up Pass', price: 8.00 }] } },
+            ff_v2: { title: "Free Fire លឿន V2", color: "c-dark", icon: "fa-bolt", sold: "3k+", tag: "RESTOCKING", tabs: [{ name: '💎 ពេជ្ររាយ', id: 'ff_d2' }], packages: { ff_d2: [{ name: '100 ពេជ្រ', price: 0.50 }, { name: '500 ពេជ្រ', price: 2.00 }] } },
+            mlbb_ru: { title: "Mobile Legends [Russia]", color: "c-blue", icon: "fa-shield", sold: "322", tag: "Event", tabs: [{ name: '💎 Diamonds', id: 'ml_ru_d' }], packages: { ml_ru_d: [{ name: '257 Diamonds', price: 4.50 }] } },
+            mlbb_sg: { title: "Mobile Legends [Singapore]", color: "c-cyan", icon: "fa-shield-heart", sold: "185", tag: "Event", tabs: [{ name: '💎 Diamonds', id: 'ml_sg_d' }], packages: { ml_sg_d: [{ name: '257 Diamonds', price: 4.50 }] } },
+            monthly_pass: { title: "Monthly 7.25$", color: "c-dark", icon: "fa-calendar", sold: "140", tag: "RESTOCKING", tabs: [{ name: '📅 Pass', id: 'mp' }], packages: { mp: [{ name: 'Monthly Pass 7.25$', price: 7.25 }] } },
+            less_more: { title: "Less is More", color: "c-dark", icon: "fa-gem", sold: "171", tag: "RESTOCKING", tabs: [{ name: '💎 Event', id: 'lm' }], packages: { lm: [{ name: 'Less is More (Diamond Pack)', price: 1.20 }] } },
+            ff_vn: { title: "Free Fire [VN]", color: "c-red", icon: "fa-moon", sold: "7k+", tag: "Hot", tabs: [{ name: '💎 ពេជ្រ', id: 'ff_vn_d' }], packages: { ff_vn_d: [{ name: '100 ពេជ្រ', price: 0.50 }] } },
+            pubg: { title: "Pubg Mobile Global", color: "c-dark", icon: "fa-crosshairs", sold: "940", tag: "Hot ⚡", tabs: [{ name: '💵 UC', id: 'pubg_uc' }], packages: { pubg_uc: [{ name: '60 UC', price: 0.99 }, { name: '325 UC', price: 4.99 }, { name: '660 UC', price: 9.99 }] } },
+            mlbb_ph: { title: "MLBB [Philippines]", color: "c-blue", icon: "fa-dragon", sold: "559", tag: "Hot ⚡", tabs: [{ name: '💎 Diamonds', id: 'ml_ph_d' }], packages: { ml_ph_d: [{ name: '172 Diamonds', price: 3.00 }] } },
+            mlbb_id: { title: "MLBB [Indonesia]", color: "c-cyan", icon: "fa-wand-magic-sparkles", sold: "164", tag: "Hot ⚡", tabs: [{ name: '💎 Diamonds', id: 'ml_id_d' }], packages: { ml_id_d: [{ name: '172 Diamonds', price: 3.00 }] } },
+            levelup_pass: { title: "Level Up Pass", color: "c-purple", icon: "fa-angles-up", sold: "9k+", tag: "Hot", tabs: [{ name: '⬆️ Pass', id: 'lp' }], packages: { lp: [{ name: 'Level Up Pass', price: 8.00 }] } },
+            roblox: { title: "Robux Gift Card", color: "c-blue", icon: "fa-cube", sold: "497", tag: "Hot", tabs: [{ name: '💎 Robux', id: 'rbx' }], packages: { rbx: [{ name: '80 Robux', price: 1.10 }, { name: '400 Robux', price: 5.20 }] } },
+            heartopia: { title: "Heartopia", color: "c-dark", icon: "fa-heart", sold: "254", tag: "RESTOCKING", tabs: [{ name: '🌟 Pack', id: 'ht' }], packages: { ht: [{ name: 'Starter Pack', price: 2.00 }] } },
+            ff_taiwan: { title: "Free Fire [Taiwan]", color: "c-dark", icon: "fa-fire", sold: "367", tag: "Hot", tabs: [{ name: '💎 ពេជ្រ', id: 'ff_tw_d' }], packages: { ff_tw_d: [{ name: '100 ពេជ្រ', price: 0.50 }] } },
+            ff_th: { title: "Free Fire [TH]", color: "c-red", icon: "fa-fire", sold: "754", tag: "ស្វ័យប្រវត្តិ ⚡", tabs: [{ name: '💎 ពេជ្រ', id: 'ff_th_d' }], packages: { ff_th_d: [{ name: '100 ពេជ្រ', price: 0.50 }] } },
+            hok: { title: "Honor of Kings", color: "c-orange", icon: "fa-crown", sold: "1k+", tag: "ស្វ័យប្រវត្តិ ⚡", tabs: [{ name: '👑 Tokens', id: 'hok_t' }], packages: { hok_t: [{ name: '80 Tokens', price: 1.10 }, { name: '240 Tokens', price: 3.20 }] } },
+            magic_chess: { title: "Magic Chess: Go Go", color: "c-purple", icon: "fa-chess", sold: "429", tag: "ស្វ័យប្រវត្តិ ⚡", tabs: [{ name: '♟️ Pass', id: 'mc' }], packages: { mc: [{ name: 'Season Pass', price: 3.50 }] } },
+            valorant: { title: "Valorant KH", color: "c-red", icon: "fa-crosshairs", sold: "457", tag: "ស្វ័យប្រវត្តិ ⚡", tabs: [{ name: '🎯 Points', id: 'val_p' }], packages: { val_p: [{ name: '475 VP', price: 4.50 }, { name: '1000 VP', price: 9.50 }] } },
+            blood_strike: { title: "Blood Strike", color: "c-teal", icon: "fa-gun", sold: "123", tag: "Auto Service ⚡", tabs: [{ name: '🔫 Gold', id: 'bs' }], packages: { bs: [{ name: '100 Gold', price: 1.20 }] } },
+            zepeto: { title: "Zepeto", color: "c-purple", icon: "fa-user-astronaut", sold: "370", tag: "ស្វ័យប្រវត្តិ", tabs: [{ name: '👗 ZEM', id: 'zp' }], packages: { zp: [{ name: '29 ZEM', price: 2.20 }] } },
+            farlight: { title: "Farlight 84", color: "c-teal", icon: "fa-jet-fighter", sold: "232", tag: "Auto Service", tabs: [{ name: '🚀 Diamonds', id: 'fl' }], packages: { fl: [{ name: '60 Diamonds', price: 0.99 }] } },
+            ff_eu: { title: "Free Fire EU & TR", color: "c-dark", icon: "fa-fire", sold: "458", tag: "New", tabs: [{ name: '💎 ពេជ្រ', id: 'ff_eu_d' }], packages: { ff_eu_d: [{ name: '100 ពេជ្រ', price: 0.50 }] } },
+            pool_8: { title: "8 Ball Pool", color: "c-blue", icon: "fa-circle-dot", sold: "459", tag: "New 🔥", tabs: [{ name: '🎱 Cash', id: 'eb' }], packages: { eb: [{ name: 'Pool Pass', price: 4.99 }] } },
+            nikki: { title: "Infinity Nikki", color: "c-pink", icon: "fa-wand-magic-sparkles", sold: "136", tag: "New", tabs: [{ name: '✨ Stellar Crystals', id: 'nk' }], packages: { nk: [{ name: 'Monthly Card', price: 4.99 }] } },
+            clash: { title: "Clash Royale", color: "c-green", icon: "fa-shield-halved", sold: "493", tag: "New", tabs: [{ name: '👑 Pass', id: 'cr' }], packages: { cr: [{ name: 'Gold Pass', price: 5.99 }] } },
+            marvel: { title: "Marvel Rivals", color: "c-dark", icon: "fa-mask", sold: "231", tag: "New", tabs: [{ name: '🦸 Tokens', id: 'mr' }], packages: { mr: [{ name: 'Battle Pass', price: 9.99 }] } },
+            delta: { title: "Delta Force", color: "c-dark", icon: "fa-crosshairs", sold: "480", tag: "New", tabs: [{ name: '🎯 Coins', id: 'df' }], packages: { df: [{ name: 'Standard Pass', price: 4.99 }] } }
         };
 
         function renderCatalog() {
-            const grid = document.getElementById('gamesGridContainer'), quick = document.getElementById('quickScrollList');
-            grid.innerHTML = ''; quick.innerHTML = '';
+            const grid = document.getElementById('gamesGridContainer');
+            grid.innerHTML = '';
             for (let key in gameCatalog) {
                 let g = gameCatalog[key];
-                grid.innerHTML += `<div class="poster-card" onclick="openOrderModal('${key}', '${g.title}')"><div class="poster-art ${g.color}"><i class="fa-solid ${g.icon}"></i><div class="poster-art-title">${g.title}</div></div><div class="poster-overlay"></div><div class="poster-info"><div class="poster-title">${g.title}</div></div></div>`;
-                quick.innerHTML += `<div class="quick-item" onclick="openOrderModal('${key}', '${g.title}')"><div class="quick-circle ${g.color}"><i class="fa-solid ${g.icon}"></i></div><div class="quick-name">${g.title}</div></div>`;
+                grid.innerHTML += `
+                    <div class="poster-card" onclick="openOrderModal('${key}', '${g.title}')">
+                        <div class="poster-art ${g.color}"><i class="fa-solid ${g.icon}"></i><div class="poster-art-title">${g.title}</div></div>
+                        <div class="poster-overlay"></div>
+                        <div class="sold-badge">${g.sold} Sold</div>
+                        <div class="poster-info">
+                            <div class="poster-title">${g.title}</div>
+                            <span class="tag-pill tag-auto">${g.tag}</span>
+                        </div>
+                    </div>`;
             }
         }
         renderCatalog();
 
+        function parseJwt (token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+        }
+
         function handleCredentialResponse(response) {
-            let payload = JSON.parse(decodeURIComponent(window.atob(response.credential.split('.')[1]).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
-            currentUser = payload; document.getElementById('userImg').src = payload.picture; document.getElementById('authBox').style.display = 'none'; document.getElementById('userBox').style.display = 'flex'; document.getElementById('loginAlertBanner').style.display = 'none';
-            db.collection('users').doc(currentUser.email.toLowerCase()).onSnapshot(doc => {
+            const payload = parseJwt(response.credential);
+            currentUser = payload;
+            document.getElementById('userImg').src = payload.picture;
+            document.getElementById('authBox').style.display = 'none';
+            document.getElementById('userBox').style.display = 'flex';
+            document.getElementById('loginAlertBanner').style.display = 'none';
+            updateOnlinePresence();
+
+            db.collection('users').doc(currentUser.email.toLowerCase()).onSnapshot((doc) => {
                 currentUserBalance = doc.exists ? (doc.data().balance || 0.00) : 0.00;
-                if(!doc.exists) db.collection('users').doc(currentUser.email.toLowerCase()).set({ name: currentUser.name, balance: 0.00 });
+                if (!doc.exists) { db.collection('users').doc(currentUser.email.toLowerCase()).set({ name: currentUser.name, balance: 0.00 }); }
                 document.getElementById('userBalance').innerText = `$${currentUserBalance.toFixed(2)}`;
             });
         }
-        function logout() { location.reload(); }
 
+        function logout() { currentUser = null; document.getElementById('authBox').style.display = 'block'; document.getElementById('userBox').style.display = 'none'; document.getElementById('loginAlertBanner').style.display = 'flex'; }
+        
         function openOrderModal(gameKey, gameTitle) {
-            currentSelectedGame = gameKey; document.getElementById('modalGameTitle').innerText = gameTitle;
-            let inputField = document.getElementById('orderPlayerId'), lblField = document.getElementById('lblInputId');
-            lblField.innerText = gameKey === 'ff' ? "Free Fire Player ID" : "Game ID";
-            inputField.placeholder = "បញ្ចូល ID"; renderPackages(); document.getElementById('orderModal').style.display = 'flex';
+            if (!currentUser) { alert('⚠️ សូម Login ជាមួយ Google ជាមុនសិន!'); return; }
+            currentSelectedGame = gameKey; currentSelectedGameTitle = gameTitle;
+            document.getElementById('modalGameTitle').innerText = gameTitle;
+            const inputField = document.getElementById('orderPlayerId');
+            const lblField = document.getElementById('lblInputId');
+            
+            if (gameKey.includes('ff')) { lblField.innerText = "១. បញ្ចូល Free Fire Player ID"; inputField.placeholder = "Player ID អ្នកលេង"; }
+            else if (gameKey.includes('mlbb')) { lblField.innerText = "១. បញ្ចូល User ID & Zone ID"; inputField.placeholder = "ឧទាហរណ៍: 12345678 (Zone)"; }
+            else if (gameKey.includes('pubg')) { lblField.innerText = "១. បញ្ចូល PUBG Character ID"; inputField.placeholder = "Character ID"; }
+            else { lblField.innerText = "១. បញ្ចូល Player ID"; inputField.placeholder = "បញ្ចូល ID"; }
+            
+            renderPackages();
+            document.getElementById('orderModal').style.display = 'flex';
         }
         function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
-        function openDepositModal() { document.getElementById('depositModal').style.display = 'flex'; }
+        function openDepositModal() { if (!currentUser) { alert('⚠️ សូម Login សិន!'); return; } document.getElementById('depositModal').style.display = 'flex'; }
         function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
         function closeQRModal() { clearInterval(qrTimerInterval); document.getElementById('qrModal').style.display = 'none'; }
 
         function renderPackages() {
-            let data = gameCatalog[currentSelectedGame], grid = document.getElementById('pkgGridContainer');
-            grid.innerHTML = '';
-            data.packages[data.tabs[0].id].forEach((item, idx) => {
-                let fPrice = discountPercentage > 0 ? (item.price * (1 - discountPercentage / 100)) : item.price;
-                if(idx === 0) { selectedPackage = item.name; selectedPrice = fPrice; }
-                grid.innerHTML += `<div class="pkg-card ${idx === 0 ? 'active' : ''}" onclick="selectPkg(this, '${item.name}', ${fPrice})"><div class="pkg-name">${item.name}</div><div class="pkg-price">$${fPrice.toFixed(2)}</div></div>`;
+            const data = gameCatalog[currentSelectedGame];
+            const tabContainer = document.getElementById('pkgTabsContainer');
+            tabContainer.innerHTML = '';
+            data.tabs.forEach((tab, index) => {
+                tabContainer.innerHTML += `<button class="tab-btn ${index === 0 ? 'active' : ''}" onclick="showTabPackages('${tab.id}')">${tab.name}</button>`;
+            });
+            showTabPackages(data.tabs[0].id);
+        }
+
+        function showTabPackages(tabId) {
+            const data = gameCatalog[currentSelectedGame];
+            const pkgContainer = document.getElementById('pkgGridContainer');
+            pkgContainer.innerHTML = '';
+
+            data.packages[tabId].forEach((item, idx) => {
+                const finalPrice = discountPercentage > 0 ? (item.price * (1 - discountPercentage / 100)) : item.price;
+                if(idx === 0) { selectedPackage = item.name; selectedPrice = finalPrice; }
+                pkgContainer.innerHTML += `
+                    <div class="pkg-card ${idx === 0 ? 'active' : ''}" onclick="selectCard(this, '${item.name}', ${finalPrice})">
+                        ${discountPercentage > 0 ? `<div class="pkg-badge-discount">-${discountPercentage}%</div>` : ''}
+                        <div class="pkg-name">${item.name}</div>
+                        <div>
+                            ${discountPercentage > 0 ? `<span class="pkg-old-price">$${item.price.toFixed(2)}</span>` : ''}
+                            <span class="pkg-price">$${finalPrice.toFixed(2)}</span>
+                        </div>
+                    </div>`;
             });
         }
-        function selectPkg(el, n, p) { document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active')); el.classList.add('active'); selectedPackage = n; selectedPrice = p; }
+
+        function selectCard(card, name, price) {
+            document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active'); selectedPackage = name; selectedPrice = price;
+        }
 
         async function handleOrderPurchase() {
-            let pId = document.getElementById('orderPlayerId').value.trim(); if(!pId) return;
-            if(currentUser && currentUserBalance >= selectedPrice) {
-                await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: currentUserBalance - selectedPrice });
-                closeOrderModal(); alert('✅ បញ្ជាទិញបានជោគជ័យ!');
+            const playerId = document.getElementById('orderPlayerId').value.trim();
+            if (!playerId) { alert('សូមបញ្ចូល Player ID!'); return; }
+            if (currentUser && currentUserBalance >= selectedPrice) {
+                if (confirm(`ទិញ ${selectedPackage} តម្លៃ $${selectedPrice.toFixed(2)}?`)) {
+                    await db.collection('users').doc(currentUser.email.toLowerCase()).update({ balance: currentUserBalance - selectedPrice });
+                    closeOrderModal(); alert(`✅ បញ្ជាទិញបានជោគជ័យ! លុយនៅសល់: $${(currentUserBalance - selectedPrice).toFixed(2)}`);
+                }
             } else { closeOrderModal(); showQR(selectedPrice); }
         }
 
         function generateDepositQR() { showQR(parseFloat(document.getElementById('depositInput').value)); closeDepositModal(); }
+        
         function showQR(amt) {
             lastGeneratedAmountUSD = amt; document.getElementById('qrAmountDisplay').innerText = `$${amt.toFixed(2)}`;
             QRCode.toCanvas(document.getElementById('qrCanvas'), `00020101021229300016${BAKONG_ACCOUNT_ID}54${amt.toFixed(2)}5802KH6304`, { width: 210, margin: 1 });
             document.getElementById('qrModal').style.display = 'flex';
+            clearInterval(qrTimerInterval); remainingSeconds = 600;
+            qrTimerInterval = setInterval(() => {
+                let m = Math.floor(remainingSeconds / 60), s = remainingSeconds % 60;
+                document.getElementById('countdownText').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                if (--remainingSeconds < 0) { clearInterval(qrTimerInterval); document.getElementById('khqrActiveView').style.display = 'none'; document.getElementById('khqrExpiredView').style.display = 'block'; }
+            }, 1000);
         }
+        function regenerateQR() { showQR(lastGeneratedAmountUSD); }
 
-        /* 💬 ប្រព័ន្ធ Live Chat ជំនាន់ថ្មី៖ ផ្ញើ រូបភាព វីដេអូ និងសំឡេង */
+        /* 💬 ប្រព័ន្ធ Live Chat ជំនាន់ថ្មី */
         function toggleChatWidget() {
             let w = document.getElementById('chatWidget'); w.style.display = w.style.display === 'flex' ? 'none' : 'flex';
             if (w.style.display === 'flex') {
@@ -457,13 +714,10 @@
                 db.collection('chats').doc(cId).collection('messages').orderBy('timestamp', 'asc').onSnapshot((snap) => {
                     let box = document.getElementById('chatMessagesBox'); box.innerHTML = '';
                     snap.forEach(doc => {
-                        let m = doc.data();
-                        let cls = m.sender === 'admin' ? 'admin' : 'guest';
-                        let mediaHtml = '';
+                        let m = doc.data(), cls = m.sender === 'admin' ? 'admin' : 'guest', mediaHtml = '';
                         if(m.type === 'image') mediaHtml = `<img src="${m.fileUrl}" onclick="window.open('${m.fileUrl}')">`;
                         else if(m.type === 'video') mediaHtml = `<video src="${m.fileUrl}" controls></video>`;
                         else if(m.type === 'audio') mediaHtml = `<audio src="${m.fileUrl}" controls></audio>`;
-                        
                         box.innerHTML += `<div class="chat-bubble ${cls}">${m.text ? `<div>${m.text}</div>` : ''}${mediaHtml}</div>`;
                     });
                     box.scrollTop = box.scrollHeight;
@@ -483,16 +737,14 @@
             sendChatMessageData({ text: txt, sender: 'guest', type: 'text' }); input.value = '';
         }
 
-        // 📂 មុខងារ៖ ផ្ញើរូបភាព ឬវីដេអូ
         async function uploadChatFile(el) {
             let file = el.files[0]; if(!file) return;
             let type = file.type.startsWith('image/') ? 'image' : 'video';
-            let ref = storage.ref(`chats/${Date.now()}_${file.name}`);
-            let snap = await ref.put(file); let url = await snap.ref.getDownloadURL();
+            let snap = await storage.ref(`chats/${Date.now()}_${file.name}`).put(file);
+            let url = await snap.ref.getDownloadURL();
             sendChatMessageData({ fileUrl: url, type: type, sender: 'guest' }); el.value = '';
         }
 
-        // 🎙️ មុខងារ៖ និយាយជាសំឡេង
         async function toggleVoiceRecording() {
             let btn = document.getElementById('voiceRecordBtn');
             if (!isRecording) {
@@ -501,14 +753,22 @@
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
                 mediaRecorder.onstop = async () => {
                     let blob = new Blob(audioChunks, { type: 'audio/mp3' }); audioChunks = [];
-                    let ref = storage.ref(`chats/voice_${Date.now()}.mp3`);
-                    let snap = await ref.put(blob); let url = await snap.ref.getDownloadURL();
+                    let snap = await storage.ref(`chats/voice_${Date.now()}.mp3`).put(blob);
+                    let url = await snap.ref.getDownloadURL();
                     sendChatMessageData({ fileUrl: url, type: 'audio', sender: 'guest' });
                 };
-                mediaRecorder.start(); isRecording = true; btn.classList.add('recording'); btn.innerHTML = `<i class="fa-solid fa-stop"></i>`;
+                mediaRecorder.start(); isRecording = true; btn.classList.add('recording');
             } else {
-                mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording'); btn.innerHTML = `<i class="fa-solid fa-microphone"></i>`;
+                mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording');
             }
+        }
+
+        function filterGames() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.poster-card').forEach(card => {
+                const title = card.querySelector('.poster-title').innerText.toLowerCase();
+                card.style.display = title.includes(query) ? 'flex' : 'none';
+            });
         }
     </script>
 </body>
