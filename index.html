@@ -829,3 +829,16 @@
                 });
             }
         }
+
+        async function sendGuestMessage() {
+            const text = document.getElementById('chatInputText').value.trim();
+            if (!text) return;
+            const currentChatId = currentUser ? currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_') : sessionId;
+            const senderName = currentUser ? currentUser.name : 'Guest';
+            await db.collection('chats').doc(currentChatId).set({ chatId: currentChatId, clientName: senderName, clientEmail: currentUser ? currentUser.email : 'Guest', lastMessage: text, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            await db.collection('chats').doc(currentChatId).collection('messages').add({ text: text, sender: 'guest', senderName: senderName, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            document.getElementById('chatInputText').value = '';
+        }
+    </script>
+</body>
+</html>
